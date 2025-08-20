@@ -1,6 +1,6 @@
 package Backend;
 
-public class Medico extends Usuario  {
+public class Medico extends Persona  {
     private String clave;
     private String especialidad;
 

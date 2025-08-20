@@ -1,6 +1,6 @@
 package Backend;
 
-public class Farmaceutico extends Usuario {
+public class Farmaceutico extends Persona {
     private String clave;
 
     public Farmaceutico(String nombre, int id, String clave) {
