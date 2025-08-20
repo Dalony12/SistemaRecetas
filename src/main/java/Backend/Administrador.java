@@ -5,14 +5,14 @@ import Gestores.GestorFarmaceuticos;
 import Gestores.GestorPacientes;
 import Gestores.GestorMedicos;
 
-public class Administrador extends Persona{
+public class Administrador extends Usuario{
     private GestorMedicamentos gestormedicamentos;
     private GestorPacientes gestorPacientes;
     private GestorMedicos gestorMedicos;
     private GestorFarmaceuticos gestorFarmaceuticos;
 
-    public Administrador(String nombre, int id, GestorMedicamentos gestormedicamentos, GestorPacientes gestorPacientes, GestorMedicos gestorMedicos, GestorFarmaceuticos gestorFarmaceuticos) {
-        super(nombre, id);
+    public Administrador(String nombre, int id, String password, GestorMedicamentos gestormedicamentos, GestorPacientes gestorPacientes, GestorMedicos gestorMedicos, GestorFarmaceuticos gestorFarmaceuticos) {
+        super(id, nombre, password);
         this.gestormedicamentos = gestormedicamentos;
         this.gestorPacientes = gestorPacientes;
         this.gestorMedicos = gestorMedicos;
