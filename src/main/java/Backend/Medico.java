@@ -1,11 +1,11 @@
 package Backend;
 
-public class Medico extends Persona  {
+public class Medico extends Usuario  {
     private String clave;
     private String especialidad;
 
-    public Medico(String nombre, int id, String clave, String especialidad) {
-        super(nombre, id);
+    public Medico(String nombre, int id, String password, String especialidad) {
+        super(id, nombre, password);
         this.clave = clave;
         this.especialidad = especialidad;
     }
@@ -30,7 +30,6 @@ public class Medico extends Persona  {
     public void mostrarInfo() {
         System.out.println("Medico [ID: " + getId() +
                 ", Nombre: " + getNombre() +
-                ", Especialidad: " + getEspecialidad() +
-                ", Clave: " + getClave() + "]");
+                ", Especialidad: " + getEspecialidad() + "]");
     }
 }

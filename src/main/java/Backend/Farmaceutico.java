@@ -1,10 +1,10 @@
 package Backend;
 
-public class Farmaceutico extends Persona {
+public class Farmaceutico extends Usuario {
     private String clave;
 
-    public Farmaceutico(String nombre, int id, String clave) {
-        super(nombre, id);
+    public Farmaceutico(String nombre, int id, String password, String clave) {
+        super(id, nombre, password);
         this.clave = clave;
     }
 
@@ -19,7 +19,6 @@ public class Farmaceutico extends Persona {
     @Override
     public void mostrarInfo() {
         System.out.println("Medico [ID: " + getId() +
-                ", Nombre: " + getNombre() +
-                ", Clave: " + getClave() + "]");
+                ", Nombre: " + getNombre() + "]");
     }
 }
