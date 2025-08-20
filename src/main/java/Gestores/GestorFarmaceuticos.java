@@ -24,12 +24,20 @@ public class GestorFarmaceuticos {
     }
 
     public void consultarTodosFarmaceuticos() {
-        if (farmaceuticos.isEmpty()) return;
-        for (Farmaceutico f : farmaceuticos) System.out.println(f);
+        if (farmaceuticos.isEmpty()) {
+            return;
+        }
+        for (Farmaceutico f : farmaceuticos) {
+            System.out.println(f);
+        }
     }
 
     public Farmaceutico buscarPorid(int id) {
-        for (Farmaceutico farma : farmaceuticos) if (farma.getId() == id) return farma;
+        for (Farmaceutico farma : farmaceuticos) {
+            if (farma.getId() == id) {
+                return farma;
+            }
+        }
         return null;
     }
 
