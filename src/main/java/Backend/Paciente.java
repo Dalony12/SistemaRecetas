@@ -1,7 +1,7 @@
 package Backend;
 import java.time.LocalDate;
 
-public class Paciente extends Usuario {
+public class Paciente extends Persona {
     private int telefono;
     private LocalDate fechaNacimiento;
 

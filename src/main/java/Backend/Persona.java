@@ -1,12 +1,12 @@
 package Backend;
 
-public abstract class Usuario {
+public abstract  class Persona {
     private int id;
     private String nombre;
 
-    public Usuario(String nombre, int id) {
-        this.nombre = nombre;
+    public Persona(String nombre, int id) {
         this.id = id;
+        this.nombre = nombre;
     }
 
     public int getId() {
@@ -26,4 +26,5 @@ public abstract class Usuario {
     }
 
     public abstract void mostrarInfo();
+
 }

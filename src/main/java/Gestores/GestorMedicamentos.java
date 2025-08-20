@@ -11,6 +11,14 @@ public class GestorMedicamentos {
         this.medicamentos = new ArrayList<>();
     }
 
+    public List<Medicamento> getMedicamentos() {
+        return medicamentos;
+    }
+
+    public void setMedicamentos(List<Medicamento> medicamentos) {
+        this.medicamentos = medicamentos;
+    }
+
     public void agregarMedicamento(Medicamento m) {
         medicamentos.add(m);
     }
@@ -43,9 +51,10 @@ public class GestorMedicamentos {
         return null;
     }
 
-    public boolean modificarMedicamento(int codigo, String nuevoNombre, String nuevaPresentacion) {
+    public boolean modificarMedicamento(int codigo, String nuevoNombre, String nuevaPresentacion, int nuevoCodigo) {
         Medicamento m = buscarPorCodigo(codigo);
         if (m != null) {
+            m.setCodigo(nuevoCodigo);
             m.setNombre(nuevoNombre);
             m.setDescripcion(nuevaPresentacion);
             return true;
@@ -57,7 +66,6 @@ public class GestorMedicamentos {
         Medicamento m = buscarPorCodigo(codigo);
         if (m != null) {
             medicamentos.remove(m);
-            System.out.println("🗑️ Medicamento eliminado: " + m.getNombre());
             return true;
         }
         return false;
