@@ -55,7 +55,7 @@
                         <Insets bottom="20.0" left="75.0" right="20.0" top="-10.0" />
                     </VBox.margin>
                 </ImageView>
-                <Label id="lblBusquedaFarmaceuta" fx:id="lblFarmaceuta" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
+                <Label id="lblBusquedaFarmaceuta" fx:id="lblBusquedaFarmaceuta" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
                     <font>
                         <Font size="10.0" />
                     </font>
@@ -105,7 +105,7 @@
             </font>
         </RadioButton>
         <RadioButton id="btnBorrarFarmaceuta" fx:id="btnBorrarFarmaceuta" layoutX="440.0" layoutY="67.0" mnemonicParsing="false" styleClass="nav-item" text="Borrar" />
-        <Label id="lblLimpiarFarmaceuta" fx:id="lblFarmaceuta" layoutX="416.0" layoutY="350.0" styleClass="subrayadoFondoClaro" text="Limpiar" underline="true">
+        <Label id="lblLimpiarFarmaceuta" fx:id="lblLimpiarFarmaceuta" layoutX="416.0" layoutY="350.0" styleClass="subrayadoFondoClaro" text="Limpiar" underline="true">
             <font>
                 <Font size="10.0" />
             </font>
