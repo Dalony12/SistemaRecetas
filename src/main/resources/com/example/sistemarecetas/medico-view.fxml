@@ -55,6 +55,17 @@
                         <Insets bottom="20.0" left="75.0" right="20.0" top="-10.0" />
                     </VBox.margin>
                 </ImageView>
+            <Label id="lblLimpiarMedico" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
+               <font>
+                  <Font size="10.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <VBox.margin>
+                  <Insets left="75.0" right="40.0" />
+               </VBox.margin>
+            </Label>
             </children>
         </VBox>
         <GridPane layoutX="328.0" layoutY="113.0" prefHeight="176.0" prefWidth="242.0">
@@ -102,7 +113,7 @@
             </font>
         </RadioButton>
         <RadioButton id="btnBorrarMedico" fx:id="btnBorrarMedico" layoutX="435.0" layoutY="64.0" mnemonicParsing="false" styleClass="nav-item" text="Borrar" />
-        <Label id="lblLimpiarMedico" layoutX="430.0" layoutY="356.0" styleClass="subrayado" text="Limpiar" underline="true">
+        <Label id="lblLimpiarMedico" layoutX="430.0" layoutY="356.0" styleClass="subrayadoFondoClaro" text="Limpiar" underline="true">
             <font>
                 <Font size="10.0" />
             </font>
