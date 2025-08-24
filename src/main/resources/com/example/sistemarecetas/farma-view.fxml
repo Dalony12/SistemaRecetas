@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.MedicoController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.FarmaceuticoController">
     <stylesheets>
         <URL value="@styles/Styles.css" />
         <URL value="@styles/Styles.css" />
@@ -26,8 +26,8 @@
     <children>
         <HBox id="hbxMenu" prefHeight="23.0" prefWidth="606.0" styleClass="navbar">
             <children>
-                <ToggleButton id="tgbMedicos" fx:id="tgbMedicos" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" selected="true" styleClass="nav-item" text="Médicos" />
-                <ToggleButton id="tgbfarmaceutas" fx:id="tgbfarmaceutas" mnemonicParsing="false" prefHeight="28.0" prefWidth="109.0" styleClass="nav-item" text="Farmacéuticos" />
+                <ToggleButton id="tgbMedicos" fx:id="tgbMedicos" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" styleClass="nav-item" text="Médicos" />
+                <ToggleButton id="tgbfarmaceutas" fx:id="tgbfarmaceutas" mnemonicParsing="false" prefHeight="28.0" prefWidth="109.0" selected="true" styleClass="nav-item" text="Farmacéuticos" />
                 <ToggleButton id="tgbPacientes" fx:id="tgbPacientes" mnemonicParsing="false" prefHeight="28.0" prefWidth="87.0" styleClass="nav-item" text="Pacientes" />
                 <ToggleButton id="tgbMedicamentos" fx:id="tgbMedicamentos" mnemonicParsing="false" prefHeight="29.0" prefWidth="120.0" styleClass="nav-item" text="Medicamentos" />
                 <ToggleButton id="tgbDashBoard" fx:id="tgbDashBoard" mnemonicParsing="false" prefHeight="29.0" prefWidth="96.0" styleClass="nav-item" text="Dashboard" />
@@ -42,78 +42,70 @@
                         <Insets bottom="20.0" left="20.0" right="20.0" top="100.0" />
                     </VBox.margin>
                 </Label>
-                <Label contentDisplay="CENTER" prefHeight="15.0" prefWidth="209.0" styleClass="title" text="Médicos">
+                <Label contentDisplay="CENTER" prefHeight="15.0" prefWidth="209.0" styleClass="title" text="Farmacéuticos">
                     <VBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="-20.0" />
                     </VBox.margin>
                 </Label>
                 <ImageView fitHeight="77.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../../../../../../../SistemaRecetas/src/main/resources/com/example/sistemarecetas/cirujano.png" />
+                        <Image url="@farma.png" />
                     </image>
                     <VBox.margin>
                         <Insets bottom="20.0" left="75.0" right="20.0" top="-10.0" />
                     </VBox.margin>
                 </ImageView>
-            <Label id="lblBusquedaMedico" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
-               <font>
-                  <Font size="10.0" />
-               </font>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-               <VBox.margin>
-                  <Insets left="75.0" right="40.0" />
-               </VBox.margin>
-            </Label>
+                <Label id="lblBusquedaFarmaceuta" fx:id="lblFarmaceuta" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                    <VBox.margin>
+                        <Insets left="75.0" right="40.0" />
+                    </VBox.margin>
+                </Label>
             </children>
         </VBox>
-        <GridPane layoutX="328.0" layoutY="113.0" prefHeight="176.0" prefWidth="242.0">
+        <GridPane layoutX="328.0" layoutY="133.0" prefHeight="135.0" prefWidth="242.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="237.0" minWidth="10.0" prefWidth="211.0" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="144.0" minWidth="5.0" prefWidth="31.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="42.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="61.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="67.0" minHeight="10.0" prefHeight="45.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Label id="lblIDMedico" text="ID">
+                <Label id="lblIDFarmaceuta" text="ID">
                     <font>
                         <Font name="Berlin Sans FB" size="14.0" />
                     </font>
                 </Label>
-                <TextField id="txtIDMedico" prefHeight="24.0" prefWidth="144.0" GridPane.rowIndex="1" />
-                <Label id="lblNombreMedico" fx:id="lblNombreMedico" text="Nombre" GridPane.rowIndex="2">
+                <TextField id="txtIDFarmaceuta" prefHeight="24.0" prefWidth="144.0" GridPane.rowIndex="1" />
+                <Label id="txtNombreFarmaceuta" fx:id="lblNombreMedico" text="Nombre" GridPane.rowIndex="2">
                     <font>
                         <Font name="Berlin Sans FB" size="14.0" />
                     </font>
                 </Label>
-                <TextField id="txtNombreMedico" GridPane.rowIndex="3" />
-                <Label id="lblEspecialidadMedico" fx:id="lblMedicoEspecialidad" text="Especialidad" GridPane.rowIndex="4">
-                    <font>
-                        <Font name="Berlin Sans FB" size="14.0" />
-                    </font>
-                </Label>
-                <TextField id="txtEspecialidadMedico" GridPane.rowIndex="5" />
+                <TextField id="txtNombreFarmaceuta" GridPane.rowIndex="3" />
             </children>
         </GridPane>
-        <Button id="btnEnviarMedico" fx:id="btnEnviarMedico" layoutX="419.0" layoutY="313.0" mnemonicParsing="false" styleClass="button-primary" text="Enviar">
+        <Button id="btnEnviarFarmaceuta" fx:id="btnEnviarFarmaceuta" layoutX="405.0" layoutY="297.0" mnemonicParsing="false" styleClass="button-primary" text="Enviar">
             <font>
                 <Font name="Berlin Sans FB" size="14.0" />
             </font>
         </Button>
-        <RadioButton id="btnGuardarMedico " fx:id="btnGuardarMedico" layoutX="349.0" layoutY="64.0" mnemonicParsing="false" styleClass="nav-item" text="Guardar">
+        <RadioButton id="btnGuardarFarmaceuta" fx:id="btnGuardarFarmaceuta" layoutX="354.0" layoutY="67.0" mnemonicParsing="false" styleClass="nav-item" text="Guardar">
             <font>
                 <Font name="Berlin Sans FB" size="13.0" />
             </font>
         </RadioButton>
-        <RadioButton id="btnBorrarMedico" fx:id="btnBorrarMedico" layoutX="435.0" layoutY="64.0" mnemonicParsing="false" styleClass="nav-item" text="Borrar" />
-        <Label id="lblLimpiarMedico" layoutX="430.0" layoutY="356.0" styleClass="subrayadoFondoClaro" text="Limpiar" underline="true">
+        <RadioButton id="btnBorrarFarmaceuta" fx:id="btnBorrarFarmaceuta" layoutX="440.0" layoutY="67.0" mnemonicParsing="false" styleClass="nav-item" text="Borrar" />
+        <Label id="lblLimpiarFarmaceuta" fx:id="lblFarmaceuta" layoutX="416.0" layoutY="350.0" styleClass="subrayadoFondoClaro" text="Limpiar" underline="true">
             <font>
                 <Font size="10.0" />
             </font>
