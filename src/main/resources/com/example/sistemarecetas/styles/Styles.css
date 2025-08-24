@@ -45,10 +45,19 @@
 }
 
 
-.subrayado {
+.subrayadoFondoClaro {
     -fx-background-radius: 0;
     -fx-background-color: transparent;
     -fx-text-fill: #6b7280;   /* gris */
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-border-color: transparent;
+}
+
+.subrayadoFondoOscuro {
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: #2f3133;   /* gris */
     -fx-font-weight: bold;
     -fx-font-size: 10px;
     -fx-border-color: transparent;
