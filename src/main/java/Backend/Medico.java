@@ -1,13 +1,24 @@
 package Backend;
+import Gestores.GestorRecetas;
 
 public class Medico extends Usuario  {
     private String clave;
     private String especialidad;
+    private GestorRecetas gestorRecetas;
 
-    public Medico(String nombre, int id, String password, String especialidad) {
+    public Medico(String nombre, int id, String password, String especialidad, GestorRecetas gestorRecetas) {
         super(id, nombre, password);
         this.clave = clave;
         this.especialidad = especialidad;
+        this.gestorRecetas = gestorRecetas;
+    }
+
+    public GestorRecetas getGestorRecetas() {
+        return gestorRecetas;
+    }
+
+    public void setGestorRecetas(GestorRecetas gestorRecetas) {
+        this.gestorRecetas = gestorRecetas;
     }
 
     public String getClave() {

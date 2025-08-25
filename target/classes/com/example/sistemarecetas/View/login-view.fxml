@@ -125,17 +125,17 @@
       <ProgressIndicator layoutX="364.0" layoutY="148.0" progress="0.0" visible="false" />
       <ImageView fitHeight="166.0" fitWidth="200.0" layoutX="49.0" layoutY="66.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@prescripcion.png" />
+            <Image url="@../Images/prescripcion.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="276.0" layoutY="110.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@candado.png" />
+            <Image url="@../Images/candado.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="32.0" fitWidth="17.0" layoutX="276.0" layoutY="48.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@usuario.png" />
+            <Image url="@../Images/usuario.png" />
          </image>
       </ImageView>
    </children>
