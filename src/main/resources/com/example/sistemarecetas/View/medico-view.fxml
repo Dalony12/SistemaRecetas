@@ -20,8 +20,8 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.MedicoController">
     <stylesheets>
-        <URL value="@styles/Styles.css" />
-        <URL value="@styles/Styles.css" />
+        <URL value="@../styles/Styles.css" />
+        <URL value="@../styles/Styles.css" />
     </stylesheets>
     <children>
         <HBox id="hbxMenu" prefHeight="23.0" prefWidth="606.0" styleClass="navbar">
@@ -49,7 +49,7 @@
                 </Label>
                 <ImageView fitHeight="77.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../../../../../../../SistemaRecetas/src/main/resources/com/example/sistemarecetas/cirujano.png" />
+                        <Image url="@../Images/cirujano.png" />
                     </image>
                     <VBox.margin>
                         <Insets bottom="20.0" left="75.0" right="20.0" top="-10.0" />
