@@ -11,7 +11,7 @@ public class Administrador extends Usuario{
     private GestorMedicos gestorMedicos;
     private GestorFarmaceuticos gestorFarmaceuticos;
 
-    public Administrador(String nombre, int id, String password, GestorMedicamentos gestormedicamentos, GestorPacientes gestorPacientes, GestorMedicos gestorMedicos, GestorFarmaceuticos gestorFarmaceuticos) {
+    public Administrador(String nombre, String id, String password, GestorMedicamentos gestormedicamentos, GestorPacientes gestorPacientes, GestorMedicos gestorMedicos, GestorFarmaceuticos gestorFarmaceuticos) {
         super(id, nombre, password);
         this.gestormedicamentos = gestormedicamentos;
         this.gestorPacientes = gestorPacientes;

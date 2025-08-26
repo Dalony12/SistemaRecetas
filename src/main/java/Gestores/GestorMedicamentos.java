@@ -62,12 +62,7 @@ public class GestorMedicamentos {
         return false;
     }
 
-    public boolean eliminarMedicamento(int codigo) {
-        Medicamento m = buscarPorCodigo(codigo);
-        if (m != null) {
-            medicamentos.remove(m);
-            return true;
-        }
-        return false;
+    public void eliminarMedicamento(Medicamento medi) {
+        medicamentos.remove(medi);
     }
 }

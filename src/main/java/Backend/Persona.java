@@ -1,19 +1,19 @@
 package Backend;
 
 public abstract class Persona {
-    private int id;
+    private String id;
     private String nombre;
 
-    public Persona(String nombre, int id) {
+    public Persona(String nombre, String id) {
         this.id = id;
         this.nombre = nombre;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

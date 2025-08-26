@@ -18,13 +18,8 @@ public class GestorRecetas {
     }
 
 
-    public boolean eliminarReceta(int codigo) {
-        Receta r= buscarPorCodigo(codigo);
-        if (r != null) {
-            recetas.remove(r);
-            return true;
-        }
-        return false;
+    public void eliminarReceta(Receta receta) {
+        recetas.remove(receta);
     }
 
     public boolean modificarReceta(int codigoMedicamento, Receta nuevaReceta) {
