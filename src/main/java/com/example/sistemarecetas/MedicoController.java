@@ -173,7 +173,7 @@ public class MedicoController implements Initializable {
     }
 
     @FXML
-    private void buscarMedico() {
+    private void bucarMedico() {
 
     }
 
