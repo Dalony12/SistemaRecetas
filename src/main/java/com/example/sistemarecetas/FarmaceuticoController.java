@@ -1,17 +1,18 @@
 package com.example.sistemarecetas;
 
+import Gestores.GestorMedicos;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.*;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class FarmaceuticoController implements Initializable {
-    @FXML
-    private RadioButton btnGuardarFarmaceuta;
-    @FXML
-    private RadioButton btnBorrarFarmaceuta;
+    // Botones del formulario Medico
+    @FXML private RadioButton btnGuardarFarmaceuta;
+    @FXML private RadioButton btnBorrarFarmaceuta;
+
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
