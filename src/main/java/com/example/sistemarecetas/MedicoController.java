@@ -18,9 +18,6 @@ public class MedicoController implements Initializable {
     @FXML private RadioButton btnGuardarMedico;
     @FXML private RadioButton btnBorrarMedico;
     @FXML private RadioButton btnModificarMedico;
-    @FXML private Button btnEnviarMedico;
-    @FXML private Label lblLimpiarMedico;
-    @FXML private Label lblBusquedaMedico;
 
     //Controles del formulario Médico
     @FXML private TextField txtIDMedico;
