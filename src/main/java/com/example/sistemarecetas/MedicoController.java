@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.net.URL;
@@ -17,7 +18,7 @@ public class MedicoController implements Initializable {
     @FXML private RadioButton btnGuardarMedico;
     @FXML private RadioButton btnBorrarMedico;
     @FXML private RadioButton btnModificarMedico;
-    @FXML private RadioButton btnEnviarMedico;
+    @FXML private Button btnEnviarMedico;
     @FXML private Label lblLimpiarMedico;
     @FXML private Label lblBusquedaMedico;
 
@@ -27,7 +28,7 @@ public class MedicoController implements Initializable {
     @FXML private TextField txtEspecialidadMedico;
 
     //Gestor Medico y Medico
-    private GestorMedicos gestorMedico;
+    private GestorMedicos gestorMedico = new GestorMedicos();
     private Medico medico;
 
     @Override
@@ -50,7 +51,7 @@ public class MedicoController implements Initializable {
 
         btnModificarMedico.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) { // Si el botón de borrar se acaba de seleccionar
-                btnModificarMedico.setSelected(false); // Deselecciona el de Guardar
+                btnGuardarMedico.setSelected(false); // Deselecciona el de Guardar
                 btnBorrarMedico.setSelected(false); // Deselecciona el de Borrar
             }
         });
@@ -64,12 +65,12 @@ public class MedicoController implements Initializable {
                     return;
                 }
 
-                int id = Integer.parseInt(newValue);
+                String id = newValue; // porque ya es un String
 
                 // Buscar médico por ID
                 Medico encontrado = null;
                 for (Medico m : gestorMedico.getMedicos()) {
-                    if (m.getId() == id) {
+                    if (m.getId().equals(id)) { // usar equals para comparar Strings
                         encontrado = m;
                         break;
                     }
@@ -94,7 +95,7 @@ public class MedicoController implements Initializable {
     }
 
     @FXML
-    private void GuardarMedico() {
+    private void GuardarModificarEliminarMedico() {
         try {
             String nombre = txtNombreMedico.getText().trim();
             String especialidad = txtEspecialidadMedico.getText().trim();
@@ -107,34 +108,73 @@ public class MedicoController implements Initializable {
 
             // Solo si está seleccionado el botón de guardar
             if (btnGuardarMedico.isSelected()) {
-                int id = Integer.parseInt(identificacion);
-                Medico nuevo = new Medico(nombre, id, identificacion , especialidad );
+                Medico nuevo = new Medico(nombre, identificacion, identificacion , especialidad );
 
                 // Verificar que no se repita la identificación
                 for (Medico m : gestorMedico.getMedicos()) {
-                    if (m.getId() == (nuevo.getId())) {
+                    if (m.getId().equals(identificacion)) {
                         mostrarAlerta("Médico ya existe",
                                 "Ya existe un médico con esa identificación: " + nuevo.getId());
+                        limpiarCampos();
                         return;
                     }
                 }
 
                 gestorMedico.agregarMedico(nuevo);
+                limpiarCampos();
+
             } else if (btnModificarMedico.isSelected()) {
                 // Buscar el médico existente y modificar
-                int id = Integer.parseInt(identificacion);
-                Medico existente = gestorMedico.buscarPorId(id);
+                Medico existente = gestorMedico.buscarPorId(identificacion);
                 if (existente == null) {
                     mostrarAlerta("No encontrado", "No existe un médico con ese ID");
+                    limpiarCampos();
                     return;
                 }
                 existente.setNombre(nombre);
                 existente.setEspecialidad(especialidad);
+                limpiarCampos();
+
+            } else if(btnBorrarMedico.isSelected()) {
+                String iden = txtIDMedico.getText().trim();
+
+                if (iden.isEmpty()) {
+                    mostrarAlerta("ID vacío", "Debe ingresar el ID del médico a eliminar");
+                    return;
+                }
+
+                // Buscar el médico por ID
+                Medico aEliminar = gestorMedico.buscarPorId(iden);
+                if (aEliminar == null) {
+                    mostrarAlerta("No encontrado", "No existe un médico con ese ID: " + iden);
+                    return;
+                }
+
+                // Eliminar del gestor
+                gestorMedico.eliminarMedico(aEliminar);
+                limpiarCampos();
             }
 
         } catch (Exception error){
-            mostrarAlerta("Error al guardar los datos del médico", error.getMessage());
+            String accion;
+
+            if (btnGuardarMedico.isSelected()) {
+                accion = "guardar los datos del médico";
+            } else if (btnModificarMedico.isSelected()) {
+                accion = "modificar los datos del médico";
+            } else if (btnBorrarMedico.isSelected()) {
+                accion = "eliminar el médico";
+            } else {
+                accion = "realizar la operación";
+            }
+
+            mostrarAlerta("Error al " + accion, error.getMessage());
         }
+    }
+
+    @FXML
+    private void buscarMedico() {
+
     }
 
 
@@ -147,6 +187,7 @@ public class MedicoController implements Initializable {
         alert.showAndWait();
     }
 
+    @FXML
     private void limpiarCampos()
     {
         txtIDMedico.clear();
