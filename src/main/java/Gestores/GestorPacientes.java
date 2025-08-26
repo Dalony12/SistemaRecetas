@@ -33,9 +33,9 @@ public class GestorPacientes {
         }
     }
 
-    public Paciente buscarPorId(int id) {
+    public Paciente buscarPorId(String id) {
         for (Paciente p : pacientes) {
-            if (p.getId() == id) {
+            if (p.getId().equals(id)) {
                 return p;
             }
         }
@@ -51,7 +51,7 @@ public class GestorPacientes {
         return null;
     }
 
-    public boolean modificarPaciente(int id, String nuevoNombre, int nuevoId, int nuevotelefono, LocalDate nuevafecha) {
+    public boolean modificarPaciente(String id, String nuevoNombre, String nuevoId, int nuevotelefono, LocalDate nuevafecha) {
         Paciente p = buscarPorId(id);
         if (p != null) {
             p.setId(nuevoId);
@@ -63,12 +63,7 @@ public class GestorPacientes {
         return false;
     }
 
-    public boolean eliminarPaciente(int id) {
-        Paciente p = buscarPorId(id);
-        if (p != null) {
-            pacientes.remove(p);
-            return true;
-        }
-        return false;
+    public void eliminarPaciente(Paciente p) {
+        pacientes.remove(p);
     }
 }

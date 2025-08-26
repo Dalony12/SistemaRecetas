@@ -32,9 +32,9 @@ public class GestorFarmaceuticos {
         }
     }
 
-    public Farmaceutico buscarPorid(int id) {
+    public Farmaceutico buscarPorid(String id) {
         for (Farmaceutico farma : farmaceuticos) {
-            if (farma.getId() == id) {
+            if (farma.getId().equals(id)) {
                 return farma;
             }
         }
@@ -50,7 +50,7 @@ public class GestorFarmaceuticos {
         return null;
     }
 
-    public boolean modificarFarmaceutico(int id, String nuevoNombre, String nuevaClave, int nuevoid) {
+    public boolean modificarFarmaceutico(String id, String nuevoNombre, String nuevaClave, String nuevoid) {
         Farmaceutico farma = buscarPorid(id);
         if (farma != null) {
             farma.setId(nuevoid);
@@ -61,12 +61,7 @@ public class GestorFarmaceuticos {
         return false;
     }
 
-    public boolean eliminarFarmaceutico (int id) {
-        Farmaceutico f = buscarPorid(id);
-        if (f != null) {
-            farmaceuticos.remove(f);
-            return true;
-        }
-        return false;
+    public void eliminarFarmaceutico (Farmaceutico f) {
+        farmaceuticos.remove(f);
     }
 }

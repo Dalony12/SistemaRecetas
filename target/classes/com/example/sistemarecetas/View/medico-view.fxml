@@ -55,7 +55,7 @@
                         <Insets bottom="20.0" left="75.0" right="20.0" top="-10.0" />
                     </VBox.margin>
                 </ImageView>
-            <Label id="lblBusquedaMedico" fx:id="lblBusquedaMedico" onMouseClicked="#buscarMedico" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
+            <Label id="lblBusquedaMedico" fx:id="lblBusquedaMedico" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
                <font>
                   <Font size="10.0" />
                </font>
