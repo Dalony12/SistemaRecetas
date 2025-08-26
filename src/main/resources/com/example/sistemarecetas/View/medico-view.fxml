@@ -55,7 +55,7 @@
                         <Insets bottom="20.0" left="75.0" right="20.0" top="-10.0" />
                     </VBox.margin>
                 </ImageView>
-            <Label id="lblBusquedaMedico" fx:id="lblBusquedaMedico" onMouseClicked="#buscarMedico" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
+            <Label id="lblBusquedaMedico" fx:id="lblBusquedaMedico" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
                <font>
                   <Font size="10.0" />
                </font>
@@ -102,7 +102,7 @@
                 <TextField id="txtEspecialidadMedico" fx:id="txtEspecialidadMedico" GridPane.rowIndex="5" />
             </children>
         </GridPane>
-        <Button id="btnEnviarMedico" fx:id="btnEnviarMedico" layoutX="419.0" layoutY="313.0" mnemonicParsing="false" onAction="#GuardarModificarEliminarMedico" styleClass="button-primary" text="Enviar">
+        <Button id="btnEnviarMedico" fx:id="btnEnviarMedico" layoutX="419.0" layoutY="313.0" mnemonicParsing="false" styleClass="button-primary" text="Enviar">
             <font>
                 <Font name="Berlin Sans FB" size="14.0" />
             </font>
@@ -113,7 +113,7 @@
             </font>
         </RadioButton>
         <RadioButton id="btnBorrarMedico" fx:id="btnBorrarMedico" layoutX="391.0" layoutY="66.0" mnemonicParsing="false" styleClass="nav-item" text="Borrar" />
-        <Label id="lblLimpiarMedico" fx:id="lblLimpiarMedico" layoutX="430.0" layoutY="356.0" onMouseClicked="#limpiarCampos" styleClass="subrayadoFondoClaro" text="Limpiar" underline="true">
+        <Label id="lblLimpiarMedico" fx:id="lblLimpiarMedico" layoutX="430.0" layoutY="356.0" styleClass="subrayadoFondoClaro" text="Limpiar" underline="true">
             <font>
                 <Font size="10.0" />
             </font>
@@ -121,6 +121,10 @@
                 <Cursor fx:constant="HAND" />
             </cursor>
         </Label>
-      <RadioButton id="btnModificarMedico" fx:id="btnModificarMedico" layoutX="469.0" layoutY="66.0" mnemonicParsing="false" styleClass="nav-item" text="Modificar" />
+      <RadioButton id="btnModificarMedico" fx:id="btnModificarMedico" layoutX="469.0" layoutY="66.0" mnemonicParsing="false" styleClass="nav-item" text="Modificar">
+         <font>
+            <Font name="Berlin Sans FB" size="13.0" />
+         </font>
+      </RadioButton>
     </children>
 </AnchorPane>
