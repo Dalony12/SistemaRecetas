@@ -32,9 +32,9 @@ public class GestorMedicos {
         }
     }
 
-    public Medico buscarPorId(int id) {
+    public Medico buscarPorId(String id) {
         for (Medico m : medicos) {
-            if (m.getId() == id) {
+            if (m.getId().equals(id)) {
                 return m;
             }
         }
@@ -50,7 +50,7 @@ public class GestorMedicos {
         return null;
     }
 
-    public boolean modificarMedico(int id, String nuevoNombre, String nuevaEspecialidad, int nuevoId, String nuevaClave) {
+    public boolean modificarMedico( String id, String nuevoNombre, String nuevaEspecialidad, String nuevoId, String nuevaClave) {
         Medico m = buscarPorId(id);
         if (m != null) {
             m.setId(nuevoId);
@@ -62,12 +62,7 @@ public class GestorMedicos {
         return false;
     }
 
-    public boolean eliminarMedico(int id) {
-        Medico m = buscarPorId(id);
-        if (m != null) {
-            medicos.remove(m);
-            return true;
-        }
-        return false;
+    public void eliminarMedico(Medico m) {
+        medicos.remove(m);
     }
 }

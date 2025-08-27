@@ -3,7 +3,7 @@ package Backend;
 public class Farmaceutico extends Usuario {
     private String clave;
 
-    public Farmaceutico(String nombre, int id, String password, String clave) {
+    public Farmaceutico(String nombre, String id, String password, String clave) {
         super(id, nombre, password);
         this.clave = clave;
     }
