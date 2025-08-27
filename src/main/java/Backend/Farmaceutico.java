@@ -1,19 +1,9 @@
 package Backend;
 
 public class Farmaceutico extends Usuario {
-    private String clave;
 
-    public Farmaceutico(String nombre, String id, String password, String clave) {
+    public Farmaceutico(String nombre, String id, String password) {
         super(id, nombre, password);
-        this.clave = clave;
-    }
-
-    public String getClave() {
-        return clave;
-    }
-
-    public void setClave(String clave) {
-        this.clave = clave;
     }
 
     @Override

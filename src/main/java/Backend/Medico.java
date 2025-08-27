@@ -2,21 +2,11 @@ package Backend;
 import Gestores.GestorRecetas;
 
 public class Medico extends Usuario  {
-    private String clave;
     private String especialidad;
 
     public Medico(String nombre, String id, String password, String especialidad) {
         super(id, nombre, password);
-        this.clave = clave;
         this.especialidad = especialidad;
-    }
-
-    public String getClave() {
-        return clave;
-    }
-
-    public void setClave(String clave) {
-        this.clave = clave;
     }
 
     public String getEspecialidad() {

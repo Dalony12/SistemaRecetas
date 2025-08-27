@@ -55,7 +55,7 @@
                         <Insets bottom="20.0" left="75.0" right="20.0" top="-10.0" />
                     </VBox.margin>
                 </ImageView>
-                <Label id="lblBusquedaFarmaceuta" fx:id="lblBusquedaFarmaceuta" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
+                <Label id="lblBusquedaFarmaceuta" fx:id="lblBusquedaFarmaceuta" onMouseClicked="#buscarFarmaceuta" styleClass="subrayadoFondoOscuro" text="Ir a búsqueda" underline="true">
                     <font>
                         <Font size="10.0" />
                     </font>
@@ -85,27 +85,27 @@
                         <Font name="Berlin Sans FB" size="14.0" />
                     </font>
                 </Label>
-                <TextField id="txtIDFarmaceuta" prefHeight="24.0" prefWidth="144.0" GridPane.rowIndex="1" />
+                <TextField id="txtIDFarmaceuta" fx:id="txtIDFarmaceuta" prefHeight="24.0" prefWidth="144.0" GridPane.rowIndex="1" />
                 <Label id="txtNombreFarmaceuta" fx:id="lblNombreMedico" text="Nombre" GridPane.rowIndex="2">
                     <font>
                         <Font name="Berlin Sans FB" size="14.0" />
                     </font>
                 </Label>
-                <TextField id="txtNombreFarmaceuta" GridPane.rowIndex="3" />
+                <TextField id="txtNombreFarmaceuta" fx:id="txtNombreFarmaceuta" GridPane.rowIndex="3" />
             </children>
         </GridPane>
-        <Button id="btnEnviarFarmaceuta" fx:id="btnEnviarFarmaceuta" layoutX="405.0" layoutY="297.0" mnemonicParsing="false" styleClass="button-primary" text="Enviar">
+        <Button id="btnEnviarFarmaceuta" fx:id="btnEnviarFarmaceuta" layoutX="405.0" layoutY="297.0" mnemonicParsing="false" onAction="#GuardarModificarEliminarFarmaceutico" styleClass="button-primary" text="Enviar">
             <font>
                 <Font name="Berlin Sans FB" size="14.0" />
             </font>
         </Button>
-        <RadioButton id="btnGuardarFarmaceuta" fx:id="btnGuardarFarmaceuta" layoutX="354.0" layoutY="67.0" mnemonicParsing="false" styleClass="nav-item" text="Guardar">
+        <RadioButton id="btnGuardarFarmaceuta" fx:id="btnGuardarFarmaceuta" layoutX="305.0" layoutY="66.0" mnemonicParsing="false" styleClass="nav-item" text="Guardar">
             <font>
                 <Font name="Berlin Sans FB" size="13.0" />
             </font>
         </RadioButton>
-        <RadioButton id="btnBorrarFarmaceuta" fx:id="btnBorrarFarmaceuta" layoutX="440.0" layoutY="67.0" mnemonicParsing="false" styleClass="nav-item" text="Borrar" />
-        <Label id="lblLimpiarFarmaceuta" fx:id="lblLimpiarFarmaceuta" layoutX="416.0" layoutY="350.0" styleClass="subrayadoFondoClaro" text="Limpiar" underline="true">
+        <RadioButton id="btnBorrarFarmaceuta" fx:id="btnBorrarFarmaceuta" layoutX="391.0" layoutY="66.0" mnemonicParsing="false" styleClass="nav-item" text="Borrar" />
+        <Label id="lblLimpiarFarmaceuta" fx:id="lblLimpiarFarmaceuta" layoutX="416.0" layoutY="350.0" onMouseClicked="#limpiarCampos" styleClass="subrayadoFondoClaro" text="Limpiar" underline="true">
             <font>
                 <Font size="10.0" />
             </font>
@@ -113,5 +113,10 @@
                 <Cursor fx:constant="HAND" />
             </cursor>
         </Label>
+      <RadioButton id="btnModificarFarmaceutico" fx:id="btnModificarFarmaceutico" layoutX="469.0" layoutY="66.0" mnemonicParsing="false" styleClass="nav-item" text="Modificar">
+         <font>
+            <Font name="Berlin Sans FB" size="13.0" />
+         </font>
+      </RadioButton>
     </children>
 </AnchorPane>

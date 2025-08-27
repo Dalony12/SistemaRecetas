@@ -19,7 +19,7 @@ public class GestorFarmaceuticos {
         this.farmaceuticos = farmaceuticos;
     }
 
-    public void agregarMedicamento(Farmaceutico f) {
+    public void agregarFarmaceuta(Farmaceutico f) {
         farmaceuticos.add(f);
     }
 
@@ -55,7 +55,6 @@ public class GestorFarmaceuticos {
         if (farma != null) {
             farma.setId(nuevoid);
             farma.setNombre(nuevoNombre);
-            farma.setClave(nuevaClave);
             return true;
         }
         return false;

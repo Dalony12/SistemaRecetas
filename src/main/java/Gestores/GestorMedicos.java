@@ -56,7 +56,6 @@ public class GestorMedicos {
             m.setId(nuevoId);
             m.setNombre(nuevoNombre);
             m.setEspecialidad(nuevaEspecialidad);
-            m.setClave(nuevaClave);
             return true;
         }
         return false;

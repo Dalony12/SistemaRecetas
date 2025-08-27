@@ -64,7 +64,7 @@ public class LoginController {
 
                 if (id.equals("admin") && password.equals("1234")) {
                     try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("inicio-view.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farma-view.fxml"));
                         Parent root = loader.load();
                         Stage stage = (Stage) txtId.getScene().getWindow();
                         stage.setScene(new Scene(root));
