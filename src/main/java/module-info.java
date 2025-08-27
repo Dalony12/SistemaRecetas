@@ -2,6 +2,7 @@ module com.example.sistemarecetas {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.desktop;
+    requires javafx.graphics;
 
 
     opens com.example.sistemarecetas to javafx.fxml;

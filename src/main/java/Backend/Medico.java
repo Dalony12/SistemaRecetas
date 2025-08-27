@@ -4,7 +4,7 @@ import Gestores.GestorRecetas;
 public class Medico extends Usuario  {
     private String especialidad;
 
-    public Medico(String nombre, String id, String password, String especialidad) {
+    public Medico(String id, String nombre, String password, String especialidad) {
         super(id, nombre, password);
         this.especialidad = especialidad;
     }
