@@ -29,10 +29,14 @@ public class LoginController {
         lblAyudaId.setVisible(false);
         lblAyudaPassword.setVisible(false);
         lblAyudaSoporte.setVisible(false);
-        lblMensajeCampos.setVisible(false);
+
+        Tooltip tooltip = new Tooltip("Debe llenar los campos antes de iniciar sesión.");
+        Tooltip.install(btnIniciarSesion, tooltip);
 
         // Inicialmente deshabilitar botón
         btnIniciarSesion.setDisable(true);
+        lblMensajeCampos.setVisible(true);
+
 
         // Listener para habilitar/deshabilitar botón según campos llenos
         ChangeListener<String> textListener = (obs, oldText, newText) -> {
@@ -44,8 +48,6 @@ public class LoginController {
         txtId.textProperty().addListener(textListener);
         txtContrasenaLogin.textProperty().addListener(textListener);
     }
-
-
 
     @FXML
     private void clickIniciarSesion(ActionEvent event) {
@@ -72,7 +74,7 @@ public class LoginController {
 
                 if (id.equals("admin") && password.equals("1234")) {
                     try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farma-view.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("View/admin-view.fxml"));
                         Parent root = loader.load();
                         Stage stage = (Stage) txtId.getScene().getWindow();
                         stage.setScene(new Scene(root));
@@ -83,6 +85,9 @@ public class LoginController {
                         alert.setHeaderText(null);
                         alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
                         alert.showAndWait();
+                        txtId.clear();
+                        txtContrasenaLogin.clear();
+                        lblMensajeCampos.setVisible(true);
                     }
                 } else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -92,6 +97,7 @@ public class LoginController {
                     alert.showAndWait();
                     txtId.clear();
                     txtContrasenaLogin.clear();
+                    lblMensajeCampos.setVisible(true);
                 }
             });
         }).start();
