@@ -1,9 +1,7 @@
 package com.example.sistemarecetas;
 
 //OTRAS BIBLIOTECAS
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.input.MouseEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import java.net.URL;
@@ -18,7 +16,6 @@ import javafx.scene.control.TextField;
 //FARMACEUTICO
 import Backend.Farmaceutico;
 import Gestores.GestorFarmaceuticos;
-import javafx.scene.control.*;
 
 public class AdminController implements Initializable {
     // Botones del formulario Medico
@@ -31,22 +28,22 @@ public class AdminController implements Initializable {
     @FXML private TextField txtNombreMedico;
     @FXML private TextField txtEspecialidadMedico;
 
-    //Gestor Medico y Medico
+    //Gestor Medico
     private GestorMedicos gestorMedico = new GestorMedicos();
-    private Medico medico;
+
 
     // Botones del formulario Farmaceuta
-    @FXML private RadioButton btnGuardarFarmaceuta;
-    @FXML private RadioButton btnBorrarFarmaceuta;
+    @FXML private RadioButton btnGuardarFarmaceutico;
+    @FXML private RadioButton btnBorrarFarmaceutico;
     @FXML private RadioButton btnModificarFarmaceutico;
 
     //Controles del formulario Farmaceuta
-    @FXML private TextField txtIDFarmaceuta;
-    @FXML private TextField txtNombreFarmaceuta;
+    @FXML private TextField txtIDFarmaceutico;
+    @FXML private TextField txtNombreFarmaceutico;
 
-    //Gestor Farmaceutas y farmaceuta
+    //Gestor Farmaceutas
     private GestorFarmaceuticos gestorfarmaceuticos = new GestorFarmaceuticos();
-    private Farmaceutico farmaceutico;
+
 
 
     @Override
@@ -114,17 +111,17 @@ public class AdminController implements Initializable {
 
 
         // Listener para el botón de Guardar FARMACEUTA
-        btnGuardarFarmaceuta.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        btnGuardarFarmaceutico.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) { // Si el botón de guardar se acaba de seleccionar
-                btnBorrarFarmaceuta.setSelected(false); // Deselecciona el de Borrar
+                btnBorrarFarmaceutico.setSelected(false); // Deselecciona el de Borrar
                 btnModificarFarmaceutico.setSelected(false); // // Deselecciona el de Modificar
             }
         });
 
         // Listener para el botón de Borrar FARMACEUTA
-        btnBorrarFarmaceuta.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        btnBorrarFarmaceutico.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) { // Si el botón de borrar se acaba de seleccionar
-                btnGuardarFarmaceuta.setSelected(false); // Deselecciona el de Guardar
+                btnGuardarFarmaceutico.setSelected(false); // Deselecciona el de Guardar
                 btnModificarFarmaceutico.setSelected(false); // // Deselecciona el de Modificar
             }
         });
@@ -132,16 +129,16 @@ public class AdminController implements Initializable {
         // Listener para el botón de Modificar FARMACEUTA
         btnModificarFarmaceutico.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) { // Si el botón de borrar se acaba de seleccionar
-                btnGuardarFarmaceuta.setSelected(false); // Deselecciona el de Guardar
-                btnBorrarFarmaceuta.setSelected(false); // Deselecciona el de Borrar
+                btnGuardarFarmaceutico.setSelected(false); // Deselecciona el de Guardar
+                btnBorrarFarmaceutico.setSelected(false); // Deselecciona el de Borrar
             }
         });
 
         // Listener para el TextField de ID FARMACEUTA, rellena los campos dependiendo lo que escriba el usuario para que se llenen automaticamente
-        txtIDFarmaceuta.textProperty().addListener((observable, oldValue, newValue) -> {
+        txtIDFarmaceutico.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (newValue.isEmpty()) {
-                    txtNombreFarmaceuta.clear();
+                    txtNombreFarmaceutico.clear();
                     return;
                 }
 
@@ -158,15 +155,15 @@ public class AdminController implements Initializable {
 
                 // Si lo encontró, rellena los campos
                 if (encontrado != null) {
-                    txtNombreFarmaceuta.setText(encontrado.getNombre());
+                    txtNombreFarmaceutico.setText(encontrado.getNombre());
                 } else {
                     // Si no existe, limpia los campos
-                    txtNombreFarmaceuta.clear();
+                    txtNombreFarmaceutico.clear();
                 }
 
             } catch (NumberFormatException e) {
                 // Si el usuario escribe algo que no sea número
-                txtNombreFarmaceuta.clear();
+                txtNombreFarmaceutico.clear();
             }
         });
     }
@@ -186,7 +183,7 @@ public class AdminController implements Initializable {
 
             // Solo si está seleccionado el botón de guardar
             if (btnGuardarMedico.isSelected()) {
-                Medico nuevo = new Medico(nombre, identificacion, identificacion , especialidad );
+                Medico nuevo = new Medico(identificacion, nombre, identificacion , especialidad );
 
                 // Verificar que no se repita la identificación
                 for (Medico m : gestorMedico.getMedicos()) {
@@ -269,8 +266,8 @@ public class AdminController implements Initializable {
     @FXML
     private void GuardarModificarEliminarFarmaceutico() {
         try {
-            String id = txtIDFarmaceuta.getText().trim();
-            String nombre = txtNombreFarmaceuta.getText().trim();
+            String id = txtIDFarmaceutico.getText().trim();
+            String nombre = txtNombreFarmaceutico.getText().trim();
 
             if (id.isEmpty() || nombre.isEmpty()) {
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
@@ -278,8 +275,8 @@ public class AdminController implements Initializable {
             }
 
             // Guardar
-            if (btnGuardarFarmaceuta.isSelected()) {
-                Farmaceutico nuevo = new Farmaceutico(nombre, id, id);
+            if (btnGuardarFarmaceutico.isSelected()) {
+                Farmaceutico nuevo = new Farmaceutico(id, nombre, id);
 
                 // Verificar que no se repita el ID
                 for (Farmaceutico f : gestorfarmaceuticos.getFarmaceuticos()) {
@@ -308,7 +305,7 @@ public class AdminController implements Initializable {
                 limpiarCamposFarmaceuta();
 
                 // Eliminar
-            } else if (btnBorrarFarmaceuta.isSelected()) {
+            } else if (btnBorrarFarmaceutico.isSelected()) {
                 if (id.isEmpty()) {
                     mostrarAlerta("ID vacío", "Debe ingresar el ID del farmacéutico a eliminar");
                     return;
@@ -327,11 +324,11 @@ public class AdminController implements Initializable {
         } catch (Exception error) {
             String accion;
 
-            if (btnGuardarFarmaceuta.isSelected()) {
+            if (btnGuardarFarmaceutico.isSelected()) {
                 accion = "guardar los datos del farmacéutico";
             } else if (btnModificarFarmaceutico.isSelected()) {
                 accion = "modificar los datos del farmacéutico";
-            } else if (btnBorrarFarmaceuta.isSelected()) {
+            } else if (btnBorrarFarmaceutico.isSelected()) {
                 accion = "eliminar el farmacéutico";
             } else {
                 accion = "realizar la operación";
@@ -351,8 +348,8 @@ public class AdminController implements Initializable {
     @FXML
     private void limpiarCamposFarmaceuta()
     {
-        txtIDFarmaceuta.clear();
-        txtNombreFarmaceuta.clear();
+        txtIDFarmaceutico.clear();
+        txtNombreFarmaceutico.clear();
     }
 
     //MOSTRAR ALERTAS PARA TODOS LOS METODOS
