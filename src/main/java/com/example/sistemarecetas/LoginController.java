@@ -1,6 +1,11 @@
 package com.example.sistemarecetas;
 
+import Backend.Farmaceutico;
+import Backend.Medico;
+import Gestores.GestorFarmaceuticos;
+import Gestores.GestorMedicos;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,81 +17,136 @@ import javafx.stage.Stage;
 public class LoginController {
 
     @FXML private TextField txtId;
-    @FXML private PasswordField txtContraseñaLogin;
+    @FXML private PasswordField txtContrasenaLogin;
     @FXML private Button btnIniciarSesion;
     @FXML private ProgressIndicator progressIndicator;
     @FXML private RadioButton rbtAyuda;
 
-    private Tooltip tooltipId;
-    private Tooltip tooltipPassword;
+    @FXML private Label lblAyudaId;
+    @FXML private Label lblAyudaPassword;
+    @FXML private Label lblAyudaSoporte;
+    @FXML private Label lblMensajeCampos;
 
     @FXML
     private void initialize() {
-        // Crear tooltips y asociarlos a los campos
-        tooltipId = new Tooltip("Ingrese su ID de usuario. Ejemplo: admin");
-        tooltipPassword = new Tooltip("Ingrese su contraseña asignada. Ejemplo: 1234");
 
-        Tooltip.install(txtId, tooltipId);
-        Tooltip.install(txtContraseñaLogin, tooltipPassword);
+        // Ocultar inicialmente etiquetas de ayuda y mensaje
+        lblAyudaId.setVisible(false);
+        lblAyudaPassword.setVisible(false);
+        lblAyudaSoporte.setVisible(false);
+        lblMensajeCampos.setVisible(false);
 
-        // Por defecto los tooltips están deshabilitados
-        tooltipId.setAutoHide(true);
-        tooltipPassword.setAutoHide(true);
+        // Inicialmente deshabilitar botón
+        btnIniciarSesion.setDisable(true);
+
+        // Listener para habilitar/deshabilitar botón según campos llenos
+        ChangeListener<String> textListener = (obs, oldText, newText) -> {
+            boolean habilitar = !txtId.getText().trim().isEmpty() && !txtContrasenaLogin.getText().trim().isEmpty();
+            btnIniciarSesion.setDisable(!habilitar);
+            lblMensajeCampos.setVisible(false); // Ocultar mensaje mientras escribe
+        };
+
+        txtId.textProperty().addListener(textListener);
+        txtContrasenaLogin.textProperty().addListener(textListener);
     }
 
-    // Método que se ejecuta al hacer clic en "Iniciar Sesión"
+
+
     @FXML
     private void clickIniciarSesion(ActionEvent event) {
         // Bloquear inputs y mostrar animación
         btnIniciarSesion.setVisible(false);
         progressIndicator.setVisible(true);
         txtId.setDisable(true);
-        txtContraseñaLogin.setDisable(true);
+        txtContrasenaLogin.setDisable(true);
         rbtAyuda.setDisable(true);
 
-        String id = txtId.getText();
-        String password = txtContraseñaLogin.getText();
+        String id = txtId.getText().trim();
+        String password = txtContrasenaLogin.getText().trim();
 
         new Thread(() -> {
-            try {
-                Thread.sleep(1500); // Simula procesamiento
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            try { Thread.sleep(1500); } catch (InterruptedException e) { e.printStackTrace(); }
 
             Platform.runLater(() -> {
                 // Restaurar estado UI
                 btnIniciarSesion.setVisible(true);
                 progressIndicator.setVisible(false);
                 txtId.setDisable(false);
-                txtContraseñaLogin.setDisable(false);
+                txtContrasenaLogin.setDisable(false);
                 rbtAyuda.setDisable(false);
 
+
+                boolean encontrado = false;
+
+                // ----- ADMIN -----
                 if (id.equals("admin") && password.equals("1234")) {
                     try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farma-view.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("View/admin-view.fxml"));
                         Parent root = loader.load();
                         Stage stage = (Stage) txtId.getScene().getWindow();
                         stage.setScene(new Scene(root));
                         stage.setTitle("Pantalla de Inicio");
                     } catch (Exception e) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Error de sistema");
-                        alert.setHeaderText(e.getStackTrace()[0].getClassName());
-                        alert.setContentText("No fue posible iniciar sesión, debido a un error de sistema: " + e.getMessage());
+                        alert.setHeaderText(null);
+                        alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
                         alert.showAndWait();
                     }
-                } else {
-                    // Mostrar error de autenticación
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error de autenticación");
+                    encontrado = true;
+                }
+
+                // ----- MÉDICO -----
+                for (Medico m : GestorMedicos.getInstancia().getMedicos()) {
+                    if (m.getId().equals(id) && m.getPassword().equals(password)) {
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("View/admin-view.fxml"));
+                            Parent root = loader.load();
+                            Stage stage = (Stage) txtId.getScene().getWindow();
+                            stage.setScene(new Scene(root));
+                            stage.setTitle("Pantalla de Inicio");
+                        } catch (Exception e) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Error de sistema");
+                            alert.setHeaderText(null);
+                            alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
+                            alert.showAndWait();
+                        }
+                        encontrado = true;
+                        break;
+                    }
+                }
+
+                // ----- FARMACEUTA -----
+                    for (Farmaceutico f : GestorFarmaceuticos.getInstancia().getFarmaceuticos()) {
+                        if (f.getId().equals(id) && f.getPassword().equals(password)) {
+                            try {
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farma-view.fxml"));
+                                Parent root = loader.load();
+                                Stage stage = (Stage) txtId.getScene().getWindow();
+                                stage.setScene(new Scene(root));
+                                stage.setTitle("Pantalla de Inicio");
+                            } catch (Exception e) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setTitle("Error de sistema");
+                                alert.setHeaderText(null);
+                                alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
+                                alert.showAndWait();
+                            }
+                            encontrado = true;
+                            break;
+                        }
+                    }
+
+                // ----- NO ENCONTRADO -----
+                if (!encontrado) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Autenticación");
                     alert.setHeaderText(null);
                     alert.setContentText("Usuario o contraseña incorrectos.");
                     alert.showAndWait();
-
-                    // Vaciar campos después del error
                     txtId.clear();
-                    txtContraseñaLogin.clear();
+                    txtContrasenaLogin.clear();
                 }
             });
         }).start();
@@ -94,19 +154,9 @@ public class LoginController {
 
     @FXML
     private void clickAyudaIniciarSesion(ActionEvent event) {
-        if (rbtAyuda.isSelected()) {
-            // Mostrar tooltips en pantalla
-            tooltipId.show(txtId,
-                    txtId.localToScreen(txtId.getBoundsInLocal()).getMinX(),
-                    txtId.localToScreen(txtId.getBoundsInLocal()).getMinY() - 30);
-
-            tooltipPassword.show(txtContraseñaLogin,
-                    txtContraseñaLogin.localToScreen(txtContraseñaLogin.getBoundsInLocal()).getMinX(),
-                    txtContraseñaLogin.localToScreen(txtContraseñaLogin.getBoundsInLocal()).getMinY() - 30);
-        } else {
-            // Ocultar tooltips
-            tooltipId.hide();
-            tooltipPassword.hide();
-        }
+        boolean mostrarAyuda = rbtAyuda.isSelected();
+        lblAyudaId.setVisible(mostrarAyuda);
+        lblAyudaPassword.setVisible(mostrarAyuda);
+        lblAyudaSoporte.setVisible(mostrarAyuda);
     }
 }

@@ -5,24 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GestorMedicamentos {
+    private static GestorMedicamentos instancia = new GestorMedicamentos();
     private List<Medicamento> medicamentos;
 
-    public GestorMedicamentos() {
-        this.medicamentos = new ArrayList<>();
+    private GestorMedicamentos() {
+        medicamentos = new ArrayList<>();
+    }
+
+    public static GestorMedicamentos getInstancia() {
+        return instancia;
     }
 
     public List<Medicamento> getMedicamentos() {
         return medicamentos;
     }
 
-    public void setMedicamentos(List<Medicamento> medicamentos) {
-        this.medicamentos = medicamentos;
-    }
-
     public void agregarMedicamento(Medicamento m) {
         medicamentos.add(m);
     }
-
 
     public void consultarTodosMedicamentos() {
         if (medicamentos.isEmpty()) {

@@ -6,18 +6,19 @@ import java.util.List;
 import java.time.LocalDate;
 
 public class GestorPacientes {
+    private static GestorPacientes instancia = new GestorPacientes();
     private List<Paciente> pacientes;
 
-    public GestorPacientes() {
-        this.pacientes = new ArrayList<>();
+    private GestorPacientes() {
+        pacientes = new ArrayList<>();
+    }
+
+    public static GestorPacientes getInstancia() {
+        return instancia;
     }
 
     public List<Paciente> getPacientes() {
         return pacientes;
-    }
-
-    public void setPacientes(List<Paciente> pacientes) {
-        this.pacientes = pacientes;
     }
 
     public void agregarPaciente(Paciente p) {

@@ -2,7 +2,7 @@ package Backend;
 
 public class Farmaceutico extends Usuario {
 
-    public Farmaceutico(String nombre, String id, String password) {
+    public Farmaceutico(String id, String nombre, String password) {
         super(id, nombre, password);
     }
 

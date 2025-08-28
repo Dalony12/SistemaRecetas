@@ -5,18 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GestorFarmaceuticos {
+    private static GestorFarmaceuticos instancia = new GestorFarmaceuticos();
     private List<Farmaceutico> farmaceuticos;
 
-    public GestorFarmaceuticos() {
-        this.farmaceuticos = new ArrayList<>();
+    private GestorFarmaceuticos() {
+        farmaceuticos = new ArrayList<>();
+    }
+
+    public static GestorFarmaceuticos getInstancia() {
+        return instancia;
     }
 
     public List<Farmaceutico> getFarmaceuticos() {
         return farmaceuticos;
-    }
-
-    public void setFarmaceuticos(List<Farmaceutico> farmaceuticos) {
-        this.farmaceuticos = farmaceuticos;
     }
 
     public void agregarFarmaceuta(Farmaceutico f) {
