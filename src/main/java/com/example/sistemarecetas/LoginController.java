@@ -19,8 +19,10 @@ public class LoginController {
     @FXML private TextField txtId;
     @FXML private PasswordField txtContrasenaLogin;
     @FXML private Button btnIniciarSesion;
+    @FXML private Button btnSalir;
     @FXML private ProgressIndicator progressIndicator;
     @FXML private RadioButton rbtAyuda;
+
 
     @FXML private Label lblAyudaId;
     @FXML private Label lblAyudaPassword;
@@ -29,6 +31,8 @@ public class LoginController {
 
     @FXML
     private void initialize() {
+        //Ejemplo
+        GestorMedicos.getInstancia().agregarMedico(new Medico("med123", "Juan Perez", "med123", "Cardiología"));
 
         // Ocultar inicialmente etiquetas de ayuda y mensaje
         lblAyudaId.setVisible(false);
@@ -158,5 +162,11 @@ public class LoginController {
         lblAyudaId.setVisible(mostrarAyuda);
         lblAyudaPassword.setVisible(mostrarAyuda);
         lblAyudaSoporte.setVisible(mostrarAyuda);
+    }
+
+    @FXML
+    private void SalirAplicacion(){
+        Stage stage = (Stage) btnSalir.getScene().getWindow();
+        stage.close();
     }
 }
