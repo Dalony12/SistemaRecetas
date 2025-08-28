@@ -5,18 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GestorMedicos {
+    private static GestorMedicos instancia = new GestorMedicos();
     private List<Medico> medicos;
 
-    public GestorMedicos() {
-        this.medicos = new ArrayList<>();
+    private GestorMedicos() {
+        medicos = new ArrayList<>();
+    }
+
+    public static GestorMedicos getInstancia() {
+        return instancia;
     }
 
     public List<Medico> getMedicos() {
         return medicos;
-    }
-
-    public void setMedicos(List<Medico> medicos) {
-        this.medicos = medicos;
     }
 
     public void agregarMedico(Medico m) {

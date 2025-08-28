@@ -1,5 +1,9 @@
 package com.example.sistemarecetas;
 
+import Backend.Farmaceutico;
+import Backend.Medico;
+import Gestores.GestorFarmaceuticos;
+import Gestores.GestorMedicos;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -25,6 +29,7 @@ public class LoginController {
 
     @FXML
     private void initialize() {
+
         // Ocultar inicialmente etiquetas de ayuda y mensaje
         lblAyudaId.setVisible(false);
         lblAyudaPassword.setVisible(false);
@@ -70,6 +75,10 @@ public class LoginController {
                 txtContrasenaLogin.setDisable(false);
                 rbtAyuda.setDisable(false);
 
+
+                boolean encontrado = false;
+
+                // ----- ADMIN -----
                 if (id.equals("admin") && password.equals("1234")) {
                     try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("View/admin-view.fxml"));
@@ -84,7 +93,53 @@ public class LoginController {
                         alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
                         alert.showAndWait();
                     }
-                } else {
+                    encontrado = true;
+                }
+
+                // ----- MÉDICO -----
+                for (Medico m : GestorMedicos.getInstancia().getMedicos()) {
+                    if (m.getId().equals(id) && m.getPassword().equals(password)) {
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("View/admin-view.fxml"));
+                            Parent root = loader.load();
+                            Stage stage = (Stage) txtId.getScene().getWindow();
+                            stage.setScene(new Scene(root));
+                            stage.setTitle("Pantalla de Inicio");
+                        } catch (Exception e) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Error de sistema");
+                            alert.setHeaderText(null);
+                            alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
+                            alert.showAndWait();
+                        }
+                        encontrado = true;
+                        break;
+                    }
+                }
+
+                // ----- FARMACEUTA -----
+                    for (Farmaceutico f : GestorFarmaceuticos.getInstancia().getFarmaceuticos()) {
+                        if (f.getId().equals(id) && f.getPassword().equals(password)) {
+                            try {
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farma-view.fxml"));
+                                Parent root = loader.load();
+                                Stage stage = (Stage) txtId.getScene().getWindow();
+                                stage.setScene(new Scene(root));
+                                stage.setTitle("Pantalla de Inicio");
+                            } catch (Exception e) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setTitle("Error de sistema");
+                                alert.setHeaderText(null);
+                                alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
+                                alert.showAndWait();
+                            }
+                            encontrado = true;
+                            break;
+                        }
+                    }
+
+                // ----- NO ENCONTRADO -----
+                if (!encontrado) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Autenticación");
                     alert.setHeaderText(null);

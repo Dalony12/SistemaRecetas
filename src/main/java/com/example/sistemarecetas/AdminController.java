@@ -29,7 +29,7 @@ public class AdminController implements Initializable {
     @FXML private TextField txtEspecialidadMedico;
 
     //Gestor Medico
-    private GestorMedicos gestorMedico = new GestorMedicos();
+    private GestorMedicos gestorMedico = GestorMedicos.getInstancia();
 
 
     // Botones del formulario Farmaceuta
@@ -42,12 +42,13 @@ public class AdminController implements Initializable {
     @FXML private TextField txtNombreFarmaceutico;
 
     //Gestor Farmaceutas
-    private GestorFarmaceuticos gestorfarmaceuticos = new GestorFarmaceuticos();
+    private GestorFarmaceuticos gestorfarmaceuticos = GestorFarmaceuticos.getInstancia();
 
 
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
         // Listener para el botón de Guardar MEDICO
         btnGuardarMedico.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) { // Si el botón de guardar se acaba de seleccionar

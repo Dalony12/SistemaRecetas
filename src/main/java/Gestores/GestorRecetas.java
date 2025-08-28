@@ -7,17 +7,24 @@ import Backend.Prescripcion;
 
 public class GestorRecetas {
 
+    private static GestorRecetas instancia = new GestorRecetas();
     private List<Receta> recetas;
 
-    public GestorRecetas() {
+    private GestorRecetas() {
         recetas = new ArrayList<>();
+    }
+
+    public static GestorRecetas getInstancia() {
+        return instancia;
     }
 
     public void agregarReceta(Receta receta) {
         recetas.add(receta);
     }
 
-
+    public List<Receta> getRecetas() {
+        return recetas;
+    }
     public void eliminarReceta(Receta receta) {
         recetas.remove(receta);
     }
