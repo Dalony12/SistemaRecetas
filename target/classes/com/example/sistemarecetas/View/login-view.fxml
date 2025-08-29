@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="253.0" prefWidth="517.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.LoginController">
+<AnchorPane prefHeight="253.0" prefWidth="517.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.LoginController">
     <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" height="257.0" layoutY="-1.0" strokeType="INSIDE" strokeWidth="4.0" width="517.0">
             <fill>
