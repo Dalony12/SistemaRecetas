@@ -1,4 +1,4 @@
-package Backend;
+package Model;
 
 public class Medicamento {
     private int codigo;

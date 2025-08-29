@@ -1,6 +1,6 @@
 package Gestores;
 
-import Backend.Farmaceutico;
+import Model.Farmaceutico;
 import java.util.ArrayList;
 import java.util.List;
 

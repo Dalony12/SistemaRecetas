@@ -1,6 +1,6 @@
 package Gestores;
 
-import Backend.Medicamento;
+import Model.Medicamento;
 import java.util.ArrayList;
 import java.util.List;
 

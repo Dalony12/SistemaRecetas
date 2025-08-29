@@ -1,4 +1,4 @@
-package Backend;
+package Model;
 
 public abstract class Usuario extends Persona {
     private String password;

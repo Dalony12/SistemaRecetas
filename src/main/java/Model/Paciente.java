@@ -1,4 +1,4 @@
-package Backend;
+package Model;
 import java.time.LocalDate;
 
 public class Paciente extends Persona {
