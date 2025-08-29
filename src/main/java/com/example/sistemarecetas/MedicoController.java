@@ -1,6 +1,6 @@
 package com.example.sistemarecetas;
 
-import Backend.Medico;
+import Model.Medico;
 import Gestores.GestorMedicos;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

@@ -2,8 +2,8 @@ package Gestores;
 
 import java.util.ArrayList;
 import java.util.List;
-import Backend.Receta;
-import Backend.Prescripcion;
+import Model.Receta;
+import Model.Prescripcion;
 
 public class GestorRecetas {
 

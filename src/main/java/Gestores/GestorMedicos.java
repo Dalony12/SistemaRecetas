@@ -1,6 +1,6 @@
 package Gestores;
 
-import Backend.Medico;
+import Model.Medico;
 import java.util.ArrayList;
 import java.util.List;
 

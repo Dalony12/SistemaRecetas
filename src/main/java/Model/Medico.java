@@ -1,5 +1,4 @@
-package Backend;
-import Gestores.GestorRecetas;
+package Model;
 
 public class Medico extends Usuario  {
     private String especialidad;
