@@ -6,6 +6,9 @@
 Aplicación de escritorio desarrollada en **Java** para un hospital estatal que permite a los médicos prescribir recetas digitales y a la farmacia gestionar su despacho de medicamentos.
 
 El sistema sigue una **arquitectura por capas** y utiliza el patrón **Modelo-Vista-Controlador (MVC)** en la interfaz gráfica.  
+
+<img width="402" height="454" alt="image" src="https://github.com/user-attachments/assets/1cdb8810-3650-46a2-bef1-3b131a6ad329" />
+
 La persistencia de datos se realiza mediante **archivos XML**.
 
 ---
