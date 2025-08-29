@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane stylesheets="@../../styles/Styles.css"
+            xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/24.0.1"
+            fx:controller="com.example.sistemarecetas.adminApplication.AdminController">
+
+    <children>
+        <TabPane fx:id="tabPane"
+                 tabClosingPolicy="UNAVAILABLE"
+                 prefHeight="400.0" prefWidth="600.0">
+
+            <tabs>
+                <Tab fx:id="tabMenuPrincipal" text="Menu Principal" onSelectionChanged="#abrirMenuPrincipal">
+                    <content>
+                        <fx:include fx:id="includeMenuPrincipal" source="MenuPrincipalTab.fxml"/>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabMedicos" text="Médicos" onSelectionChanged="#abrirMedicos">
+                    <content>
+                        <fx:include fx:id="includeMedicos" source="MedicosTab.fxml"/>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabFarmaceuticos" text="Farmacéuticos" onSelectionChanged="#abrirFarmaceuticos">
+                    <content>
+                        <fx:include fx:id="includeFarmaceuticos" source="FarmaceuticosTab.fxml"/>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabPacientes" text="Pacientes" onSelectionChanged="#abrirPacientes">
+                    <content>
+                        <fx:include fx:id="includePacientes" source="PacientesTab.fxml"/>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabMedicamentos" text="Medicamentos" onSelectionChanged="#abrirMedicamentos">
+                    <content>
+                        <fx:include fx:id="includeMedicamentos" source="MedicamentosTab.fxml"/>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabDashboard" text="Dashboard" onSelectionChanged="#abrirDashboard">
+                    <content>
+                        <fx:include fx:id="includeDashboard" source="DashboardTab.fxml"/>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabHistorial" text="Historial" onSelectionChanged="#abrirHistorial">
+                    <content>
+                        <fx:include fx:id="includeHistorial" source="HistorialTab.fxml"/>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabTuCuenta" text="Tu Cuenta" onSelectionChanged="#abrirTuCuenta">
+                    <content>
+                        <fx:include fx:id="includeTuCuenta" source="TuCuentaTab.fxml"/>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
+</AnchorPane>

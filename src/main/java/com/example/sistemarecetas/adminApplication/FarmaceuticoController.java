@@ -1,4 +1,4 @@
-package com.example.sistemarecetas;
+package com.example.sistemarecetas.adminApplication;
 
 import Model.Farmaceutico;
 import Gestores.GestorFarmaceuticos;
