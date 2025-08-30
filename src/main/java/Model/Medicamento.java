@@ -1,21 +1,27 @@
 package Model;
 
 public class Medicamento {
-    private int codigo;
+    private String codigo;
     private String nombre;
     private String descripcion;
+    private String presentacion;
 
-    public Medicamento(int codigo, String nombre, String presentacion) {
+    public Medicamento(String codigo, String nombre, String presentacion, String descripcion) {
         this.codigo = codigo;
         this.nombre = nombre;
-        this.descripcion = presentacion;
+        this.presentacion = presentacion;
+        this.descripcion = descripcion;
     }
 
-    public int getCodigo() {
+    public String getPresentacion() {return presentacion;}
+
+    public void setPresentacion(String presentacion) { this.presentacion = presentacion;}
+
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 

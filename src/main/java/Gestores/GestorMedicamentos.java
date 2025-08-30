@@ -33,9 +33,9 @@ public class GestorMedicamentos {
         }
     }
 
-    public Medicamento buscarPorCodigo(int codigo) {
+    public Medicamento buscarPorCodigo(String codigo) {
         for (Medicamento medi : medicamentos) {
-            if (medi.getCodigo() == codigo) {
+            if (medi.getCodigo().equals(codigo)) {
                 return medi;
             }
         }
@@ -51,7 +51,7 @@ public class GestorMedicamentos {
         return null;
     }
 
-    public boolean modificarMedicamento(int codigo, String nuevoNombre, String nuevaPresentacion, int nuevoCodigo) {
+    public boolean modificarMedicamento(String codigo, String nuevoNombre, String nuevaPresentacion, String nuevoCodigo) {
         Medicamento m = buscarPorCodigo(codigo);
         if (m != null) {
             m.setCodigo(nuevoCodigo);
