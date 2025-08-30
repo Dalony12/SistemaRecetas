@@ -79,7 +79,7 @@
             </GridPane>
             <HBox alignment="CENTER" prefHeight="35.0" prefWidth="310.0" spacing="20.0">
                 <children>
-                    <Button id="btnEnviarFarmaceutico" fx:id="btnEnviarFarmaceutico" onAction="#GuardarModificarEliminarMedico" styleClass="button-primary" text="Enviar" />
+                    <Button id="btnEnviarFarmaceutico" fx:id="btnEnviarFarmaceutico" onAction="#GuardarModificarEliminarFarmaceutico" styleClass="button-primary" text="Enviar" />
                     <Button id="btnCancelarFarmaceutico" fx:id="btnCancelarFarmaceutico" onAction="#limpiarCampos" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Cancelar" />
                 </children>
             </HBox>

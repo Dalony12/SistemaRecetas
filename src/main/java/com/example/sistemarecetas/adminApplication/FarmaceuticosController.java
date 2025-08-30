@@ -1,9 +1,7 @@
 package com.example.sistemarecetas.adminApplication;
 
 import Gestores.GestorFarmaceuticos;
-import Gestores.GestorMedicos;
 import Model.Farmaceutico;
-import Model.Medico;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -66,13 +64,13 @@ public class FarmaceuticosController {
 
         txtIDFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {
             if (btnBuscarFarmaceutico.isSelected()) {
-                buscarMedico();
+                buscarFarmaceutico();
             }
         });
 
         txtNombreFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {
             if (btnBuscarFarmaceutico.isSelected()) {
-                buscarMedico();
+                buscarFarmaceutico();
             }
         });
 
@@ -95,7 +93,7 @@ public class FarmaceuticosController {
     // ---------------- Lógica CRUD ----------------
 
     @FXML
-    private void GuardarModificarEliminarMedico() {
+    private void GuardarModificarEliminarFarmaceutico() {
         try {
             String nombre = txtNombreFarmaceuta.getText().trim();
             String identificacion = txtIDFarmaceuta.getText().trim();
@@ -149,7 +147,7 @@ public class FarmaceuticosController {
     }
 
     @FXML
-    private void buscarMedico() {
+    private void buscarFarmaceutico() {
         String criterioID = txtIDFarmaceuta.getText().trim().toLowerCase();
         String criterioNombre = txtNombreFarmaceuta.getText().trim().toLowerCase();
 
