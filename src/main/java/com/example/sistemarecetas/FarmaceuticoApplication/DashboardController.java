@@ -1,4 +1,4 @@
-package com.example.sistemarecetas.MedicoApplication;
+package com.example.sistemarecetas.FarmaceuticoApplication;
 
 import javafx.event.Event;
 

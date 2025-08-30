@@ -1,6 +1,8 @@
-package com.example.sistemarecetas.MedicoApplication;
+package com.example.sistemarecetas.FarmaceuticoApplication;
 
 import Gestores.GestorRecetas;
+import Model.Medicamento;
+import Model.Paciente;
 import Model.Prescripcion;
 import Model.Receta;
 import javafx.beans.property.SimpleStringProperty;
@@ -35,7 +37,6 @@ public class HistorialController {
 
     @FXML
     public void initialize() {
-
         // Inicializar lista y tabla
         listaObservable = FXCollections.observableArrayList(gestorRecetas.getRecetas());
         tableRecetas.setItems(listaObservable);

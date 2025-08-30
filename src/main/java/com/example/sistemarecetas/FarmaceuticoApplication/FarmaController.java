@@ -1,4 +1,4 @@
-package com.example.sistemarecetas.MedicoApplication;
+package com.example.sistemarecetas.FarmaceuticoApplication;
 
 
 import com.example.sistemarecetas.adminApplication.FarmaceuticosController;
@@ -14,14 +14,14 @@ import javafx.scene.control.TabPane;
 
 import java.io.IOException;
 
-public class MedicoController {
+public class FarmaController {
 
     @FXML private TabPane tabPane;
     @FXML private Tab tabMenuPrincipal;
     @FXML private Tab tabDashboard;
     @FXML private Tab tabHistorial;
     @FXML private Tab tabTuCuenta;
-    @FXML private Tab tabPrescripcion;
+    @FXML private Tab tabDespacho;
 
     @FXML
     public void abrirMenuPrincipal(Event event) { }
@@ -36,5 +36,5 @@ public class MedicoController {
     public void abrirTuCuenta(Event event) { }
 
     @FXML
-    public void abrirPrescripcion(Event event) { }
+    public void abrirDespacho(Event event) { }
 }
