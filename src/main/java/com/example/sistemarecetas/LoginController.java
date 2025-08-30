@@ -30,6 +30,10 @@ public class LoginController {
 
     @FXML
     private void initialize() {
+        Medico medico = new Medico("med-111","Pacheco","med-111","Otorrino");
+        GestorMedicos gestorMedicos = GestorMedicos.getInstancia();
+        gestorMedicos.agregarMedico(medico);
+
         // Ocultar inicialmente etiquetas de ayuda y mensaje
         lblAyudaId.setVisible(false);
         lblAyudaPassword.setVisible(false);
@@ -105,7 +109,7 @@ public class LoginController {
                 for (Medico m : GestorMedicos.getInstancia().getMedicos()) {
                     if (m.getId().equals(id) && m.getPassword().equals(password)) {
                         try {
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("View/admin-view.fxml"));
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("View/MedicoView/Medico-view.fxml"));
                             Parent root = loader.load();
                             Stage stage = (Stage) txtId.getScene().getWindow();
                             stage.setScene(new Scene(root));

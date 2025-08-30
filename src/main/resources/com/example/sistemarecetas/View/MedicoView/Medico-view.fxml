@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane stylesheets="@../../styles/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.MedicoApplication.MedicoController">
+
+    <children>
+        <TabPane fx:id="tabPane" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+
+            <tabs>
+                <Tab fx:id="tabMenuPrincipal" onSelectionChanged="#abrirMenuPrincipal" text="Menu Principal">
+                    <content>
+                        <fx:include fx:id="includeMenuPrincipal" source="MenuPrincipaltabMedico.fxml" />
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabPrescripcion" onSelectionChanged="#abrirPrescripcion" text="Prescripción">
+                    <content>
+                        <fx:include fx:id="includePrescripcion" source="PrescripcionTab.fxml" />
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabDashboard" onSelectionChanged="#abrirDashboard" text="Dashboard">
+                    <content>
+                        <fx:include fx:id="includeDashboard" source="DashboardTab.fxml" />
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabHistorial" onSelectionChanged="#abrirHistorial" text="Historial">
+                    <content>
+                        <fx:include fx:id="includeHistorial" source="HistorialTab.fxml" />
+                    </content>
+                </Tab>
+
+                <Tab fx:id="tabTuCuenta" onSelectionChanged="#abrirTuCuenta" text="Tu Cuenta">
+                    <content>
+                        <fx:include fx:id="includeTuCuenta" source="TuCuentaTab.fxml" />
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
+</AnchorPane>
+

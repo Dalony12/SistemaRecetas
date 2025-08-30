@@ -19,7 +19,6 @@ public class AdminController {
     @FXML private Tab tabMedicamentos;
     @FXML private Tab tabDashboard;
     @FXML private Tab tabHistorial;
-    @FXML private Tab tabTuCuenta;
 
     @FXML
     public void abrirMenuPrincipal(Event event) { }
@@ -50,6 +49,4 @@ public class AdminController {
     @FXML
     public void abrirHistorial(Event event) { }
 
-    @FXML
-    public void abrirTuCuenta(Event event) { }
 }
