@@ -44,10 +44,5 @@ public class Prescripcion {
     public void setIndicaciones(String indicaciones) {
         this.indicaciones = indicaciones;
     }
-
-    public String toString() {
-        return medicamento.getDescripcion() + " (" + getCantidad() + " unidades, " +
-                "duración: " + getDuracionDias() + " días, indicaciones: " + getIndicaciones() + ")";
-    }
 }
 

@@ -25,6 +25,7 @@ public class GestorRecetas {
     public List<Receta> getRecetas() {
         return recetas;
     }
+
     public void eliminarReceta(Receta receta) {
         recetas.remove(receta);
     }
@@ -71,4 +72,5 @@ public class GestorRecetas {
             System.out.println(r);
         }
     }
+
 }

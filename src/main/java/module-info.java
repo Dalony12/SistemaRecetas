@@ -10,4 +10,6 @@ module com.example.sistemarecetas {
     exports com.example.sistemarecetas.adminApplication;
     opens Model to javafx.base;
     opens com.example.sistemarecetas.adminApplication to javafx.fxml;
+    exports com.example.sistemarecetas.MedicoApplication;
+    opens com.example.sistemarecetas.MedicoApplication to javafx.fxml;
 }
