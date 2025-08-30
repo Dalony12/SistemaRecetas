@@ -30,9 +30,6 @@ public class LoginController {
 
     @FXML
     private void initialize() {
-        Farmaceutico farmaceutico = new Farmaceutico("far-111", "jose", "far-111");
-        GestorFarmaceuticos gestorFarmaceuticos = GestorFarmaceuticos.getInstancia();
-        gestorFarmaceuticos.agregarFarmaceuta(farmaceutico);
 
         // Ocultar inicialmente etiquetas de ayuda y mensaje
         lblAyudaId.setVisible(false);
