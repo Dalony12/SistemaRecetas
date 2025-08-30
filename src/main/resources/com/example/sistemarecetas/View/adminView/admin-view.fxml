@@ -1,64 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane stylesheets="@../../styles/Styles.css"
-            xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/24.0.1"
-            fx:controller="com.example.sistemarecetas.adminApplication.AdminController">
+<AnchorPane stylesheets="@../../styles/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.adminApplication.AdminController">
 
     <children>
-        <TabPane fx:id="tabPane"
-                 tabClosingPolicy="UNAVAILABLE"
-                 prefHeight="400.0" prefWidth="600.0">
+        <TabPane fx:id="tabPane" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
 
             <tabs>
-                <Tab fx:id="tabMenuPrincipal" text="Menu Principal" onSelectionChanged="#abrirMenuPrincipal">
+                <Tab fx:id="tabMenuPrincipal" onSelectionChanged="#abrirMenuPrincipal" text="Menu Principal">
                     <content>
-                        <fx:include fx:id="includeMenuPrincipal" source="MenuPrincipalTab.fxml"/>
+                        <fx:include fx:id="includeMenuPrincipal" source="MenuPrincipalTab.fxml" />
                     </content>
                 </Tab>
 
-                <Tab fx:id="tabMedicos" text="Médicos" onSelectionChanged="#abrirMedicos">
+                <Tab fx:id="tabMedicos" onSelectionChanged="#abrirMedicos" text="Médicos">
                     <content>
-                        <fx:include fx:id="includeMedicos" source="MedicosTab.fxml"/>
+                        <fx:include fx:id="includeMedicos" source="MedicosTab.fxml" />
                     </content>
                 </Tab>
 
-                <Tab fx:id="tabFarmaceuticos" text="Farmacéuticos" onSelectionChanged="#abrirFarmaceuticos">
+                <Tab fx:id="tabFarmaceuticos" onSelectionChanged="#abrirFarmaceuticos" text="Farmacéuticos">
                     <content>
-                        <fx:include fx:id="includeFarmaceuticos" source="FarmaceuticosTab.fxml"/>
+                        <fx:include fx:id="includeFarmaceuticos" source="FarmaceuticosTab.fxml" />
                     </content>
                 </Tab>
 
-                <Tab fx:id="tabPacientes" text="Pacientes" onSelectionChanged="#abrirPacientes">
+                <Tab fx:id="tabPacientes" onSelectionChanged="#abrirPacientes" text="Pacientes">
                     <content>
-                        <fx:include fx:id="includePacientes" source="PacientesTab.fxml"/>
+                        <fx:include fx:id="includePacientes" source="PacientesTab.fxml" />
                     </content>
                 </Tab>
 
-                <Tab fx:id="tabMedicamentos" text="Medicamentos" onSelectionChanged="#abrirMedicamentos">
+                <Tab fx:id="tabMedicamentos" onSelectionChanged="#abrirMedicamentos" text="Medicamentos">
                     <content>
-                        <fx:include fx:id="includeMedicamentos" source="MedicamentosTab.fxml"/>
+                        <fx:include fx:id="includeMedicamentos" source="MedicamentosTab.fxml" />
                     </content>
                 </Tab>
 
-                <Tab fx:id="tabDashboard" text="Dashboard" onSelectionChanged="#abrirDashboard">
+                <Tab fx:id="tabDashboard" onSelectionChanged="#abrirDashboard" text="Dashboard">
                     <content>
-                        <fx:include fx:id="includeDashboard" source="DashboardTab.fxml"/>
+                        <fx:include fx:id="includeDashboard" source="DashboardTab.fxml" />
                     </content>
                 </Tab>
 
-                <Tab fx:id="tabHistorial" text="Historial" onSelectionChanged="#abrirHistorial">
+                <Tab fx:id="tabHistorial" onSelectionChanged="#abrirHistorial" text="Historial">
                     <content>
-                        <fx:include fx:id="includeHistorial" source="HistorialTab.fxml"/>
-                    </content>
-                </Tab>
-
-                <Tab fx:id="tabTuCuenta" text="Tu Cuenta" onSelectionChanged="#abrirTuCuenta">
-                    <content>
-                        <fx:include fx:id="includeTuCuenta" source="TuCuentaTab.fxml"/>
+                        <fx:include fx:id="includeHistorial" source="HistorialTab.fxml" />
                     </content>
                 </Tab>
             </tabs>

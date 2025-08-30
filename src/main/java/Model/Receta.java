@@ -57,20 +57,4 @@ public class Receta {
     public void setConfeccionada(boolean confeccionada) {
         this.confeccionada = confeccionada;
     }
-
-    @Override
-    public String toString() {
-        String resultado = "Receta de " + paciente + ":\n";
-        resultado += "Fecha confección: " + fechaConfeccion + "\n";
-        resultado += "Fecha retiro: " + fechaRetiro + "\n";
-        resultado += "Confeccionada: " + (confeccionada ? "Sí" : "No") + "\n";
-        resultado += "Medicamentos:\n";
-
-        for (Prescripcion prescripcion : medicamentos) {
-
-            resultado += "- " + prescripcion.toString() + "\n";
-        }
-
-        return resultado;
-    }
 }

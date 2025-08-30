@@ -1,9 +1,6 @@
-package com.example.sistemarecetas.adminApplication;
-
+package com.example.sistemarecetas.MedicoApplication;
 
 import Gestores.GestorRecetas;
-import Model.Medicamento;
-import Model.Paciente;
 import Model.Prescripcion;
 import Model.Receta;
 import javafx.beans.property.SimpleStringProperty;
@@ -38,32 +35,6 @@ public class HistorialController {
 
     @FXML
     public void initialize() {
-        // =======================
-        // DATOS DE PRUEBA
-        // =======================
-        // Pacientes
-        Paciente p1 = new Paciente("med-111", "Juan Pérez", 71978798, LocalDate.of(1995, 5, 21));
-
-        // Medicamentos
-        Medicamento m1 = new Medicamento("met","Ibuprofeno", "duro", "dolor");
-        Medicamento m2 = new Medicamento("amo","Amoxicilina", "duro", "dolor");
-
-        // Prescripciones
-        Prescripcion pr1 = new Prescripcion(m1, 2, "Cada 8 horas", 5);
-        Prescripcion pr2 = new Prescripcion(m2, 1, "Cada 12 horas", 7);
-
-        // Recetas
-        Receta r1 = new Receta(p1);
-
-        // 5. Agregar la prescripción a la receta
-        r1.getMedicamentos().add(pr1);
-        r1.getMedicamentos().add(pr2);
-
-        // 6. Opcional: asignar fecha de retiro
-        r1.setFechaRetiro(LocalDate.now().plusDays(5));
-
-        // 7. Guardar la receta en el gestor
-        gestorRecetas.agregarReceta(r1);
 
         // Inicializar lista y tabla
         listaObservable = FXCollections.observableArrayList(gestorRecetas.getRecetas());

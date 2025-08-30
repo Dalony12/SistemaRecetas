@@ -30,6 +30,7 @@ public class LoginController {
 
     @FXML
     private void initialize() {
+
         // Ocultar inicialmente etiquetas de ayuda y mensaje
         lblAyudaId.setVisible(false);
         lblAyudaPassword.setVisible(false);
@@ -105,7 +106,7 @@ public class LoginController {
                 for (Medico m : GestorMedicos.getInstancia().getMedicos()) {
                     if (m.getId().equals(id) && m.getPassword().equals(password)) {
                         try {
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("View/admin-view.fxml"));
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("View/MedicoView/Medico-view.fxml"));
                             Parent root = loader.load();
                             Stage stage = (Stage) txtId.getScene().getWindow();
                             stage.setScene(new Scene(root));
@@ -126,7 +127,7 @@ public class LoginController {
                     for (Farmaceutico f : GestorFarmaceuticos.getInstancia().getFarmaceuticos()) {
                         if (f.getId().equals(id) && f.getPassword().equals(password)) {
                             try {
-                                FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farma-view.fxml"));
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farmaView/farma-view.fxml"));
                                 Parent root = loader.load();
                                 Stage stage = (Stage) txtId.getScene().getWindow();
                                 stage.setScene(new Scene(root));
@@ -136,6 +137,7 @@ public class LoginController {
                                 alert.setTitle("Error de sistema");
                                 alert.setHeaderText(null);
                                 alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
+                                System.out.println(e.getMessage());
                                 alert.showAndWait();
                             }
                             encontrado = true;
