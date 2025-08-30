@@ -29,11 +29,11 @@ public class GestorRecetas {
         recetas.remove(receta);
     }
 
-    public boolean modificarReceta(int codigoMedicamento, Receta nuevaReceta) {
+    public boolean modificarReceta(String codigoMedicamento, Receta nuevaReceta) {
         for (int i = 0; i < recetas.size(); i++) {
             Receta r = recetas.get(i);
             for (Prescripcion p : r.getMedicamentos()) {
-                if (p.getMedicamento().getCodigo() == codigoMedicamento) {
+                if (p.getMedicamento().getCodigo().equals(codigoMedicamento)) {
                     recetas.set(i, nuevaReceta);
                     return true;
                 }
@@ -42,10 +42,10 @@ public class GestorRecetas {
         return false;
     }
 
-    public Receta buscarPorCodigo(int codigo) {
+    public Receta buscarPorCodigo(String codigo) {
         for (Receta r : recetas) {
             for (Prescripcion p : r.getMedicamentos()) {
-                if (p.getMedicamento().getCodigo() == codigo) {
+                if (p.getMedicamento().getCodigo().equals(codigo)) {
                     return r;
                 }
             }

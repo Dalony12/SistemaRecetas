@@ -1,14 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
-<HBox alignment="CENTER_LEFT" prefHeight="400" prefWidth="600" spacing="20.0" stylesheets="@../../styles/Styles.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/24.0.1" fx:controller="com.example.sistemarecetas.adminApplication.PacientesController">
-    <children>
-        <VBox alignment="CENTER" prefWidth="250" spacing="10" styleClass="card">
+<StackPane prefHeight="400" prefWidth="600" stylesheets="@../../styles/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.adminApplication.PacientesController">
+
+    <!-- TableView: inicialmente detrás de la tarjeta, tamaño similar a la tarjeta -->
+    <TableView fx:id="tablePacientes" fixedCellSize="24" prefHeight="400" prefWidth="150.0" visible="true">
+        <columns>
+            <TableColumn fx:id="colID" prefWidth="50.0" text="ID" />
+            <TableColumn fx:id="colNombre" prefWidth="90.0" text="Nombre" />
+            <TableColumn fx:id="colFechaNacimiento" minWidth="4.0" prefWidth="90.0" text="Fecha Nacimiento" />
+            <TableColumn fx:id="colTelefono" minWidth="4.0" prefWidth="85.0" text="Telefono" />
+        </columns>
+    </TableView>
+
+    <!-- Contenedor HBox con tarjeta + formulario -->
+    <HBox alignment="CENTER_LEFT">
+
+        <VBox fx:id="vBoxPortadaPaciente" alignment="CENTER" prefWidth="400.0" spacing="10" styleClass="card">
             <children>
                 <Label text="Gestión de" textFill="WHITE">
                     <font>
@@ -25,46 +50,51 @@
                 </ImageView>
             </children>
         </VBox>
-        <VBox alignment="TOP_CENTER" spacing="20.0">
+
+        <!-- Formulario derecho -->
+        <VBox alignment="TOP_CENTER" prefHeight="380.0" prefWidth="300.0" spacing="20.0" styleClass="background">
             <children>
-                <Label prefHeight="44.0" prefWidth="293.0" style="-fx-font-size: 16;" styleClass="title" text="Seleccione la acción que desea realizar:" />
-                <HBox alignment="CENTER" spacing="15">
+                <Label prefHeight="44.0" style="-fx-font-size: 16;" styleClass="title" text="Acciones Disponibles:" />
+                <HBox alignment="CENTER" prefWidth="100.0" spacing="15">
                     <children>
-                        <RadioButton id="btnGuardarPaciente" fx:id="btnGuardarPaciente" onAction="#GuardarPaciente" text="Guardar" />
-                        <RadioButton id="btnBorrarPaciente" fx:id="btnBorrarPaciente" onAction="#BorrarPaciente" text="Borrar" />
-                        <RadioButton id="btnModificarPaciente" fx:id="btnModificarPaciente" onAction="#ModificarPaciente" text="Modificar" />
+                        <RadioButton id="btnGuardarPaciente" fx:id="btnGuardarPaciente" text="Guardar" />
+                        <RadioButton id="btnBorrarPaciente" fx:id="btnBorrarPaciente" text="Borrar" />
+                        <RadioButton id="btnModificarPaciente" fx:id="btnModificarPaciente" text="Modificar" />
+                  <RadioButton id="btnBuscarPaciente" fx:id="btnBuscarPaciente" mnemonicParsing="false" text="Buscar" />
                     </children>
                 </HBox>
                 <Line endX="182.0" opacity="0.3" startX="-100.0" strokeWidth="2.0" />
+
                 <GridPane alignment="CENTER" hgap="10" vgap="10">
                     <columnConstraints>
                         <ColumnConstraints prefWidth="100" />
-                        <ColumnConstraints prefWidth="200" />
+                        <ColumnConstraints prefWidth="150" />
                     </columnConstraints>
                     <children>
-                        <Label text="ID" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                        <TextField id="txtIDPaciente" fx:id="txtIDPaciente" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                        <Label text="Nombre" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                        <TextField id="txtNombrePaciente" fx:id="txtNombrePaciente" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="ID" GridPane.rowIndex="0" />
+                        <TextField fx:id="txtIDPaciente" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Label text="Nombre" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtNombrePaciente" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Fecha Nacimiento" GridPane.rowIndex="2" />
-                        <Label text="Número Teléfono" GridPane.rowIndex="3" />
-                        <TextField id="txtNumeroTelefonico" fx:id="txtNumeroTelefonico" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <DatePicker id="dtpFechaNacimiento" fx:id="dtpFechaNacimiento" prefHeight="24.0" prefWidth="293.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Telefono" GridPane.rowIndex="3" />
+                        <TextField fx:id="txtTelefonoPaciente" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <DatePicker id="dtpFechaNacimiento" fx:id="dtpFechaNacimiento" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                     </children>
                     <rowConstraints>
                         <RowConstraints />
                         <RowConstraints />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                        <RowConstraints />
+                  <RowConstraints />
                     </rowConstraints>
                 </GridPane>
+
                 <HBox alignment="CENTER" prefHeight="35.0" prefWidth="310.0" spacing="20.0">
                     <children>
-                        <Button id="btnEnviarPaciente" fx:id="btnEnviarPaciente" onAction="#EnviarPaciente" styleClass="button-primary" text="Enviar" />
-                        <Button id="btnCancelarPaciente" fx:id="btnCancelarPaciente" onAction="#CancelarPaciente" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Cancelar" />
+                        <Button id="btnEnviarPaciente" fx:id="btnEnviarPaciente" onAction="#GuardarModificarEliminarPaciente" styleClass="button-primary" text="Enviar" />
+                        <Button id="btnCancelarPaciente" fx:id="btnCancelarPaciente" onAction="#limpiarCampos" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Cancelar" />
                     </children>
                 </HBox>
             </children>
         </VBox>
-    </children>
-</HBox>
+    </HBox>
+</StackPane>

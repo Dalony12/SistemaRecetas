@@ -30,13 +30,19 @@ public class AdminController {
     }
 
     @FXML
-    public void abrirFarmaceuticos(Event event) { }
+    public void abrirFarmaceuticos(Event event) {
+        if (tabFarmaceuticos.isSelected()) {FarmaceuticosController.getInstance().mostrarListaConAnimacion();}
+    }
 
     @FXML
-    public void abrirPacientes(Event event) { }
+    public void abrirPacientes(Event event) {
+        if (tabPacientes.isSelected()) {PacientesController.getInstance().mostrarListaConAnimacion();}
+    }
 
     @FXML
-    public void abrirMedicamentos(Event event) { }
+    public void abrirMedicamentos(Event event) {
+        if (tabMedicamentos.isSelected()) {MedicamentosController.getInstance().mostrarListaConAnimacion();}
+    }
 
     @FXML
     public void abrirDashboard(Event event) { }

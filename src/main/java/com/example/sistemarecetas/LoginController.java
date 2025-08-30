@@ -1,7 +1,7 @@
 package com.example.sistemarecetas;
 
-import Backend.Farmaceutico;
-import Backend.Medico;
+import Model.Farmaceutico;
+import Model.Medico;
 import Gestores.GestorFarmaceuticos;
 import Gestores.GestorMedicos;
 import javafx.application.Platform;
@@ -19,7 +19,6 @@ public class LoginController {
     @FXML private TextField txtId;
     @FXML private PasswordField txtContrasenaLogin;
     @FXML private Button btnIniciarSesion;
-    @FXML private Button btnSalir;
     @FXML private ProgressIndicator progressIndicator;
     @FXML private RadioButton rbtAyuda;
 
@@ -31,9 +30,6 @@ public class LoginController {
 
     @FXML
     private void initialize() {
-        //Ejemplo
-        GestorMedicos.getInstancia().agregarMedico(new Medico("med123", "Juan Perez", "med123", "Cardiología"));
-
         // Ocultar inicialmente etiquetas de ayuda y mensaje
         lblAyudaId.setVisible(false);
         lblAyudaPassword.setVisible(false);
@@ -170,9 +166,4 @@ public class LoginController {
         lblAyudaSoporte.setVisible(mostrarAyuda);
     }
 
-    @FXML
-    private void SalirAplicacion(){
-        Stage stage = (Stage) btnSalir.getScene().getWindow();
-        stage.close();
-    }
 }
