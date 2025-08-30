@@ -17,6 +17,17 @@ public class Medico extends Usuario  {
     }
 
     @Override
+    public String getId() {
+        return super.getId();
+    }
+
+    @Override
+    public String getNombre() {
+        return super.getNombre();
+    }
+
+
+    @Override
     public void mostrarInfo() {
         System.out.println("Medico [ID: " + getId() +
                 ", Nombre: " + getNombre() +

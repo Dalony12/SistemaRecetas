@@ -8,5 +8,6 @@ module com.example.sistemarecetas {
     opens com.example.sistemarecetas to javafx.fxml;
     exports com.example.sistemarecetas;
     exports com.example.sistemarecetas.adminApplication;
+    opens Model to javafx.base;
     opens com.example.sistemarecetas.adminApplication to javafx.fxml;
 }

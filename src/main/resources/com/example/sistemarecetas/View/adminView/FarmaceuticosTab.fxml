@@ -1,15 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
-<HBox alignment="CENTER_LEFT" prefHeight="400" prefWidth="600" spacing="20.0" stylesheets="@../../styles/Styles.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/24.0.1" fx:controller="com.example.sistemarecetas.adminApplication.FarmaceuticosController">
+<StackPane prefHeight="400" prefWidth="600" stylesheets="@../../styles/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.adminApplication.FarmaceuticosController">
+
+    <!-- TableView: inicialmente detrás de la tarjeta, tamaño similar a la tarjeta -->
+    <TableView fx:id="tableFarmaceuticos" fixedCellSize="24" prefHeight="400" prefWidth="150.0" visible="true">
+        <columns>
+            <TableColumn fx:id="colIDFarma" prefWidth="120.0" text="ID" />
+            <TableColumn fx:id="colNombreFarma" prefWidth="177.0" text="Nombre" />
+        </columns>
+    </TableView>
+
+    <!-- Contenedor HBox con tarjeta + formulario -->
+    <HBox alignment="CENTER_LEFT">
 
     <!-- Tarjeta izquierda -->
-    <VBox alignment="CENTER" prefWidth="250" spacing="10" styleClass="card">
+        <VBox fx:id="vBoxPortadaFarmaceuta" alignment="CENTER" prefWidth="300" spacing="10" styleClass="card">
         <children>
             <Label text="Gestión de" textFill="WHITE">
                 <font>
@@ -28,39 +50,40 @@
     </VBox>
 
     <!-- Formulario derecho -->
-    <VBox alignment="TOP_CENTER" spacing="20.0">
+        <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="301.0" spacing="20.0" styleClass="background">
         <children>
-            <Label prefHeight="44.0" prefWidth="303.0" style="-fx-font-size: 16;" styleClass="title" text="Seleccione la acción que desea realizar:" />
-
+            <Label prefHeight="44.0" style="-fx-font-size: 16;" styleClass="title" text="Acciones Disponibles:" />
             <HBox alignment="CENTER" spacing="15">
-                <RadioButton id="btnGuardarFarmaceutico" fx:id="btnGuardarFarmaceutico" onAction="#GuardarFarmaceutico" text="Guardar" />
-                <RadioButton id="btnBorrarFarmaceutico" fx:id="btnBorrarFarmaceutico" onAction="#BorrarFarmaceutico" text="Borrar" />
-                <RadioButton id="btnModificarFarmaceutico" fx:id="btnModificarFarmaceutico" onAction="#ModificarFarmaceutico" text="Modificar" />
+                <RadioButton id="btnGuardarFarmaceutico" fx:id="btnGuardarFarmaceutico" text="Guardar" />
+                <RadioButton id="btnBorrarFarmaceutico" fx:id="btnBorrarFarmaceutico" text="Borrar" />
+                <RadioButton id="btnModificarFarmaceutico" fx:id="btnModificarFarmaceutico" text="Modificar" />
+               <RadioButton id="btnBuscarFarmaceuta" fx:id="btnBuscarFarmaceutico" mnemonicParsing="false" text="Buscar" />
             </HBox>
             <Line endX="182.0" opacity="0.3" startX="-100.0" strokeWidth="2.0" />
             <GridPane alignment="CENTER" hgap="10" vgap="10">
                 <columnConstraints>
                     <ColumnConstraints prefWidth="100" />
-                    <ColumnConstraints prefWidth="200" />
+                    <ColumnConstraints prefWidth="150" />
                 </columnConstraints>
                 <children>
-                    <Label text="ID" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <TextField id="txtIDFarmaceutico" fx:id="txtIDFarmaceutico" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                    <Label text="Nombre" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                    <TextField id="txtNombreFarmaceutico" fx:id="txtNombreFarmaceutico" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <Label text="ID" GridPane.rowIndex="0" />
+                    <TextField fx:id="txtIDFarmaceuta" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <Label text="Nombre" GridPane.rowIndex="1" />
+                    <TextField fx:id="txtNombreFarmaceuta" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 </children>
                 <rowConstraints>
+                    <RowConstraints />
                     <RowConstraints />
                     <RowConstraints />
                 </rowConstraints>
             </GridPane>
             <HBox alignment="CENTER" prefHeight="35.0" prefWidth="310.0" spacing="20.0">
                 <children>
-                    <Button id="btnEnviarFarmaceutico" fx:id="btnEnviarFarmaceutico" onAction="#EnviarFarmaceutico" styleClass="button-primary" text="Enviar" />
-                    <Button id="btnCancelarFarmaceutico" fx:id="btnCancelarFarmaceutico" onAction="#CancelarFarmaceutico" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Cancelar" />
+                    <Button id="btnEnviarFarmaceutico" fx:id="btnEnviarFarmaceutico" onAction="#GuardarModificarEliminarMedico" styleClass="button-primary" text="Enviar" />
+                    <Button id="btnCancelarFarmaceutico" fx:id="btnCancelarFarmaceutico" onAction="#limpiarCampos" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Cancelar" />
                 </children>
             </HBox>
         </children>
     </VBox>
-
-</HBox>
+    </HBox>
+</StackPane>
