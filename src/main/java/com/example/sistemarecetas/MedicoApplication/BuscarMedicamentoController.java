@@ -3,6 +3,7 @@ package com.example.sistemarecetas.MedicoApplication;
 import Model.Medicamento;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
@@ -11,6 +12,8 @@ public class BuscarMedicamentoController {
     private Medicamento medicamento;
     @FXML
     private TableView<Medicamento> tblMedicamentoPresc;
+    @FXML
+    private Button btnAceptarMedicamento;
 
     public Medicamento getMedicamento() {
         return medicamento;

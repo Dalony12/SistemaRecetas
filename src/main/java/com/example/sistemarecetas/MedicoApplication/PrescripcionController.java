@@ -34,6 +34,7 @@ public class PrescripcionController {
     private int cantidad = 0;
     private int duracion = 0;
 
+    @FXML
     private void limpiarPrescripcion() {
         dtpFechaRetiroPres.setValue(null);
         txtNombrePacientePresc.setText("");
