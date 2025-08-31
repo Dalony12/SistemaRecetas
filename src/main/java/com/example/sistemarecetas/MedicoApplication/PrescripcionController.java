@@ -59,7 +59,7 @@ public class PrescripcionController {
             // cuando se cierre la ventana, recupero el medicamento
             stage.setOnHiding(event -> {
                 Medicamento medicamentoSeleccionado = controller.getMedicamento();
-                if (medicamento != null) {
+                if (medicamentoSeleccionado != null) {
                     this.medicamento = medicamentoSeleccionado;
                     tblMedicamentoReceta.getItems().add(medicamentoSeleccionado);
 

@@ -24,7 +24,6 @@ public class BuscarMedicamentoController {
         try {
             medicamento = tblMedicamentoPresc.getSelectionModel().getSelectedItem();
             if (medicamento == null) {
-                // Se va a lanzar un error (alert)
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }

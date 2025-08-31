@@ -45,7 +45,6 @@ public class AsignacionDatosController {
             indicacionesMedicamento = txtAIndicacionesMedicamento.getText();
 
             if (cantidadMedicamento == 0 || duracionMedicamento == 0 || Objects.equals(indicacionesMedicamento, "")) {
-                // Se va a lanzar un error (alert)
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }
