@@ -73,22 +73,22 @@
                   </Pane>
                   <Pane prefHeight="62.0" prefWidth="606.0" stylesheets="@../../styles/Styles.css">
                      <children>
-                        <Button fx:id="btnGuardarReceta" layoutX="60.0" layoutY="11.0" lineSpacing="10.0" onAction="#limpiarCampos" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Guardar">
+                        <Button fx:id="btnGuardarReceta" layoutX="60.0" layoutY="11.0" lineSpacing="10.0" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Guardar">
                            <font>
                               <Font size="11.0" />
                            </font>
                         </Button>
-                        <Button fx:id="btnLimpiarReceta" layoutX="182.0" layoutY="11.0" lineSpacing="10.0" onAction="#limpiarCampos" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Limpiar">
+                        <Button fx:id="btnLimpiarReceta" layoutX="182.0" layoutY="11.0" lineSpacing="10.0" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Limpiar">
                            <font>
                               <Font size="11.0" />
                            </font>
                         </Button>
-                        <Button fx:id="btnEliminarMedicamento" disable="true" layoutX="300.0" layoutY="11.0" lineSpacing="10.0" onAction="#limpiarCampos" prefHeight="32.0" prefWidth="147.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Eliminar Medicamento">
+                        <Button fx:id="btnEliminarMedicamento" disable="true" layoutX="300.0" layoutY="11.0" lineSpacing="10.0" prefHeight="32.0" prefWidth="147.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Eliminar Medicamento">
                            <font>
                               <Font size="11.0" />
                            </font>
                         </Button>
-                        <Button fx:id="btnDetallesReceta" disable="true" layoutX="477.0" layoutY="11.0" lineSpacing="10.0" onAction="#limpiarCampos" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Detalles">
+                        <Button fx:id="btnDetallesReceta" disable="true" layoutX="477.0" layoutY="11.0" lineSpacing="10.0" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Detalles">
                            <font>
                               <Font size="11.0" />
                            </font>
