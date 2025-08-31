@@ -2,11 +2,13 @@ package com.example.sistemarecetas.MedicoApplication;
 
 import Model.Medicamento;
 import Model.Prescripcion;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -22,7 +24,20 @@ public class PrescripcionController {
     @FXML
     private TextField txtNombrePacientePresc;
     @FXML
-    private TableView<Medicamento> tblMedicamentoReceta;
+    private TableView<Medicamento> tblMedicamentoPresc;
+    @FXML
+    private TableView<Prescripcion> tblMedicamentoReceta;
+
+    @FXML
+    private TableColumn<Prescripcion, Medicamento> colMedicamento;
+    @FXML
+    private TableColumn<Prescripcion, String> colPresentacion;
+    @FXML
+    private TableColumn<Prescripcion, Integer> colCantidad;
+    @FXML
+    private TableColumn<Prescripcion, String> colIndicaciones;
+    @FXML
+    private TableColumn<Prescripcion, Integer> colDuracion;
 
 
     private Prescripcion prescripcion;
@@ -33,6 +48,18 @@ public class PrescripcionController {
     private String indicaciones = "";
     private int cantidad = 0;
     private int duracion = 0;
+
+    @FXML
+    public void initialize() {
+        // Configuramos las columnas de la tabla
+        colMedicamento.setCellValueFactory(new PropertyValueFactory<>("medicamento"));
+        colPresentacion.setCellValueFactory(new PropertyValueFactory<>("presentacion"));
+        colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+        colIndicaciones.setCellValueFactory(new PropertyValueFactory<>("indicaciones"));
+        colDuracion.setCellValueFactory(new PropertyValueFactory<>("duracionDias"));
+
+        tblMedicamentoReceta.setItems(FXCollections.observableArrayList());
+    }
 
     @FXML
     private void limpiarPrescripcion() {
@@ -61,7 +88,7 @@ public class PrescripcionController {
                 Medicamento medicamentoSeleccionado = controller.getMedicamento();
                 if (medicamentoSeleccionado != null) {
                     this.medicamento = medicamentoSeleccionado;
-                    tblMedicamentoReceta.getItems().add(medicamentoSeleccionado);
+                    tblMedicamentoPresc.getItems().add(medicamentoSeleccionado);
 
                     // Se debe de abrir despues de seleccionar el medicamento
                     abrirAsignacionDatos();
@@ -97,6 +124,17 @@ public class PrescripcionController {
                     cantidad = controller.getCantidadMedicamento();
                     duracion = controller.getDuracionMedicamento();
                     indicaciones = controller.getIndicacionesMedicamento();
+
+                    if (!modoEdicion) {
+                        prescripcion = new Prescripcion(medicamento, cantidad, indicaciones, duracion);
+                    } else {
+                        prescripcion.setMedicamento(medicamento);
+                        prescripcion.setIndicaciones(indicaciones);
+                        prescripcion.setCantidad(cantidad);
+                        prescripcion.setDuracionDias(duracion);
+                    }
+
+                    tblMedicamentoReceta.getItems().add(prescripcion);
                 }
             });
 
@@ -119,14 +157,8 @@ public class PrescripcionController {
                 return;
             }
 
-            if (!modoEdicion) {
-                prescripcion = new Prescripcion(medicamento, cantidad, indicaciones, duracion);
-            } else {
-                prescripcion.setMedicamento(medicamento);
-                prescripcion.setIndicaciones(indicaciones);
-                prescripcion.setCantidad(cantidad);
-                prescripcion.setDuracionDias(duracion);
-            }
+            // Donde se deberia de guardar el nombre y la fecha de retiro
+
         }
         catch (Exception e) {
             mostrarAlerta("Error al guardar los datos", e.getMessage());
