@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="198.0" prefWidth="425.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.MedicoApplication.PrescripcionController">
    <children>
       <Pane prefHeight="229.0" prefWidth="537.0">
@@ -29,13 +28,13 @@
             </TextField>
             <TableView id="tblPacientePresc" fx:id="tblPacientePresc" layoutX="13.0" layoutY="52.0" prefHeight="116.0" prefWidth="509.0">
               <columns>
-                <TableColumn prefWidth="87.0" text="ID" />
-                <TableColumn prefWidth="171.0" text="Nombre" />
-                  <TableColumn prefWidth="103.0" text="Teléfono" />
-                  <TableColumn prefWidth="147.0" text="Fecha de Nacimiento" />
+                <TableColumn fx:id="colIDPaciente" prefWidth="87.0" text="ID" />
+                <TableColumn fx:id="colNombrePaciente" prefWidth="171.0" text="Nombre" />
+                  <TableColumn fx:id="colTelefonoPaciente" prefWidth="103.0" text="Teléfono" />
+                  <TableColumn fx:id="colFechaNacPaciente" prefWidth="147.0" text="Fecha de Nacimiento" />
               </columns>
             </TableView>
-            <Button id="btnAceptarPaciente" fx:id="btnAceptarPaciente" layoutX="362.0" layoutY="182.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="76.0" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Aceptar" />
+            <Button id="btnAceptarPaciente" fx:id="btnAceptarPaciente" layoutX="362.0" layoutY="182.0" mnemonicParsing="false" onAction="#buscarPaciente" prefHeight="33.0" prefWidth="76.0" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Aceptar" />
             <Button id="btnCancelarPaciente" fx:id="btnCancelarPaciente" layoutX="446.0" layoutY="182.0" mnemonicParsing="false" style="-fx-background-color: #858383;" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Cancelar" />
          </children>
       </Pane>

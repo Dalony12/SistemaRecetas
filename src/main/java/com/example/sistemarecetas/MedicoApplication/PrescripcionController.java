@@ -1,7 +1,10 @@
 package com.example.sistemarecetas.MedicoApplication;
 
+import Gestores.GestorPacientes;
 import Model.Medicamento;
+import Model.Paciente;
 import Model.Prescripcion;
+import Model.Receta;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,9 +14,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrescripcionController {
 
@@ -27,7 +31,6 @@ public class PrescripcionController {
     private TableView<Medicamento> tblMedicamentoPresc;
     @FXML
     private TableView<Prescripcion> tblMedicamentoReceta;
-
     @FXML
     private TableColumn<Prescripcion, Medicamento> colMedicamento;
     @FXML
@@ -39,19 +42,15 @@ public class PrescripcionController {
     @FXML
     private TableColumn<Prescripcion, Integer> colDuracion;
 
+    private GestorPacientes gestorPacientes;
 
-    private Prescripcion prescripcion;
-    private boolean modoEdicion = false;
-
+    private List<Prescripcion> listaMedicamentos;
+    private Receta receta = null;
     private Medicamento medicamento = null;
 
-    private String indicaciones = "";
-    private int cantidad = 0;
-    private int duracion = 0;
 
     @FXML
     public void initialize() {
-        // Configuramos las columnas de la tabla
         colMedicamento.setCellValueFactory(new PropertyValueFactory<>("medicamento"));
         colPresentacion.setCellValueFactory(new PropertyValueFactory<>("presentacion"));
         colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
@@ -59,6 +58,12 @@ public class PrescripcionController {
         colDuracion.setCellValueFactory(new PropertyValueFactory<>("duracionDias"));
 
         tblMedicamentoReceta.setItems(FXCollections.observableArrayList());
+
+        listaMedicamentos = new ArrayList<>();
+    }
+
+    public void setGestorPacientes(GestorPacientes gestorPacientes) {
+        this.gestorPacientes = gestorPacientes;
     }
 
     @FXML
@@ -67,10 +72,9 @@ public class PrescripcionController {
         txtNombrePacientePresc.setText("");
         tblMedicamentoReceta.getItems().clear();
 
+        listaMedicamentos.clear();
         medicamento = null;
-        indicaciones = "";
-        cantidad = 0;
-        duracion = 0;
+        receta = null;
     }
 
     @FXML
@@ -121,20 +125,16 @@ public class PrescripcionController {
                         controller.getDuracionMedicamento() > 0 &&
                         !controller.getIndicacionesMedicamento().trim().isEmpty()) {
 
-                    cantidad = controller.getCantidadMedicamento();
-                    duracion = controller.getDuracionMedicamento();
-                    indicaciones = controller.getIndicacionesMedicamento();
-
-                    if (!modoEdicion) {
-                        prescripcion = new Prescripcion(medicamento, cantidad, indicaciones, duracion);
-                    } else {
-                        prescripcion.setMedicamento(medicamento);
-                        prescripcion.setIndicaciones(indicaciones);
-                        prescripcion.setCantidad(cantidad);
-                        prescripcion.setDuracionDias(duracion);
-                    }
-
+                    Prescripcion prescripcion = new Prescripcion(
+                            medicamento,
+                            controller.getCantidadMedicamento(),
+                            controller.getIndicacionesMedicamento(),
+                            controller.getDuracionMedicamento()
+                    );
                     tblMedicamentoReceta.getItems().add(prescripcion);
+                    listaMedicamentos.add(prescripcion);
+
+                    medicamento = null;
                 }
             });
 
@@ -147,18 +147,41 @@ public class PrescripcionController {
     @FXML
     private void guardarPrescripcion() {
         try {
+            if (gestorPacientes == null) {
+                mostrarAlerta("Error de Sistema", "El gestor de pacientes no está disponible");
+                return;
+            }
+
             String nombreCompletoPaciente = txtNombrePacientePresc.getText().trim();
             LocalDate fechaRetiro = dtpFechaRetiroPres.getValue();
 
             // Verificamos que el formulario este completo
             if (nombreCompletoPaciente.isEmpty() || fechaRetiro == null) {
-                // Se va a lanzar un error (alert)
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }
 
-            // Donde se deberia de guardar el nombre y la fecha de retiro
+            if (listaMedicamentos.isEmpty()) {
+                mostrarAlerta("Receta vacia", "Debe seleccionar un medicamento");
+                return;
+            }
 
+            Paciente paciente = gestorPacientes.buscarPorNombre(nombreCompletoPaciente);
+
+            if (paciente == null) {
+                mostrarAlerta("Paciente no encontrado", "No se encontró ningún paciente con el nombre " + nombreCompletoPaciente);
+                return;
+            }
+
+            if (receta == null) {
+                receta = new Receta(paciente, listaMedicamentos, fechaRetiro, true);
+            }
+            else {
+                receta.setPaciente(paciente);
+                receta.setMedicamentos(listaMedicamentos);
+                receta.setFechaRetiro(fechaRetiro);
+                receta.setConfeccionada(true);
+            }
         }
         catch (Exception e) {
             mostrarAlerta("Error al guardar los datos", e.getMessage());

@@ -26,6 +26,11 @@
     -fx-padding: 20;
 }
 
+.card2 {
+    -fx-background-color: linear-gradient(to top, #95beed, #124e93);
+    -fx-background-radius: 0;
+    -fx-padding: 20;
+}
 .form {
     -fx-background-image: src\main\resources\org\example\prueba\fondo.png;
     -fx-background-size: cover;
@@ -82,12 +87,13 @@
 
 /* Botón principal */
 .button-primary {
-    -fx-background-color: #438ee6; /* Celeste */
+    -fx-background-color: #2973d5; /* Celeste */
     -fx-text-fill: white;
     -fx-background-radius: 10;
     -fx-padding: 8 14;
     -fx-font-weight: bold;
 }
+
 .button-primary:hover {
     -fx-background-color: #387ac6; /* Celeste más oscuro */
 }
