@@ -18,6 +18,14 @@ public class Receta {
         this.confeccionada = false;
     }
 
+    public Receta(Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro, boolean confeccionada) {
+        this.paciente = paciente;
+        this.medicamentos = medicamentos;
+        this.fechaConfeccion = LocalDate.now();
+        this.fechaRetiro = fechaRetiro;
+        this.confeccionada = false;
+    }
+
     public Paciente getPaciente() {
         return paciente;
     }
