@@ -1,5 +1,6 @@
 package com.example.sistemarecetas.MedicoApplication;
 
+import Gestores.GestorMedicamentos;
 import Gestores.GestorPacientes;
 import Model.Medicamento;
 import Model.Paciente;
@@ -42,7 +43,7 @@ public class PrescripcionController {
     @FXML
     private TableColumn<Prescripcion, Integer> colDuracion;
 
-    private GestorPacientes gestorPacientes;
+    private GestorPacientes gestorPacientes = GestorPacientes.getInstancia();
 
     private List<Prescripcion> listaMedicamentos;
     private Receta receta = null;
@@ -51,6 +52,7 @@ public class PrescripcionController {
 
     @FXML
     public void initialize() {
+
         colMedicamento.setCellValueFactory(new PropertyValueFactory<>("medicamento"));
         colPresentacion.setCellValueFactory(new PropertyValueFactory<>("presentacion"));
         colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
@@ -60,10 +62,6 @@ public class PrescripcionController {
         tblMedicamentoReceta.setItems(FXCollections.observableArrayList());
 
         listaMedicamentos = new ArrayList<>();
-    }
-
-    public void setGestorPacientes(GestorPacientes gestorPacientes) {
-        this.gestorPacientes = gestorPacientes;
     }
 
     @FXML
@@ -80,7 +78,7 @@ public class PrescripcionController {
     @FXML
     private void abrirBuscarMedicamento() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("buscarMedicamento.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sistemarecetas/View/MedicoView/buscarMedicamento.fxml"));
             Parent root = loader.load();
 
             BuscarMedicamentoController controller = loader.getController();
@@ -113,7 +111,7 @@ public class PrescripcionController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("asignacionMedicamento.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sistemarecetas/View/MedicoView/asignacionMedicamento.fxml"));
             Parent root = loader.load();
 
             AsignacionDatosController controller = loader.getController();

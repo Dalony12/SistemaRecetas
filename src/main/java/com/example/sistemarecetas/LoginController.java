@@ -31,6 +31,10 @@ public class LoginController {
     @FXML
     private void initialize() {
 
+        Medico medico = new Medico("med-111","Josue","med-111","Doctore");
+        GestorMedicos gestorMedicos = GestorMedicos.getInstancia();
+        gestorMedicos.agregarMedico(medico);
+
         // Ocultar inicialmente etiquetas de ayuda y mensaje
         lblAyudaId.setVisible(false);
         lblAyudaPassword.setVisible(false);
