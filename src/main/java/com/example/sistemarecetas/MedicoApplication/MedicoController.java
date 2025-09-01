@@ -47,7 +47,7 @@ public class MedicoController {
 
             PrescripcionController controller = loader.getController();
 
-            // Inyectar el gestor de pacientes
+            // Para poder manejar el gestor en el controller
             controller.setGestorPacientes(this.gestorPacientes);
 
             Stage stage = new Stage();
