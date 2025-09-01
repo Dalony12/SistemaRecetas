@@ -43,6 +43,7 @@ public class HistorialController {
         // =======================
         // Pacientes
         Paciente p1 = new Paciente("med-111", "Juan Pérez", 71978798, LocalDate.of(1995, 5, 21));
+        Paciente p2 = new Paciente("med-222", "Juliana Pérez", 97879487, LocalDate.of(2000, 5, 20));
 
         // Medicamentos
         Medicamento m1 = new Medicamento("met","Ibuprofeno", "duro", "dolor");
@@ -54,16 +55,20 @@ public class HistorialController {
 
         // Recetas
         Receta r1 = new Receta(p1);
+        Receta r2 = new Receta(p2);
 
         // 5. Agregar la prescripción a la receta
         r1.getMedicamentos().add(pr1);
         r1.getMedicamentos().add(pr2);
+        r2.getMedicamentos().add(pr1);
 
         // 6. Opcional: asignar fecha de retiro
         r1.setFechaRetiro(LocalDate.now().plusDays(5));
+        r2.setFechaRetiro(LocalDate.now().plusDays(7));
 
         // 7. Guardar la receta en el gestor
         gestorRecetas.agregarReceta(r1);
+        gestorRecetas.agregarReceta(r2);
 
         // Inicializar lista y tabla
         listaObservable = FXCollections.observableArrayList(gestorRecetas.getRecetas());

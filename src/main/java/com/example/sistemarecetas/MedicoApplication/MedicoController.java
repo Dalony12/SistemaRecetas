@@ -41,22 +41,5 @@ public class MedicoController {
 
     @FXML
     public void abrirPrescripcion(Event event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("PrescripcionTab.fxml"));
-            Parent root = loader.load();
-
-            PrescripcionController controller = loader.getController();
-
-            // Para poder manejar el gestor en el controller
-            controller.setGestorPacientes(this.gestorPacientes);
-
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Nueva Prescripción");
-            stage.show();
-
-        } catch (IOException e) {
-            // mostrar alerta??
-        }
     }
 }

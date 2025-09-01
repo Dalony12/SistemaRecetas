@@ -29,7 +29,8 @@ public class buscarPacienteController {
     @FXML
     private ComboBox<String> cmbFiltrarPacientePresc;
 
-    private GestorPacientes gestorPacientes;
+
+    private GestorPacientes gestorPacientes = GestorPacientes.getInstancia();
 
     @FXML
     public void initialize() {
@@ -39,10 +40,6 @@ public class buscarPacienteController {
         colFechaNacPaciente.setCellValueFactory(new PropertyValueFactory<>("fechaNacimiento"));
 
         tblPacientePresc.setItems(FXCollections.observableArrayList());
-    }
-
-    public void setGestorPacientes(GestorPacientes gestorPacientes) {
-        this.gestorPacientes = gestorPacientes;
     }
 
     @FXML

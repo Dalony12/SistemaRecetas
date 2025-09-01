@@ -4,15 +4,13 @@ import Model.Farmaceutico;
 import Gestores.GestorFarmaceuticos;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 public class TuCuentaControllerFarma {
     @FXML private TextField txtIDCambiarContraseña;
-    @FXML private TextField txtNuevaContraseña;
-    @FXML private TextField txtVerificarContraseña;
-    @FXML private Button btnEnviarContraseña;
-    @FXML private Button btnCancelarContraseña;
+    @FXML private PasswordField pwfNuevaContraseña;
+    @FXML private PasswordField pwfVerificarContraseña;
 
     private GestorFarmaceuticos gestorFarmaceutico = GestorFarmaceuticos.getInstancia();
 
@@ -20,8 +18,8 @@ public class TuCuentaControllerFarma {
     @FXML
     private void EnviarContraseñaNueva(){
         String id = txtIDCambiarContraseña.getText().trim();
-        String nueva = txtNuevaContraseña.getText().trim();
-        String verificar = txtVerificarContraseña.getText().trim();
+        String nueva = pwfNuevaContraseña.getText().trim();
+        String verificar = pwfVerificarContraseña.getText().trim();
 
         // Validación básica de campos vacíos
         if (id.isEmpty() || nueva.isEmpty() || verificar.isEmpty()) {
@@ -45,6 +43,7 @@ public class TuCuentaControllerFarma {
 
         // Actualizar la contraseña
         farma.setPassword(nueva);
+        System.out.println("Nueva contraseña guardada: " + farma.getPassword());
         mostrarAlerta("Éxito", "La contraseña ha sido actualizada correctamente.");
         limpiarCampos();
     }
@@ -60,8 +59,8 @@ public class TuCuentaControllerFarma {
     @FXML
     private void limpiarCampos() {
         txtIDCambiarContraseña.clear();
-        txtNuevaContraseña.clear();
-        txtVerificarContraseña.clear();
+        pwfNuevaContraseña.clear();
+        pwfVerificarContraseña.clear();
     }
 }
 

@@ -4,13 +4,13 @@ import Model.Medico;
 import Gestores.GestorMedicos;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 public class TuCuentaControllerMedico {
     @FXML private TextField txtIDCambiarContraseña;
-    @FXML private TextField txtNuevaContraseña;
-    @FXML private TextField txtVerificarContraseña;
+    @FXML private PasswordField pwfNuevaContraseña;
+    @FXML private  PasswordField pwfVerificarContraseña;
 
     private GestorMedicos gestorMedico = GestorMedicos.getInstancia();
 
@@ -18,8 +18,8 @@ public class TuCuentaControllerMedico {
     @FXML
     private void EnviarContraseñaNueva(){
         String id = txtIDCambiarContraseña.getText().trim();
-        String nueva = txtNuevaContraseña.getText().trim();
-        String verificar = txtVerificarContraseña.getText().trim();
+        String nueva = pwfNuevaContraseña.getText().trim();
+        String verificar = pwfVerificarContraseña.getText().trim();
 
         // Validación básica de campos vacíos
         if (id.isEmpty() || nueva.isEmpty() || verificar.isEmpty()) {
@@ -58,7 +58,7 @@ public class TuCuentaControllerMedico {
     @FXML
     private void limpiarCampos() {
         txtIDCambiarContraseña.clear();
-        txtNuevaContraseña.clear();
-        txtVerificarContraseña.clear();
+        pwfNuevaContraseña.clear();
+        pwfVerificarContraseña.clear();
     }
 }
