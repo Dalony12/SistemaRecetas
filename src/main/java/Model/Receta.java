@@ -9,16 +9,15 @@ public class Receta {
     private List<Prescripcion> medicamentos;
     private LocalDate fechaConfeccion;
     private LocalDate fechaRetiro;
-    private boolean confeccionada;
+    private int estado;
 
-    public Receta(Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro, boolean confeccionada) {
+    public Receta(Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro) {
         this.paciente = paciente;
         this.medicamentos = new ArrayList<>(medicamentos);
         this.fechaConfeccion = LocalDate.now();
         this.fechaRetiro = fechaRetiro;
-        this.confeccionada = confeccionada;
+        this.estado = 1;
     }
-
 
     public Paciente getPaciente() {
         return paciente;
@@ -52,11 +51,9 @@ public class Receta {
         this.fechaRetiro = fechaRetiro;
     }
 
-    public boolean isConfeccionada() {
-        return confeccionada;
-    }
+    public int getEstado() {return estado;}
 
-    public void setConfeccionada(boolean confeccionada) {
-        this.confeccionada = confeccionada;
+    public void setEstado(int estado) {
+        this.estado = estado;
     }
 }

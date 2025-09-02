@@ -1,6 +1,5 @@
 package com.example.sistemarecetas.adminApplication;
 
-
 import Gestores.GestorRecetas;
 import Model.Medicamento;
 import Model.Paciente;
