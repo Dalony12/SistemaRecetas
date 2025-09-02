@@ -2,10 +2,12 @@ package com.example.sistemarecetas.MedicoApplication;
 
 import Gestores.GestorMedicamentos;
 import Gestores.GestorPacientes;
+import Gestores.GestorRecetas;
 import Model.Medicamento;
 import Model.Paciente;
 import Model.Prescripcion;
 import Model.Receta;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,15 +27,15 @@ public class PrescripcionController {
     @FXML
     private Button btnGuardarReceta;
     @FXML
+    private Button btnEliminarMedicamento;
+    @FXML
     private DatePicker dtpFechaRetiroPres;
     @FXML
     private TextField txtNombrePacientePresc;
     @FXML
-    private TableView<Medicamento> tblMedicamentoPresc;
-    @FXML
     private TableView<Prescripcion> tblMedicamentoReceta;
     @FXML
-    private TableColumn<Prescripcion, Medicamento> colMedicamento;
+    private TableColumn<Prescripcion, String> colMedicamento;
     @FXML
     private TableColumn<Prescripcion, String> colPresentacion;
     @FXML
@@ -44,17 +46,35 @@ public class PrescripcionController {
     private TableColumn<Prescripcion, Integer> colDuracion;
 
     private GestorPacientes gestorPacientes = GestorPacientes.getInstancia();
+    private GestorMedicamentos gestorMedicamentos = GestorMedicamentos.getInstancia();
+    private GestorRecetas gestorRecetas = GestorRecetas.getInstancia();
 
     private List<Prescripcion> listaMedicamentos;
     private Receta receta = null;
     private Medicamento medicamento = null;
+    private Paciente paciente = null;
 
 
     @FXML
     public void initialize() {
 
-        colMedicamento.setCellValueFactory(new PropertyValueFactory<>("medicamento"));
-        colPresentacion.setCellValueFactory(new PropertyValueFactory<>("presentacion"));
+        // Crear medicamentos de prueba
+        Medicamento med1 = new Medicamento("MED001", "Paracetamol", "Tableta 500mg", "lola");
+        Medicamento med2 = new Medicamento("MED002", "Ibuprofeno", "Cápsula 200mg", "lola");
+        gestorMedicamentos.agregarMedicamento(med1);
+        gestorMedicamentos.agregarMedicamento(med2);
+
+        Paciente pa = new Paciente("123", "Rosalinda", 673884, LocalDate.of(1995, 5, 21));
+        gestorPacientes.agregarPaciente(pa);
+
+        colMedicamento.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getMedicamento().getNombre())
+        );
+
+        colPresentacion.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getMedicamento().getPresentacion())
+        );
+
         colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
         colIndicaciones.setCellValueFactory(new PropertyValueFactory<>("indicaciones"));
         colDuracion.setCellValueFactory(new PropertyValueFactory<>("duracionDias"));
@@ -62,6 +82,11 @@ public class PrescripcionController {
         tblMedicamentoReceta.setItems(FXCollections.observableArrayList());
 
         listaMedicamentos = new ArrayList<>();
+
+        tblMedicamentoReceta.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            btnEliminarMedicamento.setDisable(newSelection == null);
+        });
+
     }
 
     @FXML
@@ -90,7 +115,6 @@ public class PrescripcionController {
                 Medicamento medicamentoSeleccionado = controller.getMedicamento();
                 if (medicamentoSeleccionado != null) {
                     this.medicamento = medicamentoSeleccionado;
-                    tblMedicamentoPresc.getItems().add(medicamentoSeleccionado);
 
                     // Se debe de abrir despues de seleccionar el medicamento
                     abrirAsignacionDatos();
@@ -102,6 +126,31 @@ public class PrescripcionController {
             mostrarAlerta("Error", "No se pudo abrir la ventana de búsqueda: " + e.getMessage());
         }
     }
+
+    @FXML
+    private void abrirBuscarPaciente() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sistemarecetas/View/MedicoView/buscarPacienteTab.fxml"));
+            Parent root = loader.load();
+
+            buscarPacienteController controller = loader.getController();
+
+            Stage stage = crearVentanaModal(root, "Buscar Paciente");
+
+            stage.setOnHiding(event -> {
+                Paciente seleccionado = controller.getPacienteSeleccionado();
+                if (seleccionado != null) {
+                    this.paciente = seleccionado;
+                    txtNombrePacientePresc.setText(seleccionado.getNombre());
+                }
+            });
+
+            stage.showAndWait();
+        } catch (IOException e) {
+            mostrarAlerta("Error", "No se pudo abrir la ventana de búsqueda de pacientes.");
+        }
+    }
+
 
     @FXML
     private void abrirAsignacionDatos() {
@@ -150,41 +199,55 @@ public class PrescripcionController {
                 return;
             }
 
-            String nombreCompletoPaciente = txtNombrePacientePresc.getText().trim();
             LocalDate fechaRetiro = dtpFechaRetiroPres.getValue();
 
-            // Verificamos que el formulario este completo
-            if (nombreCompletoPaciente.isEmpty() || fechaRetiro == null) {
-                mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
+            if (paciente == null || fechaRetiro == null) {
+                mostrarAlerta("Campos incompletos", "Debe seleccionar un paciente y una fecha de retiro.");
                 return;
             }
 
             if (listaMedicamentos.isEmpty()) {
-                mostrarAlerta("Receta vacia", "Debe seleccionar un medicamento");
-                return;
-            }
-
-            Paciente paciente = gestorPacientes.buscarPorNombre(nombreCompletoPaciente);
-
-            if (paciente == null) {
-                mostrarAlerta("Paciente no encontrado", "No se encontró ningún paciente con el nombre " + nombreCompletoPaciente);
+                mostrarAlerta("Receta vacía", "Debe agregar al menos un medicamento.");
                 return;
             }
 
             if (receta == null) {
                 receta = new Receta(paciente, listaMedicamentos, fechaRetiro, true);
-            }
-            else {
+                gestorRecetas.agregarReceta(receta);
+            } else {
                 receta.setPaciente(paciente);
                 receta.setMedicamentos(listaMedicamentos);
                 receta.setFechaRetiro(fechaRetiro);
                 receta.setConfeccionada(true);
+                gestorRecetas.agregarReceta(receta);
             }
+
+            mostrarAlerta("Receta guardada", "La receta fue registrada correctamente.");
+            limpiarPrescripcion(); // Opcional: limpiar campos después de guardar
+
         }
         catch (Exception e) {
             mostrarAlerta("Error al guardar los datos", e.getMessage());
         }
     }
+
+    @FXML
+    private void eliminarUnMedicamento() {
+        Prescripcion seleccionada = tblMedicamentoReceta.getSelectionModel().getSelectedItem();
+
+        if (seleccionada == null) {
+            mostrarAlerta("Sin selección", "Debe seleccionar un medicamento para eliminar.");
+            return;
+        }
+
+        tblMedicamentoReceta.getItems().remove(seleccionada);
+        listaMedicamentos.remove(seleccionada);
+
+        //Desactivar el botón después de eliminar
+        btnEliminarMedicamento.setDisable(true);
+    }
+
+
 
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);

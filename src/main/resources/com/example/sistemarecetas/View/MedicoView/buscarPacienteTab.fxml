@@ -20,7 +20,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <ComboBox id="cmbFiltrarPresc" fx:id="cmbFiltrarPacientePresc" layoutX="93.0" layoutY="13.0" onAction="#inicializarFiltrado" prefHeight="25.0" prefWidth="125.0" promptText="Seleccionar" />
+            <ComboBox id="cmbFiltrarPresc" fx:id="cmbFiltrarPacientePresc" layoutX="93.0" layoutY="13.0" prefHeight="25.0" prefWidth="125.0" promptText="Seleccionar" />
             <TextField fx:id="txtBuscarPacientePresc" layoutX="234.0" layoutY="13.0" prefHeight="25.0" prefWidth="289.0">
                <cursor>
                   <Cursor fx:constant="TEXT" />
@@ -34,8 +34,8 @@
                   <TableColumn fx:id="colFechaNacPaciente" prefWidth="147.0" text="Fecha de Nacimiento" />
               </columns>
             </TableView>
-            <Button id="btnAceptarPaciente" fx:id="btnAceptarPaciente" layoutX="362.0" layoutY="182.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="76.0" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Aceptar" />
-            <Button id="btnCancelarPaciente" fx:id="btnCancelarPaciente" layoutX="446.0" layoutY="182.0" mnemonicParsing="false" style="-fx-background-color: #858383;" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Cancelar" />
+            <Button id="btnAceptarPaciente" fx:id="btnAceptarPaciente" layoutX="362.0" layoutY="182.0" mnemonicParsing="false" onAction="#guardarPaciente" prefHeight="33.0" prefWidth="76.0" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Aceptar" />
+            <Button id="btnCancelarPaciente" fx:id="btnCancelarPaciente" layoutX="446.0" layoutY="182.0" mnemonicParsing="false" onAction="#cancelarBusqueda" style="-fx-background-color: #858383;" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Cancelar" />
          </children>
       </Pane>
    </children>
