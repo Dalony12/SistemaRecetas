@@ -212,13 +212,12 @@ public class PrescripcionController {
             }
 
             if (receta == null) {
-                receta = new Receta(paciente, listaMedicamentos, fechaRetiro, true);
+                receta = new Receta(paciente, listaMedicamentos, fechaRetiro);
                 gestorRecetas.agregarReceta(receta);
             } else {
                 receta.setPaciente(paciente);
                 receta.setMedicamentos(listaMedicamentos);
                 receta.setFechaRetiro(fechaRetiro);
-                receta.setConfeccionada(true);
                 gestorRecetas.agregarReceta(receta);
             }
 

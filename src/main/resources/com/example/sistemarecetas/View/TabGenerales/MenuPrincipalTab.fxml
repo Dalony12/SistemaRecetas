@@ -70,7 +70,7 @@
 
         <VBox alignment="BOTTOM_CENTER" layoutX="-3.0" layoutY="-12.0" prefHeight="80.0" prefWidth="606.0" styleClass="card">
             <children>
-                <Label alignment="CENTER" prefHeight="44.0" prefWidth="495.0" text="¡Bienvenido Administrador!" textAlignment="CENTER" textFill="WHITE">
+                <Label alignment="CENTER" prefHeight="44.0" prefWidth="495.0" text="¡Bienvendo!" textAlignment="CENTER" textFill="WHITE">
                     <font>
                         <Font name="System Bold" size="38.0" />
                     </font>

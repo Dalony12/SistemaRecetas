@@ -12,7 +12,7 @@
             <tabs>
                 <Tab fx:id="tabMenuPrincipal" onSelectionChanged="#abrirMenuPrincipal" text="Menu Principal">
                     <content>
-                        <fx:include fx:id="includeMenuPrincipal" source="MenuPrincipaltabMedico.fxml" />
+                        <fx:include fx:id="includeMenuPrincipal" source="../TabGenerales/MenuPrincipalTab.fxml" />
                     </content>
                 </Tab>
 
@@ -24,19 +24,19 @@
 
                 <Tab fx:id="tabDashboard" onSelectionChanged="#abrirDashboard" text="Dashboard">
                     <content>
-                        <fx:include fx:id="includeDashboard" source="DashboardTab.fxml" />
+                        <fx:include fx:id="includeDashboard" source="../TabGenerales/DashboardTab.fxml" />
                     </content>
                 </Tab>
 
                 <Tab fx:id="tabHistorial" onSelectionChanged="#abrirHistorial" text="Historial">
                     <content>
-                        <fx:include fx:id="includeHistorial" source="HistorialTab.fxml" />
+                        <fx:include fx:id="includeHistorial" source="../TabGenerales/HistorialTab.fxml" />
                     </content>
                 </Tab>
 
                 <Tab fx:id="tabTuCuenta" onSelectionChanged="#abrirTuCuenta" text="Tu Cuenta">
                     <content>
-                        <fx:include fx:id="includeTuCuenta" source="TuCuentaTab.fxml" />
+                        <fx:include fx:id="includeTuCuenta" source="../TabGenerales/TuCuentaTab.fxml" />
                     </content>
                 </Tab>
             </tabs>
