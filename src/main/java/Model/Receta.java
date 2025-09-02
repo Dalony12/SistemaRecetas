@@ -10,6 +10,7 @@ public class Receta {
     private LocalDate fechaConfeccion;
     private LocalDate fechaRetiro;
     private boolean confeccionada;
+    private String estado;
 
     public Receta(Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro, boolean confeccionada) {
         this.paciente = paciente;
@@ -17,6 +18,7 @@ public class Receta {
         this.fechaConfeccion = LocalDate.now();
         this.fechaRetiro = fechaRetiro;
         this.confeccionada = confeccionada;
+        this.estado = "En proceso";
     }
 
 
@@ -58,5 +60,12 @@ public class Receta {
 
     public void setConfeccionada(boolean confeccionada) {
         this.confeccionada = confeccionada;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

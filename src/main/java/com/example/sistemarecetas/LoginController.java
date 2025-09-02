@@ -36,6 +36,10 @@ public class LoginController {
         GestorMedicos gestorMedicos = GestorMedicos.getInstancia();
         gestorMedicos.agregarMedico(medico);
 
+        Farmaceutico farmaceutico = new Farmaceutico("far-111","Roberto","far-111");
+        GestorFarmaceuticos gestorFarmaceuticos = GestorFarmaceuticos.getInstancia();
+        gestorFarmaceuticos.agregarFarmaceuta(farmaceutico);
+
         // Ocultar inicialmente etiquetas de ayuda y mensaje
         lblAyudaId.setVisible(false);
         lblAyudaPassword.setVisible(false);
