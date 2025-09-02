@@ -23,7 +23,7 @@
                <children>
                   <Pane prefHeight="95.0" prefWidth="606.0" styleClass="card2" stylesheets="@../../styles/Styles.css">
                      <children>
-                        <Button id="btnBuscarPaciente" fx:id="btnBuscarPaciente" layoutX="54.0" layoutY="31.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="231.0" style="-fx-background-color: #00008a;" styleClass="button-primary" text="Buscar Paciente" />
+                        <Button id="btnBuscarPaciente" fx:id="btnBuscarPaciente" layoutX="54.0" layoutY="31.0" mnemonicParsing="false" onAction="#abrirBuscarPaciente" prefHeight="33.0" prefWidth="231.0" style="-fx-background-color: #00008a;" styleClass="button-primary" text="Buscar Paciente" />
                         <Button id="btnAgregarMedicamento" fx:id="btnAgregarMedicamento" layoutX="331.0" layoutY="31.0" mnemonicParsing="false" onAction="#abrirBuscarMedicamento" prefHeight="33.0" prefWidth="231.0" style="-fx-background-color: #00008a;" styleClass="button-primary" text="Agregar Medicamento" />
                         <Label id="lblInstruccionesPresPaciente" layoutX="68.0" layoutY="69.0" text="Presione para ingresar al paciente de la receta">
                            <font>
@@ -61,11 +61,11 @@
                         </GridPane>
                         <TableView id="tblMedicamentoReceta" fx:id="tblMedicamentoReceta" layoutX="57.0" layoutY="133.0" prefHeight="92.0" prefWidth="506.0">
                           <columns>
-                            <TableColumn fx:id="colMedicamento" prefWidth="127.0" text="Medicamento" />
-                            <TableColumn fx:id="colPresentacion" prefWidth="92.0" text="Presentación" />
-                              <TableColumn fx:id="colCantidad" minWidth="6.0" prefWidth="78.0" text="Cantidad" />
-                              <TableColumn fx:id="colIndicaciones" minWidth="4.0" prefWidth="131.0" text="Indicaciones" />
-                              <TableColumn fx:id="colDuracion" minWidth="0.0" prefWidth="77.0" text="Duración" />
+                            <TableColumn fx:id="colMedicamento" prefWidth="117.60004425048828" text="Medicamento" />
+                            <TableColumn fx:id="colPresentacion" prefWidth="101.5999755859375" text="Presentación" />
+                              <TableColumn fx:id="colCantidad" minWidth="6.0" prefWidth="65.5999755859375" text="Cantidad" />
+                              <TableColumn fx:id="colIndicaciones" minWidth="4.0" prefWidth="154.4000244140625" text="Indicaciones" />
+                              <TableColumn fx:id="colDuracion" minWidth="0.0" prefWidth="67.99996948242188" text="Duración" />
                           </columns>
                         </TableView>
                         <Label layoutX="235.0" layoutY="17.0" style="-fx-font-size: 20;" styleClass="title" stylesheets="@../../styles/Styles.css" text="Receta Médica" />
@@ -73,22 +73,17 @@
                   </Pane>
                   <Pane prefHeight="62.0" prefWidth="606.0" stylesheets="@../../styles/Styles.css">
                      <children>
-                        <Button fx:id="btnGuardarReceta" layoutX="60.0" layoutY="11.0" lineSpacing="10.0" onAction="#guardarPrescripcion" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Guardar">
+                        <Button fx:id="btnGuardarReceta" layoutX="52.0" layoutY="11.0" lineSpacing="10.0" onAction="#guardarPrescripcion" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Guardar">
                            <font>
                               <Font size="11.0" />
                            </font>
                         </Button>
-                        <Button fx:id="btnLimpiarReceta" layoutX="182.0" layoutY="11.0" lineSpacing="10.0" onAction="#limpiarPrescripcion" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Limpiar">
+                        <Button fx:id="btnLimpiarReceta" layoutX="180.0" layoutY="11.0" lineSpacing="10.0" onAction="#limpiarPrescripcion" prefHeight="32.0" prefWidth="212.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Eliminar Toda la Receta Actual">
                            <font>
                               <Font size="11.0" />
                            </font>
                         </Button>
-                        <Button fx:id="btnEliminarMedicamento" disable="true" layoutX="300.0" layoutY="11.0" lineSpacing="10.0" prefHeight="32.0" prefWidth="147.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Eliminar Medicamento">
-                           <font>
-                              <Font size="11.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="btnDetallesReceta" disable="true" layoutX="477.0" layoutY="11.0" lineSpacing="10.0" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Detalles">
+                        <Button fx:id="btnEliminarMedicamento" disable="true" layoutX="436.0" layoutY="11.0" lineSpacing="10.0" onAction="#eliminarUnMedicamento" prefHeight="32.0" prefWidth="147.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Eliminar Medicamento">
                            <font>
                               <Font size="11.0" />
                            </font>

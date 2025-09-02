@@ -14,6 +14,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+
+
 public class LoginController {
 
     @FXML private TextField txtId;
@@ -30,7 +32,6 @@ public class LoginController {
 
     @FXML
     private void initialize() {
-
         Medico medico = new Medico("med-111","Josue","med-111","Doctore");
         GestorMedicos gestorMedicos = GestorMedicos.getInstancia();
         gestorMedicos.agregarMedico(medico);

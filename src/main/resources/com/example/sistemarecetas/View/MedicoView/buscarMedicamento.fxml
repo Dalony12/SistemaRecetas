@@ -26,15 +26,15 @@
                         <Cursor fx:constant="TEXT" />
                     </cursor>
                 </TextField>
-                <TableView id="tblPacientePresc" fx:id="tblMedicamentoPresc" layoutX="13.0" layoutY="52.0" prefHeight="116.0" prefWidth="509.0">
+                <TableView fx:id="tblMedicamentoPresc" layoutX="13.0" layoutY="52.0" prefHeight="116.0" prefWidth="509.0">
                     <columns>
-                        <TableColumn prefWidth="118.0" text="Código" />
-                        <TableColumn prefWidth="214.0" text="Nombre" />
-                        <TableColumn prefWidth="176.0" text="Presentación" />
+                        <TableColumn fx:id="colCodigo" prefWidth="118.0" text="Código" />
+                        <TableColumn fx:id="colNombre" prefWidth="214.0" text="Nombre" />
+                        <TableColumn fx:id="colPresentacion" prefWidth="176.0" text="Presentación" />
                     </columns>
                 </TableView>
                 <Button id="btnAceptarPaciente" fx:id="btnAceptarMedicamento" layoutX="362.0" layoutY="182.0" mnemonicParsing="false" onAction="#guardarMedicamento" prefHeight="33.0" prefWidth="76.0" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Aceptar" />
-                <Button id="btnCancelarPaciente" fx:id="btnCancelarMedicamento" layoutX="446.0" layoutY="182.0" mnemonicParsing="false" style="-fx-background-color: #858383;" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Cancelar" />
+                <Button fx:id="btnCancelarMedicamento" layoutX="446.0" layoutY="182.0" mnemonicParsing="false" onAction="#cancelarBusqueda" style="-fx-background-color: #858383;" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Cancelar" />
             </children>
         </Pane>
     </children>
