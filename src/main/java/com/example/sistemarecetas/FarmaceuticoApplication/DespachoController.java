@@ -107,7 +107,7 @@ public class DespachoController {
         lista.add(prescripcion);
         lista.add(prescripcion2);
         tblBuscarPacientesDespacho.setItems(FXCollections.observableArrayList(
-                new Receta(new Paciente("1", "Juan", 12, LocalDate.of(1995,2,21)), lista , LocalDate.of(2025, 9, 2), true)
+                new Receta(new Paciente("1", "Juan", 12, LocalDate.of(1995,2,21)), lista , LocalDate.of(2025, 9, 2))
         ));
     }
 }
