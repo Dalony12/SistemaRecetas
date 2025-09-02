@@ -205,6 +205,7 @@ public class MedicosController {
     // ---------------- Animación ----------------
     public void mostrarListaConAnimacion() {
         if (vBoxPortadaMedicos.isVisible()) {
+            // Pausa de 1 segundo antes de iniciar la animación
             javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.seconds(1));
             pause.setOnFinished(event -> {
                 TranslateTransition transition = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaMedicos);

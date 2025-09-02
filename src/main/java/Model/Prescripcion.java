@@ -7,14 +7,11 @@ public class Prescripcion {
     private int cantidad;
     private String indicaciones;
     private int duracionDias;
-    private LocalDate fechaActual;
-    private LocalDate fechaRetiro;
 
     public Prescripcion(Medicamento medicamento, int cantidad, String indicaciones, int duracionDias) {
         this.medicamento = medicamento;
         this.cantidad = cantidad;
         this.indicaciones = indicaciones;
-        this.fechaActual = LocalDate.now();
         this.duracionDias = duracionDias;
     }
 
@@ -48,22 +45,6 @@ public class Prescripcion {
 
     public void setIndicaciones(String indicaciones) {
         this.indicaciones = indicaciones;
-    }
-
-    public LocalDate getFechaRetiro() {
-        return fechaRetiro;
-    }
-
-    public void setFechaRetiro() {
-        this.fechaRetiro = getFechaActual().plusDays(duracionDias);
-    }
-
-    public LocalDate getFechaActual() {
-        return fechaActual;
-    }
-
-    public void setFechaActual(LocalDate fechaActual) {
-        this.fechaActual = fechaActual;
     }
 }
 
