@@ -2,38 +2,38 @@ package com.example.sistemarecetas.MedicoApplication;
 
 import Model.Medico;
 import Gestores.GestorMedicos;
+import domain.UsuarioActual;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 
 public class TuCuentaControllerMedico {
-    @FXML private TextField txtIDCambiarContraseña;
+
     @FXML private PasswordField pwfNuevaContraseña;
-    @FXML private  PasswordField pwfVerificarContraseña;
+    @FXML private PasswordField pwfVerificarContraseña;
 
     private GestorMedicos gestorMedico = GestorMedicos.getInstancia();
 
-
     @FXML
-    private void EnviarContraseñaNueva(){
-        String id = txtIDCambiarContraseña.getText().trim();
+    private void EnviarContraseñaNueva() {
         String nueva = pwfNuevaContraseña.getText().trim();
         String verificar = pwfVerificarContraseña.getText().trim();
 
         // Validación básica de campos vacíos
-        if (id.isEmpty() || nueva.isEmpty() || verificar.isEmpty()) {
+        if (nueva.isEmpty() || verificar.isEmpty()) {
             mostrarAlerta("Campos vacíos", "Por favor, completar todos los campos.");
             return;
         }
 
-        Medico medico = gestorMedico.buscarPorId(id);
+        // Obtener ID del usuario activo
+        String idActual = UsuarioActual.getInstancia().getId();
+
+        Medico medico = gestorMedico.buscarPorId(idActual);
 
         if (medico == null) {
-            mostrarAlerta("ID inválido", "No se encontró ningún médico con ese ID.");
+            mostrarAlerta("Error", "No se encontró la cuenta del usuario activo.");
             return;
         }
-
 
         // Verificar que las contraseñas coincidan
         if (!nueva.equals(verificar)) {
@@ -57,7 +57,6 @@ public class TuCuentaControllerMedico {
 
     @FXML
     private void limpiarCampos() {
-        txtIDCambiarContraseña.clear();
         pwfNuevaContraseña.clear();
         pwfVerificarContraseña.clear();
     }
