@@ -4,6 +4,7 @@ import Model.Farmaceutico;
 import Model.Medico;
 import Gestores.GestorFarmaceuticos;
 import Gestores.GestorMedicos;
+import domain.UsuarioActual;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -14,8 +15,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-
-
 public class LoginController {
 
     @FXML private TextField txtId;
@@ -23,7 +22,6 @@ public class LoginController {
     @FXML private Button btnIniciarSesion;
     @FXML private ProgressIndicator progressIndicator;
     @FXML private RadioButton rbtAyuda;
-
 
     @FXML private Label lblAyudaId;
     @FXML private Label lblAyudaPassword;
@@ -51,7 +49,6 @@ public class LoginController {
         // Inicialmente deshabilitar botón
         btnIniciarSesion.setDisable(true);
         lblMensajeCampos.setVisible(true);
-
 
         // Listener para habilitar/deshabilitar botón según campos llenos
         ChangeListener<String> textListener = (obs, oldText, newText) -> {
@@ -87,11 +84,15 @@ public class LoginController {
                 txtContrasenaLogin.setDisable(false);
                 rbtAyuda.setDisable(false);
 
-
                 boolean encontrado = false;
 
                 // ----- ADMIN -----
                 if (id.equals("admin") && password.equals("1234")) {
+                    UsuarioActual user = UsuarioActual.getInstancia();
+                    user.setId("admin");
+                    user.setNombre("Administrador");
+                    user.setRol("Admin");
+
                     try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("View/adminView/admin-view.fxml"));
                         Parent root = loader.load();
@@ -99,11 +100,7 @@ public class LoginController {
                         stage.setScene(new Scene(root));
                         stage.setTitle("Pantalla de Inicio");
                     } catch (Exception e) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Error de sistema");
-                        alert.setHeaderText(null);
-                        alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
-                        alert.showAndWait();
+                        mostrarError("No fue posible iniciar sesión debido a un error: " + e.getMessage());
                         txtId.clear();
                         txtContrasenaLogin.clear();
                         lblMensajeCampos.setVisible(true);
@@ -114,6 +111,11 @@ public class LoginController {
                 // ----- MÉDICO -----
                 for (Medico m : GestorMedicos.getInstancia().getMedicos()) {
                     if (m.getId().equals(id) && m.getPassword().equals(password)) {
+                        UsuarioActual user = UsuarioActual.getInstancia();
+                        user.setId(m.getId());
+                        user.setNombre(m.getNombre());
+                        user.setRol("Medico");
+
                         try {
                             FXMLLoader loader = new FXMLLoader(getClass().getResource("View/MedicoView/Medico-view.fxml"));
                             Parent root = loader.load();
@@ -121,11 +123,7 @@ public class LoginController {
                             stage.setScene(new Scene(root));
                             stage.setTitle("Pantalla de Inicio");
                         } catch (Exception e) {
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setTitle("Error de sistema");
-                            alert.setHeaderText(null);
-                            alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
-                            alert.showAndWait();
+                            mostrarError("No fue posible iniciar sesión debido a un error: " + e.getMessage());
                         }
                         encontrado = true;
                         break;
@@ -133,40 +131,52 @@ public class LoginController {
                 }
 
                 // ----- FARMACEUTA -----
-                    for (Farmaceutico f : GestorFarmaceuticos.getInstancia().getFarmaceuticos()) {
-                        if (f.getId().equals(id) && f.getPassword().equals(password)) {
-                            try {
-                                FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farmaView/farma-view.fxml"));
-                                Parent root = loader.load();
-                                Stage stage = (Stage) txtId.getScene().getWindow();
-                                stage.setScene(new Scene(root));
-                                stage.setTitle("Pantalla de Inicio");
-                            } catch (Exception e) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setTitle("Error de sistema");
-                                alert.setHeaderText(null);
-                                alert.setContentText("No fue posible iniciar sesión debido a un error: " + e.getMessage());
-                                System.out.println(e.getMessage());
-                                alert.showAndWait();
-                            }
-                            encontrado = true;
-                            break;
+                for (Farmaceutico f : GestorFarmaceuticos.getInstancia().getFarmaceuticos()) {
+                    if (f.getId().equals(id) && f.getPassword().equals(password)) {
+                        UsuarioActual user = UsuarioActual.getInstancia();
+                        user.setId(f.getId());
+                        user.setNombre(f.getNombre());
+                        user.setRol("Farmaceutico");
+
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farmaView/farma-view.fxml"));
+                            Parent root = loader.load();
+                            Stage stage = (Stage) txtId.getScene().getWindow();
+                            stage.setScene(new Scene(root));
+                            stage.setTitle("Pantalla de Inicio");
+                        } catch (Exception e) {
+                            mostrarError("No fue posible iniciar sesión debido a un error: " + e.getMessage());
                         }
+                        encontrado = true;
+                        break;
                     }
+                }
 
                 // ----- NO ENCONTRADO -----
                 if (!encontrado) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Autenticación");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Usuario o contraseña incorrectos.");
-                    alert.showAndWait();
+                    mostrarInfo("Usuario o contraseña incorrectos.");
                     txtId.clear();
                     txtContrasenaLogin.clear();
                     lblMensajeCampos.setVisible(true);
                 }
             });
         }).start();
+    }
+
+    private void mostrarError(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error de sistema");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void mostrarInfo(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Autenticación");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 
     @FXML
@@ -176,5 +186,4 @@ public class LoginController {
         lblAyudaPassword.setVisible(mostrarAyuda);
         lblAyudaSoporte.setVisible(mostrarAyuda);
     }
-
 }

@@ -2,6 +2,8 @@ package Gestores;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import Model.Medicamento;
 import Model.Receta;
 import Model.Prescripcion;
 
@@ -73,4 +75,17 @@ public class GestorRecetas {
         }
     }
 
+    public boolean actualizarEstadoReceta(Receta receta, String nuevoEstado) {
+        GestorMedicamentos gestorMeds = GestorMedicamentos.getInstancia();
+
+        for (Prescripcion pres : receta.getMedicamentos()) {
+            Medicamento m = gestorMeds.buscarPorCodigo(pres.getMedicamento().getCodigo());
+            if (m == null) {
+                return false; // fallo validación
+            }
+        }
+
+        receta.setEstado(nuevoEstado);
+        return true;
+    }
 }

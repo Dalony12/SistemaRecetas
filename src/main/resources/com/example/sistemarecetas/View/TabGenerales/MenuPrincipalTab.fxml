@@ -20,7 +20,7 @@
                                         <Image url="@../../Images/pregunta.png" />
                                     </image>
                                 </ImageView>
-                                <Label prefHeight="73.0" prefWidth="231.0" styleClass="title" text="Dudas Frecuentes" />
+                                <Label prefHeight="91.0" prefWidth="231.0" styleClass="title" text="Dudas Frecuentes" />
                             </children>
                         </HBox>
 
@@ -42,17 +42,16 @@
                             </font>
                         </Label>
 
-                        <Label fx:id="lblComoCerrarSesion" contentDisplay="CENTER" onMouseClicked="#clickComoCerrarSesion" styleClass="column-header-background" text="   + ¿Cómo cerrar sesión?" textFill="#1c9797">
+                        <Label fx:id="lblComoCerrarSesion" contentDisplay="CENTER" onMouseClicked="#clickComoCerrarSesion" styleClass="column-header-background" text="   + ¿Cómo contactar a soporte técnico?" textFill="#1c9797">
                             <font>
                                 <Font size="14.0" />
                             </font>
                         </Label>
-
-                        <Label fx:id="lblNoEncuentroMiDuda" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#clickNoEncuentroMiDuda" prefHeight="67.0" prefWidth="324.0" styleClass="column-header-background" text="No encuentro mi duda" underline="true">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Label>
+                  <HBox alignment="CENTER" prefHeight="72.0" prefWidth="320.0">
+                     <children>
+                        <Button fx:id="btnCerrarSesion" mnemonicParsing="false" onAction="#clickCerrarSesion" prefHeight="28.0" prefWidth="166.0" style="-fx-font-size: 20;" styleClass="button-primary" text="Cerrar Sesión" />
+                     </children>
+                  </HBox>
                     </children>
                 </VBox>
 

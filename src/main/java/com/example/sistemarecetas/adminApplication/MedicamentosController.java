@@ -35,7 +35,7 @@ public class MedicamentosController {
     @FXML private TextField txtCodigoMedicamento;
     @FXML private TextField txtNombreMedicamento;
     @FXML private TextField txtPresentacionMedicamento;
-    @FXML private TextField txtDescripcionMedicamento;
+    @FXML private TextArea txtDescripcionMedicamento;
 
     // Lista observable + gestor
     private ObservableList<Medicamento> listaObservable;
