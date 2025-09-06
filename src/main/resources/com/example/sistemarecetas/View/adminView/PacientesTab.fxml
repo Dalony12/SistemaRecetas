@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane prefHeight="400" prefWidth="600" stylesheets="@../../styles/Styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.adminApplication.PacientesController">
+<StackPane prefHeight="400" prefWidth="600" stylesheets="@../../styles/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.adminApplication.PacientesController">
 
     <!-- TableView: inicialmente detrás de la tarjeta, tamaño similar a la tarjeta -->
     <TableView fx:id="tablePacientes" fixedCellSize="24" prefHeight="400" prefWidth="150.0" visible="true">

@@ -10,6 +10,7 @@ public class GestorMedicos {
 
     private GestorMedicos() {
         medicos = new ArrayList<>();
+        agregarDatosPrueba();
     }
 
     public static GestorMedicos getInstancia() {
@@ -24,13 +25,13 @@ public class GestorMedicos {
         medicos.add(m);
     }
 
-    public void consultarTodosMedicos() {
-        if (medicos.isEmpty()) {
-            return;
+    public boolean actualizarPassword(String id, String nuevaClave) {
+        Medico m = buscarPorId(id);
+        if (m != null) {
+            m.setPassword(nuevaClave);
+            return true;
         }
-        for (Medico m : medicos) {
-            System.out.println(m);
-        }
+        return false;
     }
 
     public Medico buscarPorId(String id) {
@@ -65,4 +66,12 @@ public class GestorMedicos {
     public void eliminarMedico(Medico m) {
         medicos.remove(m);
     }
+
+    public void agregarDatosPrueba() {
+        medicos.add(new Medico("med-111", "Dr. Juan Perez", "med-111", "Medico General"));
+        medicos.add(new Medico("med-222", "Dra. Maria Gomez", "med-222", "Pediatra"));
+        medicos.add(new Medico("med-333", "Dr. Carlos Ruiz", "med-333", "Cardiologo"));
+    }
+
 }
+

@@ -4,6 +4,7 @@ import Model.Farmaceutico;
 import Model.Medico;
 import Gestores.GestorFarmaceuticos;
 import Gestores.GestorMedicos;
+import Model.Usuario;
 import domain.UsuarioActual;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -30,14 +31,6 @@ public class LoginController {
 
     @FXML
     private void initialize() {
-        Medico medico = new Medico("med-111","Josue","med-111","Doctore");
-        GestorMedicos gestorMedicos = GestorMedicos.getInstancia();
-        gestorMedicos.agregarMedico(medico);
-
-        Farmaceutico farmaceutico = new Farmaceutico("far-111","Roberto","far-111");
-        GestorFarmaceuticos gestorFarmaceuticos = GestorFarmaceuticos.getInstancia();
-        gestorFarmaceuticos.agregarFarmaceuta(farmaceutico);
-
         // Ocultar inicialmente etiquetas de ayuda y mensaje
         lblAyudaId.setVisible(false);
         lblAyudaPassword.setVisible(false);
@@ -45,6 +38,9 @@ public class LoginController {
 
         Tooltip tooltip = new Tooltip("Debe llenar los campos antes de iniciar sesión.");
         Tooltip.install(btnIniciarSesion, tooltip);
+
+        // Se reinicia el usuario actual al iniciar la aplicación
+        UsuarioActual.getInstancia().cerrarSesion();
 
         // Inicialmente deshabilitar botón
         btnIniciarSesion.setDisable(true);
@@ -86,81 +82,70 @@ public class LoginController {
 
                 boolean encontrado = false;
 
-                // ----- ADMIN -----
-                if (id.equals("admin") && password.equals("1234")) {
-                    UsuarioActual user = UsuarioActual.getInstancia();
-                    user.setId("admin");
-                    user.setNombre("Administrador");
-                    user.setRol("Admin");
+                try {
+                    // ----- ADMIN -----
+                    if (id.equals("admin") && password.equals("1234")) {
+                        // Creamos un Usuario "ficticio" para admin
+                        Usuario admin = new Usuario(id, "Administrador", password) {
+                            @Override
+                            public void mostrarInfo() {
+                                System.out.println("Usuario Administrador");
+                            }
+                        };
 
-                    try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("View/adminView/admin-view.fxml"));
-                        Parent root = loader.load();
-                        Stage stage = (Stage) txtId.getScene().getWindow();
-                        stage.setScene(new Scene(root));
-                        stage.setTitle("Pantalla de Inicio");
-                    } catch (Exception e) {
-                        mostrarError("No fue posible iniciar sesión debido a un error: " + e.getMessage());
+                        UsuarioActual.getInstancia().setUsuario(admin, "Admin");
+                        cargarVista("View/adminView/admin-view.fxml", "Pantalla de Inicio");
+                        encontrado = true;
+                    }
+                    // ----- MÉDICO -----
+                    if (!encontrado) {
+                        for (Medico m : GestorMedicos.getInstancia().getMedicos()) {
+                            if (m.getId().equals(id) && m.getPassword().equals(password)) {
+                                UsuarioActual.getInstancia().setUsuario(m, "Medico");
+                                cargarVista("View/MedicoView/Medico-view.fxml", "Pantalla de Inicio");
+                                encontrado = true;
+                                break;
+                            }
+                        }
+                    }
+                    // ----- FARMACEUTA -----
+                    if (!encontrado) {
+                        for (Farmaceutico f : GestorFarmaceuticos.getInstancia().getFarmaceuticos()) {
+                            if (f.getId().equals(id) && f.getPassword().equals(password)) {
+                                UsuarioActual.getInstancia().setUsuario(f, "Farmaceutico");
+                                cargarVista("View/farmaView/farma-view.fxml", "Pantalla de Inicio");
+                                encontrado = true;
+                                break;
+                            }
+                        }
+                    }
+
+
+                    // ----- NO ENCONTRADO -----
+                    if (!encontrado) {
+                        mostrarInfo("Usuario o contraseña incorrectos.");
                         txtId.clear();
                         txtContrasenaLogin.clear();
                         lblMensajeCampos.setVisible(true);
                     }
-                    encontrado = true;
-                }
 
-                // ----- MÉDICO -----
-                for (Medico m : GestorMedicos.getInstancia().getMedicos()) {
-                    if (m.getId().equals(id) && m.getPassword().equals(password)) {
-                        UsuarioActual user = UsuarioActual.getInstancia();
-                        user.setId(m.getId());
-                        user.setNombre(m.getNombre());
-                        user.setRol("Medico");
-
-                        try {
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("View/MedicoView/Medico-view.fxml"));
-                            Parent root = loader.load();
-                            Stage stage = (Stage) txtId.getScene().getWindow();
-                            stage.setScene(new Scene(root));
-                            stage.setTitle("Pantalla de Inicio");
-                        } catch (Exception e) {
-                            mostrarError("No fue posible iniciar sesión debido a un error: " + e.getMessage());
-                        }
-                        encontrado = true;
-                        break;
-                    }
-                }
-
-                // ----- FARMACEUTA -----
-                for (Farmaceutico f : GestorFarmaceuticos.getInstancia().getFarmaceuticos()) {
-                    if (f.getId().equals(id) && f.getPassword().equals(password)) {
-                        UsuarioActual user = UsuarioActual.getInstancia();
-                        user.setId(f.getId());
-                        user.setNombre(f.getNombre());
-                        user.setRol("Farmaceutico");
-
-                        try {
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("View/farmaView/farma-view.fxml"));
-                            Parent root = loader.load();
-                            Stage stage = (Stage) txtId.getScene().getWindow();
-                            stage.setScene(new Scene(root));
-                            stage.setTitle("Pantalla de Inicio");
-                        } catch (Exception e) {
-                            mostrarError("No fue posible iniciar sesión debido a un error: " + e.getMessage());
-                        }
-                        encontrado = true;
-                        break;
-                    }
-                }
-
-                // ----- NO ENCONTRADO -----
-                if (!encontrado) {
-                    mostrarInfo("Usuario o contraseña incorrectos.");
+                } catch (Exception e) {
+                    mostrarError("No fue posible iniciar sesión debido a un error: " + e.getMessage());
                     txtId.clear();
                     txtContrasenaLogin.clear();
                     lblMensajeCampos.setVisible(true);
                 }
             });
         }).start();
+    }
+
+    // Método de utilidad para cargar vistas
+    private void cargarVista(String fxmlPath, String tituloVentana) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
+        Stage stage = (Stage) txtId.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle(tituloVentana);
     }
 
     private void mostrarError(String mensaje) {

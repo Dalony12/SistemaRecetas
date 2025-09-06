@@ -1,6 +1,8 @@
 package Gestores;
 
 import Model.Farmaceutico;
+import Model.Medico;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,7 @@ public class GestorFarmaceuticos {
 
     private GestorFarmaceuticos() {
         farmaceuticos = new ArrayList<>();
+        agregarDatosPrueba();
     }
 
     public static GestorFarmaceuticos getInstancia() {
@@ -24,13 +27,13 @@ public class GestorFarmaceuticos {
         farmaceuticos.add(f);
     }
 
-    public void consultarTodosFarmaceuticos() {
-        if (farmaceuticos.isEmpty()) {
-            return;
+    public boolean actualizarPassword(String id, String nuevaClave) {
+        Farmaceutico farma = buscarPorid(id);
+        if (farma != null) {
+            farma.setPassword(nuevaClave);
+            return true;
         }
-        for (Farmaceutico f : farmaceuticos) {
-            System.out.println(f);
-        }
+        return false;
     }
 
     public Farmaceutico buscarPorid(String id) {
@@ -63,5 +66,11 @@ public class GestorFarmaceuticos {
 
     public void eliminarFarmaceutico (Farmaceutico f) {
         farmaceuticos.remove(f);
+    }
+
+    public void agregarDatosPrueba() {
+        farmaceuticos.add(new Farmaceutico("far-111", "Juliana Gonzalez", "far-111"));
+        farmaceuticos.add(new Farmaceutico("far-222", "Victor Espinoza", "far-222"));
+        farmaceuticos.add(new Farmaceutico("far-333", "Sebastian Sepulveda", "far-333"));
     }
 }
