@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="204.0" prefWidth="457.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.MedicoApplication.AsignacionDatosController">
+<AnchorPane prefHeight="204.0" prefWidth="457.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.controller.MedicoApplication.AsignacionDatosController">
    <children>
       <Pane prefHeight="204.0" prefWidth="457.0">
          <children>
