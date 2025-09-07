@@ -1,6 +1,8 @@
 package com.example.sistemarecetas.controller.FarmaceuticoApplication;
 
+import com.example.sistemarecetas.Gestores.GestorPacientes;
 import com.example.sistemarecetas.Gestores.GestorRecetas;
+import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,8 +31,19 @@ public class DespachoController {
     private TableColumn<Receta, String> colFechaRetiro;
     @FXML
     private TableColumn<Receta, String> colEstado;
+    @FXML
+    private ComboBox<String> cmbFiltrarPaciencteDespacho;
+    @FXML
+    private TextField txtBuscarClienetDespacho;
+
+    private ObservableList<Receta> listaObservable;  // 🔹 Todas las recetas
+    private GestorPacientes gestorPacientes = GestorPacientes.getInstancia();
 
     public void initialize() {
+        // para el combox para poder buscar por id o por nombre
+        cmbFiltrarPaciencteDespacho.setItems(FXCollections.observableArrayList("ID", "Nombre"));
+        cmbFiltrarPaciencteDespacho.setValue("Nombre");
+
         // Configurar columnas
         colNombre.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getPaciente().getNombre()));
@@ -93,9 +106,35 @@ public class DespachoController {
             cambiarEstado(receta);
         });
 
-        // 🔹 Poblar tabla con recetas desde el GestorRecetas
+        // Cargar recetas en lista observable
         GestorRecetas gestor = GestorRecetas.getInstancia();
-        tblBuscarPacientesDespacho.setItems(FXCollections.observableArrayList(gestor.getRecetas()));
+        listaObservable = FXCollections.observableArrayList(gestor.getRecetas());
+        tblBuscarPacientesDespacho.setItems(listaObservable);
+
+        // Conectar filtros
+        txtBuscarClienetDespacho.textProperty().addListener((obs, oldVal, newVal) -> filtrarPacientes());
+        cmbFiltrarPaciencteDespacho.setOnAction(e -> filtrarPacientes());
+    }
+
+    // Filtro por paciente (ID o Nombre)
+    private void filtrarPacientes() {
+        String filtro = cmbFiltrarPaciencteDespacho.getValue();
+        String texto = txtBuscarClienetDespacho.getText().trim().toLowerCase();
+
+        ObservableList<Receta> filtradas = FXCollections.observableArrayList();
+
+        for (Receta receta : listaObservable) {
+            String id = receta.getPaciente().getId().toLowerCase();
+            String nombre = receta.getPaciente().getNombre().toLowerCase();
+
+            if (filtro.equals("ID") && id.contains(texto)) {
+                filtradas.add(receta);
+            } else if (filtro.equals("Nombre") && nombre.contains(texto)) {
+                filtradas.add(receta);
+            }
+        }
+
+        tblBuscarPacientesDespacho.setItems(filtradas);
     }
 
     // Método para validar y actualizar estado en el gestor
