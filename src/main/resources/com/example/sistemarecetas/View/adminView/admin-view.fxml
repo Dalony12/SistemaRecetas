@@ -8,7 +8,6 @@
 
     <children>
         <TabPane fx:id="tabPane" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
-
             <tabs>
                 <Tab fx:id="tabMenuPrincipal" onSelectionChanged="#abrirMenuPrincipal" text="Menu Principal">
                     <content>

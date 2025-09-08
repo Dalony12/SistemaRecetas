@@ -2,7 +2,6 @@ package com.example.sistemarecetas.controller.FarmaceuticoApplication;
 
 import com.example.sistemarecetas.Gestores.GestorPacientes;
 import com.example.sistemarecetas.Gestores.GestorRecetas;
-import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
 import javafx.beans.property.SimpleStringProperty;

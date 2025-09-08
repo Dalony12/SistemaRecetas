@@ -25,8 +25,6 @@ import java.util.List;
 public class PrescripcionController {
 
     @FXML
-    private Button btnGuardarReceta;
-    @FXML
     private Button btnEliminarMedicamento;
     @FXML
     private DatePicker dtpFechaRetiroPres;
@@ -87,6 +85,17 @@ public class PrescripcionController {
             btnEliminarMedicamento.setDisable(newSelection == null);
         });
 
+        dtpFechaRetiroPres.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+
+                if (date.isBefore(LocalDate.now())) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #ffc0cb;");
+                }
+            }
+        });
     }
 
     @FXML
@@ -208,6 +217,11 @@ public class PrescripcionController {
 
             if (listaMedicamentos.isEmpty()) {
                 mostrarAlerta("Receta vacía", "Debe agregar al menos un medicamento.");
+                return;
+            }
+
+            if (fechaRetiro.isBefore(LocalDate.now())) {
+                mostrarAlerta("Fecha inválida", "No puede seleccionar una fecha anterior a hoy.");
                 return;
             }
 

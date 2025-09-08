@@ -2,6 +2,7 @@ package com.example.sistemarecetas;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -19,6 +20,8 @@ public class Application extends javafx.application.Application {
 
         // Centrar la ventana en la pantalla
         stage.centerOnScreen();
+
+        stage.getIcons().add(new Image(Application.class.getResourceAsStream("Images/icono.png")));
 
         stage.show();
     }

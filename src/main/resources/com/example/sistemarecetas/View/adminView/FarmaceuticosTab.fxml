@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
 <StackPane prefHeight="400" prefWidth="600" stylesheets="@../../styles/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.controller.adminApplication.FarmaceuticosController">
 
@@ -12,7 +23,7 @@
     <TableView fx:id="tableFarmaceuticos" fixedCellSize="24" prefHeight="400" prefWidth="150.0" visible="true">
         <columns>
             <TableColumn fx:id="colIDFarma" prefWidth="120.0" text="ID" />
-            <TableColumn fx:id="colNombreFarma" prefWidth="177.0" text="Nombre" />
+            <TableColumn fx:id="colNombreFarma" prefWidth="195.0" text="Nombre" />
         </columns>
     </TableView>
 
