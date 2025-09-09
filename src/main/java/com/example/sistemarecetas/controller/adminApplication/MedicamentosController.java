@@ -54,17 +54,17 @@ public class MedicamentosController {
 
         // Listeners para que los RadioButton se excluyan mutuamente
         btnGuardarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnBorrarMedicamento.setSelected(false); btnModificarMedicamento.setSelected(false); btnBuscarMedicamento.setSelected(false); }
+            if (newVal) { btnBorrarMedicamento.setSelected(false); btnModificarMedicamento.setSelected(false); btnBuscarMedicamento.setSelected(false); txtDescripcionMedicamento.setEditable(true); txtNombreMedicamento.setEditable(true); txtPresentacionMedicamento.setEditable(true);}
         });
         btnBorrarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarMedicamento.setSelected(false); btnModificarMedicamento.setSelected(false); btnBuscarMedicamento.setSelected(false); }
+            if (newVal) { btnGuardarMedicamento.setSelected(false); btnModificarMedicamento.setSelected(false); btnBuscarMedicamento.setSelected(false); txtDescripcionMedicamento.setEditable(false); txtNombreMedicamento.setEditable(false); txtPresentacionMedicamento.setEditable(false);}
         });
         btnModificarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarMedicamento.setSelected(false); btnBorrarMedicamento.setSelected(false); btnBuscarMedicamento.setSelected(false); }
+            if (newVal) { btnGuardarMedicamento.setSelected(false); btnBorrarMedicamento.setSelected(false); btnBuscarMedicamento.setSelected(false); txtDescripcionMedicamento.setEditable(true); txtNombreMedicamento.setEditable(true); txtPresentacionMedicamento.setEditable(true);}
         });
 
         btnBuscarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarMedicamento.setSelected(false); btnBorrarMedicamento.setSelected(false); btnModificarMedicamento.setSelected(false); }
+            if (newVal) { btnGuardarMedicamento.setSelected(false); btnBorrarMedicamento.setSelected(false); btnModificarMedicamento.setSelected(false); txtDescripcionMedicamento.setEditable(true); txtNombreMedicamento.setEditable(true); txtPresentacionMedicamento.setEditable(true);}
         });
 
         txtCodigoMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {

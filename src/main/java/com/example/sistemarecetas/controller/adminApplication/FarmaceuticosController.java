@@ -48,17 +48,17 @@ public class FarmaceuticosController {
 
         // Listeners para que los RadioButton se excluyan mutuamente
         btnGuardarFarmaceutico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnBorrarFarmaceutico.setSelected(false); btnModificarFarmaceutico.setSelected(false); btnBuscarFarmaceutico.setSelected(false); }
+            if (newVal) { btnBorrarFarmaceutico.setSelected(false); btnModificarFarmaceutico.setSelected(false); btnBuscarFarmaceutico.setSelected(false); txtNombreFarmaceuta.setEditable(true);}
         });
         btnBorrarFarmaceutico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarFarmaceutico.setSelected(false); btnModificarFarmaceutico.setSelected(false); btnBuscarFarmaceutico.setSelected(false); }
+            if (newVal) { btnGuardarFarmaceutico.setSelected(false); btnModificarFarmaceutico.setSelected(false); btnBuscarFarmaceutico.setSelected(false); txtNombreFarmaceuta.setEditable(false);  }
         });
         btnModificarFarmaceutico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarFarmaceutico.setSelected(false); btnBorrarFarmaceutico.setSelected(false); btnBuscarFarmaceutico.setSelected(false); }
+            if (newVal) { btnGuardarFarmaceutico.setSelected(false); btnBorrarFarmaceutico.setSelected(false); btnBuscarFarmaceutico.setSelected(false); txtNombreFarmaceuta.setEditable(true);}
         });
 
         btnBuscarFarmaceutico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarFarmaceutico.setSelected(false); btnBorrarFarmaceutico.setSelected(false); btnModificarFarmaceutico.setSelected(false); }
+            if (newVal) { btnGuardarFarmaceutico.setSelected(false); btnBorrarFarmaceutico.setSelected(false); btnModificarFarmaceutico.setSelected(false); txtNombreFarmaceuta.setEditable(true);}
         });
 
         txtIDFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {

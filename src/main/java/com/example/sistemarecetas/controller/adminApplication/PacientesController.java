@@ -56,17 +56,17 @@ public class PacientesController {
 
         // Listeners para que los RadioButton se excluyan mutuamente
         btnGuardarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnBorrarPaciente.setSelected(false); btnModificarPaciente.setSelected(false); btnBuscarPaciente.setSelected(false); }
+            if (newVal) { btnBorrarPaciente.setSelected(false); btnModificarPaciente.setSelected(false); btnBuscarPaciente.setSelected(false); txtTelefonoPaciente.setEditable(true); dtpFechaNacimiento.setDisable(false); txtNombrePaciente.setEditable(true);}
         });
         btnBorrarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarPaciente.setSelected(false); btnModificarPaciente.setSelected(false); btnBuscarPaciente.setSelected(false); }
+            if (newVal) { btnGuardarPaciente.setSelected(false); btnModificarPaciente.setSelected(false); btnBuscarPaciente.setSelected(false); txtTelefonoPaciente.setEditable(false); dtpFechaNacimiento.setDisable(true); txtNombrePaciente.setEditable(false);}
         });
         btnModificarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarPaciente.setSelected(false); btnBorrarPaciente.setSelected(false); btnBuscarPaciente.setSelected(false); }
+            if (newVal) { btnGuardarPaciente.setSelected(false); btnBorrarPaciente.setSelected(false); btnBuscarPaciente.setSelected(false); txtTelefonoPaciente.setEditable(true); dtpFechaNacimiento.setDisable(false); txtNombrePaciente.setEditable(true);}
         });
 
         btnBuscarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarPaciente.setSelected(false); btnBorrarPaciente.setSelected(false); btnModificarPaciente.setSelected(false); }
+            if (newVal) { btnGuardarPaciente.setSelected(false); btnBorrarPaciente.setSelected(false); btnModificarPaciente.setSelected(false); txtTelefonoPaciente.setEditable(false); dtpFechaNacimiento.setDisable(true); txtNombrePaciente.setEditable(true); }
         });
 
         txtIDPaciente.textProperty().addListener((obs, oldVal, newVal) -> {
