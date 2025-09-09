@@ -7,9 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.util.List;
 
@@ -65,16 +63,28 @@ public class HistorialController {
             }
             return new SimpleStringProperty(cantidades);
         });
+        colInidcaiones.setCellFactory(tc -> new TableCell<Receta, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setTooltip(null);
+                } else {
+                    setText(item.length() > 20 ? item.substring(0, 20) + "..." : item);
+                    setTooltip(new Tooltip(item));
+                }
+            }
+        });
+
         colInidcaiones.setCellValueFactory(data -> {
             List<Prescripcion> lista = data.getValue().getMedicamentos();
-            String indicaciones = "";
+            StringBuilder sb = new StringBuilder();
             for (Prescripcion p : lista) {
-                indicaciones += p.getIndicaciones() + ", ";
+                sb.append(p.getIndicaciones());
             }
-            if (!indicaciones.isEmpty()) {
-                indicaciones = indicaciones.substring(0, indicaciones.length() - 2);
-            }
-            return new SimpleStringProperty(indicaciones);
+            if (!sb.isEmpty()) sb.setLength(sb.length() - 2);
+            return new SimpleStringProperty(sb.toString());
         });
         colCantidadDías.setCellValueFactory(data -> {
             List<Prescripcion> lista = data.getValue().getMedicamentos();
