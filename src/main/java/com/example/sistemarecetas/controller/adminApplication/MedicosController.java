@@ -51,17 +51,17 @@ public class MedicosController {
 
         // Listeners para que los RadioButton se excluyan mutuamente
         btnGuardarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnBorrarMedico.setSelected(false); btnModificarMedico.setSelected(false); btnBuscarMedico.setSelected(false); }
+            if (newVal) { btnBorrarMedico.setSelected(false); btnModificarMedico.setSelected(false); btnBuscarMedico.setSelected(false); txtNombreMedico.setEditable(true); txtEspecialidadMedico.setEditable(true);}
         });
         btnBorrarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarMedico.setSelected(false); btnModificarMedico.setSelected(false); btnBuscarMedico.setSelected(false); }
+            if (newVal) { btnGuardarMedico.setSelected(false); btnModificarMedico.setSelected(false); btnBuscarMedico.setSelected(false); txtNombreMedico.setEditable(false); txtEspecialidadMedico.setEditable(false); }
         });
         btnModificarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarMedico.setSelected(false); btnBorrarMedico.setSelected(false); btnBuscarMedico.setSelected(false); }
+            if (newVal) { btnGuardarMedico.setSelected(false); btnBorrarMedico.setSelected(false); btnBuscarMedico.setSelected(false); txtNombreMedico.setEditable(true); txtEspecialidadMedico.setEditable(true);}
         });
 
         btnBuscarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-        if (newVal) { btnGuardarMedico.setSelected(false); btnBorrarMedico.setSelected(false); btnModificarMedico.setSelected(false); }
+        if (newVal) { btnGuardarMedico.setSelected(false); btnBorrarMedico.setSelected(false); btnModificarMedico.setSelected(false); txtNombreMedico.setEditable(true); txtEspecialidadMedico.setEditable(true);}
         });
 
         txtIDMedico.textProperty().addListener((obs, oldVal, newVal) -> {
