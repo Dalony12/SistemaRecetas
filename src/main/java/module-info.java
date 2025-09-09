@@ -6,7 +6,7 @@ module com.example.sistemarecetas {
     requires jakarta.xml.bind;
 
     opens com.example.sistemarecetas.Model to javafx.base;
-    opens com.example.sistemarecetas.data to jakarta.xml.bind;
+    opens com.example.sistemarecetas.datos to jakarta.xml.bind;
 
 
     opens com.example.sistemarecetas.controller.adminApplication to javafx.fxml;
