@@ -16,9 +16,9 @@ public class PrescripcionDatos {
     private PrescripcionConector prescripcionConector;
     private PrescripcionConector cache;
 
-    public PrescripcionDatos(String filePath) {
+    public PrescripcionDatos(Path filePath) {
         try{
-            this.xmlPath = Path.of(Objects.requireNonNull(filePath));
+            this.xmlPath = Path.of(Objects.requireNonNull(filePath.toString()));
             this.ctx = JAXBContext.newInstance(PrescripcionConector.class, PrescripcionEntity.class);
         }
         catch(Exception e){

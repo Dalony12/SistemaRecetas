@@ -1,6 +1,7 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
 import com.example.sistemarecetas.Gestores.GestorFarmaceuticos;
+import com.example.sistemarecetas.Logica.Farmaceuticos.FarmaceuticoLogica;
 import com.example.sistemarecetas.Model.Farmaceutico;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -34,13 +35,18 @@ public class FarmaceuticosController {
     @FXML private TextField txtNombreFarmaceuta;
 
     // Lista observable + gestor
-    private ObservableList<Farmaceutico> listaObservable;
+    private final ObservableList<Farmaceutico> listaObservable = FXCollections.observableArrayList();
     private GestorFarmaceuticos gestorFamaceutico = GestorFarmaceuticos.getInstancia();
+
+    // Alamacenamiento de datos
+    private static final String RUTA_FARMACEUTICOS =
+            java.nio.file.Paths.get(System.getProperty("user.dir"), "bd", "farmaceuticos.xml").toString();
+    private final FarmaceuticoLogica farmaceuticoLogica = new FarmaceuticoLogica(RUTA_FARMACEUTICOS);
 
     @FXML
     public void initialize() {
         // Inicializar lista y tabla
-        listaObservable = FXCollections.observableArrayList(gestorFamaceutico.getFarmaceuticos());
+        listaObservable.addAll(farmaceuticoLogica.findAll());
         tableFarmaceuticos.setItems(listaObservable);
 
         colIDFarma.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -113,6 +119,7 @@ public class FarmaceuticosController {
                         return;
                     }
                 }
+                farmaceuticoLogica.create(nuevo);
                 gestorFamaceutico.agregarFarmaceuta(nuevo);
                 listaObservable.add(nuevo);
 
@@ -125,6 +132,7 @@ public class FarmaceuticosController {
                 }
                 existente.setNombre(nombre);
 
+                farmaceuticoLogica.actualizar(existente);
                 tableFarmaceuticos.refresh();
 
             } else if (btnBorrarFarmaceutico.isSelected()) {
@@ -134,6 +142,7 @@ public class FarmaceuticosController {
                     mostrarAlerta("No encontrado", "No existe un Farmacetico con ese ID: " + identificacion);
                     return;
                 }
+                farmaceuticoLogica.deleteById(aEliminar.getId());
                 gestorFamaceutico.eliminarFarmaceutico(aEliminar);
                 listaObservable.remove(aEliminar);
             }

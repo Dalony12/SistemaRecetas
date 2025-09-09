@@ -16,9 +16,9 @@ public class MedicoDatos {
     private MedicoConector medicoConnector;
     private MedicoConector cache;
 
-    public MedicoDatos(String filePath) {
+    public MedicoDatos(Path filePath) {
         try{
-            this.xmlPath = Path.of(Objects.requireNonNull(filePath));
+            this.xmlPath = Path.of(Objects.requireNonNull(filePath.toString()));
             this.ctx = JAXBContext.newInstance(MedicoConector.class, MedicoEntity.class);
         }
         catch(Exception e){

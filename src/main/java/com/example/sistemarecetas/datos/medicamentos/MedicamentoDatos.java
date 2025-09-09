@@ -16,9 +16,9 @@ public class MedicamentoDatos {
     private MedicamentoConector medicamentoConnector;
     private MedicamentoConector cache;
 
-    public MedicamentoDatos(String filePath) {
+    public MedicamentoDatos(Path filePath) {
         try{
-            this.xmlPath = Path.of(Objects.requireNonNull(filePath));
+            this.xmlPath = Path.of(Objects.requireNonNull(filePath.toString()));
             this.ctx = JAXBContext.newInstance(MedicamentoConector.class, MedicamentoEntity.class);
         }
         catch(Exception e){

@@ -16,9 +16,9 @@ public class FarmaceutaDatos {
     private FarmaceutaConector farmaceutaConnector;
     private FarmaceutaConector cache;
 
-    public FarmaceutaDatos(String filePath) {
+    public FarmaceutaDatos(Path filePath) {
         try{
-            this.xmlPath = Path.of(Objects.requireNonNull(filePath));
+            this.xmlPath = Path.of(Objects.requireNonNull(filePath.toString()));
             this.ctx = JAXBContext.newInstance(FarmaceutaConector.class, FarmaceutaEntity.class);
         }
         catch(Exception e){
