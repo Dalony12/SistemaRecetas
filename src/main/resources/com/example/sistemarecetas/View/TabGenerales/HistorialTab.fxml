@@ -29,7 +29,7 @@
                 <Font name="System Bold" size="24.0" />
             </font>
         </Label>
-        <TableView id="tableRecetas" fx:id="tableRecetas" layoutY="151.0" prefHeight="249.0" prefWidth="600.0">
+        <TableView id="tableRecetas" fx:id="tableRecetas" editable="true" layoutY="151.0" prefHeight="249.0" prefWidth="600.0">
             <columns>
                 <TableColumn fx:id="colPersona" prefWidth="66.40002745389938" text="Persona" />
                 <TableColumn fx:id="colMedicamentos" prefWidth="132.79998779296875" text="Medicamentos" />
