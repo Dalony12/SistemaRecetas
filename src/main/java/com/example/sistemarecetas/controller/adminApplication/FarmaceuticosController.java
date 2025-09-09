@@ -128,6 +128,7 @@ public class FarmaceuticosController {
                 tableFarmaceuticos.refresh();
 
             } else if (btnBorrarFarmaceutico.isSelected()) {
+
                 Farmaceutico aEliminar = gestorFamaceutico.buscarPorid(identificacion);
                 if (aEliminar == null) {
                     mostrarAlerta("No encontrado", "No existe un Farmacetico con ese ID: " + identificacion);
