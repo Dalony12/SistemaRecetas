@@ -40,12 +40,12 @@ public class PrescripcionDatos {
             // Gestion la información convertida al archivo XML
             cache = (PrescripcionConector) u.unmarshal(xmlPath.toFile());
 
-            if(cache.getClientes() == null)
+            if(cache.getPrescripciones() == null)
             {
                 //Aqui creamos una primera instancia de clientes dentro del archivo
                 //Esto se haría la primera vez que se corre el sistema
                 //O cuando se limpia la información de BD
-                cache.setClientes(new java.util.ArrayList<>());
+                cache.setPrescripciones(new java.util.ArrayList<>());
             }
             return cache;
         }catch(Exception e){
