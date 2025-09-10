@@ -18,7 +18,6 @@ module com.example.sistemarecetas {
     exports com.example.sistemarecetas.controller.generalControllers;
     exports com.example.sistemarecetas.controller.MedicoApplication;
     exports com.example.sistemarecetas.controller;
-    exports com.example.sistemarecetas.datos;
     exports com.example.sistemarecetas;
 }
 
