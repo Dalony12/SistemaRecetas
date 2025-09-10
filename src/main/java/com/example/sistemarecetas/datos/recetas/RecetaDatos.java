@@ -16,9 +16,9 @@ public class RecetaDatos {
     private RecetaConector recetaConnector;
     private RecetaConector cache;
 
-    public RecetaDatos(Path filePath) {
+    public RecetaDatos(String filePath) {
         try{
-            this.xmlPath = Path.of(Objects.requireNonNull(filePath.toString()));
+            this.xmlPath = Path.of(Objects.requireNonNull(filePath));
             this.ctx = JAXBContext.newInstance(RecetaConector.class, RecetaEntity.class);
         }
         catch(Exception e){
