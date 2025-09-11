@@ -35,18 +35,21 @@ public class MedicamentoLogica {
                 .map(MedicamentoMapper::toModel);
     }
 
-    public List<Medicamento> search(String texto) {
-        String q = (texto == null) ? "" : texto.trim().toLowerCase();
+    public List<Medicamento> search(String id, String nombre) {
+        String qId = (id == null) ? "" : id.trim().toLowerCase();
+        String qNombre = (nombre == null) ? "" : nombre.trim().toLowerCase();
+
         MedicamentoConector data = store.load();
+
         return data.getMedicamentos().stream()
-                .filter(x ->
-                        (x.getNombre() != null && x.getNombre().toLowerCase().contains(q)) ||
-                                (x.getDescripcion() != null && x.getDescripcion().toLowerCase().contains(q)) ||
-                                (x.getPresentacion() != null && x.getPresentacion().toLowerCase().contains(q)) ||
-                                (x.getCodigo() != null && x.getCodigo().toLowerCase().contains(q))
-                )
+                // filtra solo si el ID no está vacío
+                .filter(x -> qId.isEmpty() ||
+                        (x.getCodigo() != null && x.getCodigo().toLowerCase().contains(qId)))
+                // filtra solo si el nombre no está vacío
+                .filter(x -> qNombre.isEmpty() ||
+                        (x.getNombre() != null && x.getNombre().toLowerCase().contains(qNombre)))
                 .map(MedicamentoMapper::toModel)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // --------- Escritura ---------

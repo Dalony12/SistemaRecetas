@@ -144,7 +144,7 @@ public class FarmaceuticosController {
                 if (eliminado) {
                     listaObservable.removeIf(x -> x.getId().equalsIgnoreCase(id));
                 } else {
-                    mostrarAlerta("No encontrado", "No existe un medicamento con ese código: " + id);
+                    mostrarAlerta("No encontrado", "No existe un farmaceutico con ese ID: " + id);
                 }
             }
 
