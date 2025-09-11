@@ -1,7 +1,9 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
-import com.example.sistemarecetas.Gestores.GestorPacientes;
 import com.example.sistemarecetas.Model.Paciente;
+import com.example.sistemarecetas.logica.farmaceutas.FarmaceutasLogica;
+import com.example.sistemarecetas.logica.pacientes.PacientesLogica;
+import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,11 +13,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 public class PacientesController {
 
-    private static PacientesController instance; // Singleton
+    private static PacientesController instance;
     public PacientesController() { instance = this; }
     public static PacientesController getInstance() { return instance; }
 
@@ -27,7 +34,7 @@ public class PacientesController {
     @FXML private TableColumn<Paciente, String> colFechaNacimiento;
     @FXML private TableColumn<Paciente, String> colTelefono;
 
-    // Botones de acción (pueden ser RadioButton o ToggleButton)
+    // Botones de acción
     @FXML private RadioButton btnGuardarPaciente;
     @FXML private RadioButton btnBorrarPaciente;
     @FXML private RadioButton btnModificarPaciente;
@@ -39,128 +46,126 @@ public class PacientesController {
     @FXML private DatePicker dtpFechaNacimiento;
     @FXML private TextField txtTelefonoPaciente;
 
-    // Lista observable + gestor
     private ObservableList<Paciente> listaObservable;
-    private GestorPacientes gestorPaciente = GestorPacientes.getInstancia();
+    private PacientesLogica pacienteLogica;
 
     @FXML
     public void initialize() {
-        // Inicializar lista y tabla
-        listaObservable = FXCollections.observableArrayList(gestorPaciente.getPacientes());
-        tablePacientes.setItems(listaObservable);
+        try {
+            // Ruta dinámica al archivo XML
+            String rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "pacientes.xml").toString();
+            File archivo = new File(rutaXML);
 
-        colID.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colFechaNacimiento.setCellValueFactory(new PropertyValueFactory<>("fechaNacimiento"));
-        colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
-
-        // Listeners para que los RadioButton se excluyan mutuamente
-        btnGuardarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnBorrarPaciente.setSelected(false); btnModificarPaciente.setSelected(false); btnBuscarPaciente.setSelected(false); txtTelefonoPaciente.setEditable(true); dtpFechaNacimiento.setDisable(false); txtNombrePaciente.setEditable(true);}
-        });
-        btnBorrarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarPaciente.setSelected(false); btnModificarPaciente.setSelected(false); btnBuscarPaciente.setSelected(false); txtTelefonoPaciente.setEditable(false); dtpFechaNacimiento.setDisable(true); txtNombrePaciente.setEditable(false);}
-        });
-        btnModificarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarPaciente.setSelected(false); btnBorrarPaciente.setSelected(false); btnBuscarPaciente.setSelected(false); txtTelefonoPaciente.setEditable(true); dtpFechaNacimiento.setDisable(false); txtNombrePaciente.setEditable(true);}
-        });
-
-        btnBuscarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarPaciente.setSelected(false); btnBorrarPaciente.setSelected(false); btnModificarPaciente.setSelected(false); txtTelefonoPaciente.setEditable(false); dtpFechaNacimiento.setDisable(true); txtNombrePaciente.setEditable(true); }
-        });
-
-        txtIDPaciente.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarPaciente.isSelected()) {
-                buscarPaciente();
+            // Crear archivo si no existe
+            if (!archivo.exists()) {
+                archivo.getParentFile().mkdirs();
+                String contenidoInicial = """
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        <pacientes>
+                        </pacientes>
+                        """;
+                try (FileWriter writer = new FileWriter(archivo)) {
+                    writer.write(contenidoInicial);
+                    System.out.println("Archivo pacientes.xml creado en: " + rutaXML);
+                }
             }
-        });
+            // Inicializar lógica y tabla
+            pacienteLogica = new PacientesLogica(rutaXML);
+            listaObservable = FXCollections.observableArrayList(pacienteLogica.findAll());
+            tablePacientes.setItems(listaObservable);
 
-        txtNombrePaciente.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarPaciente.isSelected()) {
-                buscarPaciente();
-            }
-        });
+            colID.setCellValueFactory(new PropertyValueFactory<>("id"));
+            colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+            colFechaNacimiento.setCellValueFactory(new PropertyValueFactory<>("fechaNacimiento"));
+            colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
 
+            btnGuardarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) toggleMode("guardar");
+            });
+            btnBorrarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) toggleMode("borrar");
+            });
+            btnModificarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) toggleMode("modificar");
+            });
+            btnBuscarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) toggleMode("buscar");
+            });
 
-        // Listener para autocompletar campos cuando escriben el ID
-        txtIDPaciente.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.isEmpty()) {
-                txtNombrePaciente.clear();
-                txtTelefonoPaciente.clear();
-                dtpFechaNacimiento.setValue(null);
-                return;
-            }
-            Paciente encontrado = gestorPaciente.buscarPorId(newVal);
-            if (encontrado != null) {
-                txtNombrePaciente.setText(encontrado.getNombre());
-                dtpFechaNacimiento.setValue(encontrado.getFechaNacimiento());
-                txtTelefonoPaciente.setText(String.valueOf(encontrado.getTelefono()));
+            txtIDPaciente.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (btnBuscarPaciente.isSelected()) {
+                    buscarPaciente();
+                }
+            });
 
-            } else {
-                txtNombrePaciente.clear();
-                dtpFechaNacimiento.setValue(null);
-                txtTelefonoPaciente.clear();
-            }
-        });
+            txtNombrePaciente.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (btnBuscarPaciente.isSelected()) {
+                    buscarPaciente();
+                }
+            });
+
+            txtIDPaciente.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (btnBuscarPaciente.isSelected()) buscarPaciente();
+                if (newVal.isEmpty()) {
+                    limpiarCampos();
+                    return;
+                }
+                Optional<Paciente> encontrado = pacienteLogica.findByCodigo(newVal);
+                if (encontrado.isPresent()) {
+                    Paciente p = encontrado.get();
+                    txtNombrePaciente.setText(p.getNombre());
+                    txtTelefonoPaciente.setText(String.valueOf(p.getTelefono()));
+                    dtpFechaNacimiento.setValue(p.getFechaNacimiento());
+                } else {
+                    txtNombrePaciente.clear();
+                    txtTelefonoPaciente.clear();
+                    dtpFechaNacimiento.setValue(null);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error al inicializar", e.getMessage());
+        }
     }
-
-    // ---------------- Lógica CRUD ----------------
 
     @FXML
     private void GuardarModificarEliminarPaciente() {
         try {
+            String id = txtIDPaciente.getText().trim();
             String nombre = txtNombrePaciente.getText().trim();
-            String identificacion = txtIDPaciente.getText().trim();
+            String telefonoStr = txtTelefonoPaciente.getText().trim();
             LocalDate fechaNacimiento = dtpFechaNacimiento.getValue();
-            String telefonoTexto = txtTelefonoPaciente.getText().trim();
 
-            if (nombre.isEmpty() || identificacion.isEmpty() || fechaNacimiento == null || telefonoTexto.isEmpty()) {
+            if (id.isEmpty() || nombre.isEmpty() || telefonoStr.isEmpty() || fechaNacimiento == null) {
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }
 
-            int telefono = Integer.parseInt(telefonoTexto);
+            int telefono = Integer.parseInt(telefonoStr);
+            Paciente p = new Paciente(id, nombre, telefono, fechaNacimiento);
 
             if (btnGuardarPaciente.isSelected()) {
-                // Crear nuevo médico
-                Paciente nuevo = new Paciente(identificacion,nombre, telefono, fechaNacimiento);
-
-                for (Paciente p : gestorPaciente.getPacientes()) {
-                    if (p.getId().equals(identificacion)) {
-                        mostrarAlerta("Paciente ya existe", "Ya existe un Paciente con esa identificación: " + nuevo.getId());
-                        limpiarCampos();
-                        return;
-                    }
-                }
-                gestorPaciente.agregarPaciente(nuevo);
-                listaObservable.add(nuevo);
+                pacienteLogica.create(p);
+                listaObservable.add(p);
 
             } else if (btnModificarPaciente.isSelected()) {
-                Paciente existente = gestorPaciente.buscarPorId(identificacion);
-                if (existente == null) {
-                    mostrarAlerta("No encontrado", "No existe un Paciente con ese ID");
-                    limpiarCampos();
-                    return;
-                }
-                existente.setNombre(nombre);
-                existente.setFechaNacimiento(fechaNacimiento);
-                existente.setTelefono(telefono);
-
-                tablePacientes.refresh();
+                pacienteLogica.update(p);
+                refrescarTabla();
 
             } else if (btnBorrarPaciente.isSelected()) {
-                    Paciente aEliminar = gestorPaciente.buscarPorId(identificacion);
-                if (aEliminar == null) {
-                    mostrarAlerta("No encontrado", "No existe un Paciente con ese ID: " + identificacion);
-                    return;
+                boolean eliminado = pacienteLogica.deleteByCodigo(id);
+                if (eliminado) {
+                    listaObservable.removeIf(x -> x.getId().equalsIgnoreCase(id));
+                } else {
+                    mostrarAlerta("No encontrado", "No existe un paciente con ese código: " + id);
                 }
-                gestorPaciente.eliminarPaciente(aEliminar);
-                listaObservable.remove(aEliminar);
             }
 
             limpiarCampos();
             refrescarTabla();
 
+        } catch (NumberFormatException e) {
+            mostrarAlerta("Error de formato", "El teléfono debe ser un número válido.");
         } catch (Exception e) {
             mostrarAlerta("Error", e.getMessage());
         }
@@ -168,29 +173,29 @@ public class PacientesController {
 
     @FXML
     private void buscarPaciente() {
-        String criterioID = txtIDPaciente.getText().trim().toLowerCase();
-        String criterioNombre = txtNombrePaciente.getText().trim().toLowerCase();
-        LocalDate criterioFechaNacimiento = dtpFechaNacimiento.getValue();
-        String criterioTelefono = txtTelefonoPaciente.getText().trim().toLowerCase();
+        String id = txtIDPaciente.getText().trim();
+        String nombre = txtNombrePaciente.getText().trim();
 
-        ObservableList<Paciente> filtrados = FXCollections.observableArrayList();
-
-        for (Paciente p : gestorPaciente.getPacientes()) {
-            boolean coincideID = criterioID.isEmpty() || p.getId().toLowerCase().contains(criterioID.toLowerCase());
-            boolean coincideNombre = criterioNombre.isEmpty() || p.getNombre().toLowerCase().contains(criterioNombre.toLowerCase());
-            boolean coincideFechaNacimiento = criterioFechaNacimiento == null || p.getFechaNacimiento().toString().equals(criterioFechaNacimiento);
-            boolean coincideTelefono = criterioTelefono.isEmpty() || p.getTelefono() == Integer.parseInt(criterioTelefono);
-
-
-            if (coincideID && coincideNombre && coincideFechaNacimiento && coincideTelefono) {
-                filtrados.add(p);
-            }
+        if (id.isEmpty() && nombre.isEmpty()) {
+            refrescarTabla();
+            return;
         }
 
-
-        listaObservable.setAll(filtrados);
+        List<Paciente> resultado = pacienteLogica.search(id, nombre);
+        listaObservable.setAll(resultado);
     }
 
+    private void toggleMode(String mode) {
+        btnGuardarPaciente.setSelected(mode.equals("guardar"));
+        btnBorrarPaciente.setSelected(mode.equals("borrar"));
+        btnModificarPaciente.setSelected(mode.equals("modificar"));
+        btnBuscarPaciente.setSelected(mode.equals("buscar"));
+
+        boolean editable = !mode.equals("borrar");
+        txtNombrePaciente.setEditable(editable);
+        txtTelefonoPaciente.setEditable(editable);
+        dtpFechaNacimiento.setDisable(!editable);
+    }
 
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -204,19 +209,17 @@ public class PacientesController {
     private void limpiarCampos() {
         txtIDPaciente.clear();
         txtNombrePaciente.clear();
-        dtpFechaNacimiento.setValue(null);
         txtTelefonoPaciente.clear();
+        dtpFechaNacimiento.setValue(null);
     }
 
-    // ---------------- Tabla ----------------
     public void refrescarTabla() {
-        listaObservable.setAll(gestorPaciente.getPacientes());
+        listaObservable.setAll(pacienteLogica.findAll());
     }
 
-    // ---------------- Animación ----------------
     public void mostrarListaConAnimacion() {
         if (vBoxPortadaPaciente.isVisible()) {
-            javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.seconds(1));
+            PauseTransition pause = new PauseTransition(Duration.seconds(1));
             pause.setOnFinished(event -> {
                 TranslateTransition transition = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaPaciente);
                 transition.setToX(-vBoxPortadaPaciente.getWidth() - 20);

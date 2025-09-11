@@ -8,6 +8,7 @@ module com.example.sistemarecetas {
     opens com.example.sistemarecetas.Model to javafx.base;
     opens com.example.sistemarecetas.datos.medicamentos to jakarta.xml.bind;
     opens com.example.sistemarecetas.datos.farmaceutas to jakarta.xml.bind;
+    opens com.example.sistemarecetas.datos.pacientes to jakarta.xml.bind;
 
     opens com.example.sistemarecetas.controller.adminApplication to javafx.fxml;
     opens com.example.sistemarecetas.controller.FarmaceuticoApplication to javafx.fxml;
@@ -20,6 +21,7 @@ module com.example.sistemarecetas {
     exports com.example.sistemarecetas.controller.generalControllers;
     exports com.example.sistemarecetas.controller.MedicoApplication;
     exports com.example.sistemarecetas.controller;
+    exports com.example.sistemarecetas.datos;
     exports com.example.sistemarecetas;
 }
 
