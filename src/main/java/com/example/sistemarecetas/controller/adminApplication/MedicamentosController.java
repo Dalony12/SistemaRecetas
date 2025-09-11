@@ -1,7 +1,7 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
-import com.example.sistemarecetas.Gestores.GestorMedicamentos;
 import com.example.sistemarecetas.Model.Medicamento;
+import com.example.sistemarecetas.logica.medicamentos.MedicamentoLogica;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,13 +11,18 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
+
 public class MedicamentosController {
 
-    private static MedicamentosController instance; // Singleton
+    private static MedicamentosController instance;
     public MedicamentosController() { instance = this; }
     public static MedicamentosController getInstance() { return instance; }
 
-    // Panel y tabla
     @FXML private VBox vBoxPortadaMedicamentos;
     @FXML private TableView<Medicamento> tableMedicamentos;
     @FXML private TableColumn<Medicamento, String> colCodigo;
@@ -25,144 +30,117 @@ public class MedicamentosController {
     @FXML private TableColumn<Medicamento, String> colPresentacion;
     @FXML private TableColumn<Medicamento, String> colDescripcion;
 
-    // Botones de acción (pueden ser RadioButton o ToggleButton)
     @FXML private RadioButton btnGuardarMedicamento;
     @FXML private RadioButton btnBorrarMedicamento;
     @FXML private RadioButton btnModificarMedicamento;
     @FXML private RadioButton btnBuscarMedicamento;
 
-    // Campos del formulario
     @FXML private TextField txtCodigoMedicamento;
     @FXML private TextField txtNombreMedicamento;
     @FXML private TextField txtPresentacionMedicamento;
     @FXML private TextArea txtDescripcionMedicamento;
 
-    // Lista observable + gestor
     private ObservableList<Medicamento> listaObservable;
-    private GestorMedicamentos gestorMedicamento = GestorMedicamentos.getInstancia();
+    private MedicamentoLogica medicamentoLogica;
 
     @FXML
     public void initialize() {
-        // Inicializar lista y tabla
-        listaObservable = FXCollections.observableArrayList(gestorMedicamento.getMedicamentos());
-        tableMedicamentos.setItems(listaObservable);
+        try {
+            // Ruta dinámica al archivo XML
+            String rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "medicamentos.xml").toString();
+            File archivo = new File(rutaXML);
 
-        colCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
-        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colPresentacion.setCellValueFactory(new PropertyValueFactory<>("presentacion"));
-        colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-
-        // Listeners para que los RadioButton se excluyan mutuamente
-        btnGuardarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnBorrarMedicamento.setSelected(false); btnModificarMedicamento.setSelected(false); btnBuscarMedicamento.setSelected(false); txtDescripcionMedicamento.setEditable(true); txtNombreMedicamento.setEditable(true); txtPresentacionMedicamento.setEditable(true);}
-        });
-        btnBorrarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarMedicamento.setSelected(false); btnModificarMedicamento.setSelected(false); btnBuscarMedicamento.setSelected(false); txtDescripcionMedicamento.setEditable(false); txtNombreMedicamento.setEditable(false); txtPresentacionMedicamento.setEditable(false);}
-        });
-        btnModificarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarMedicamento.setSelected(false); btnBorrarMedicamento.setSelected(false); btnBuscarMedicamento.setSelected(false); txtDescripcionMedicamento.setEditable(true); txtNombreMedicamento.setEditable(true); txtPresentacionMedicamento.setEditable(true);}
-        });
-
-        btnBuscarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) { btnGuardarMedicamento.setSelected(false); btnBorrarMedicamento.setSelected(false); btnModificarMedicamento.setSelected(false); txtDescripcionMedicamento.setEditable(true); txtNombreMedicamento.setEditable(true); txtPresentacionMedicamento.setEditable(true);}
-        });
-
-        txtCodigoMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarMedicamento.isSelected()) {
-                buscarMedicamento();
+            // Crear archivo si no existe
+            if (!archivo.exists()) {
+                archivo.getParentFile().mkdirs();
+                String contenidoInicial = """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <medicamentos>
+                    </medicamentos>
+                    """;
+                try (FileWriter writer = new FileWriter(archivo)) {
+                    writer.write(contenidoInicial);
+                    System.out.println("Archivo medicamentos.xml creado en: " + rutaXML);
+                }
             }
-        });
 
-        txtNombreMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarMedicamento.isSelected()) {
-                buscarMedicamento();
-            }
-        });
+            // Inicializar lógica y tabla
+            medicamentoLogica = new MedicamentoLogica(rutaXML);
+            listaObservable = FXCollections.observableArrayList(medicamentoLogica.findAll());
+            tableMedicamentos.setItems(listaObservable);
 
-        txtDescripcionMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarMedicamento.isSelected()) {
-                buscarMedicamento();
-            }
-        });
+            colCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+            colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+            colPresentacion.setCellValueFactory(new PropertyValueFactory<>("presentacion"));
+            colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
-        txtPresentacionMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarMedicamento.isSelected()) {
-                buscarMedicamento();
-            }
-        });
+            btnGuardarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) toggleMode("guardar");
+            });
+            btnBorrarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) toggleMode("borrar");
+            });
+            btnModificarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) toggleMode("modificar");
+            });
+            btnBuscarMedicamento.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) toggleMode("buscar");
+            });
 
+            txtCodigoMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal.isEmpty()) {
+                    limpiarCampos();
+                    return;
+                }
+                Optional<Medicamento> encontrado = medicamentoLogica.findByCodigo(newVal);
+                if (encontrado.isPresent()) {
+                    Medicamento m = encontrado.get();
+                    txtNombreMedicamento.setText(m.getNombre());
+                    txtPresentacionMedicamento.setText(m.getPresentacion());
+                    txtDescripcionMedicamento.setText(m.getDescripcion());
+                } else {
+                    txtNombreMedicamento.clear();
+                    txtPresentacionMedicamento.clear();
+                    txtDescripcionMedicamento.clear();
+                }
+            });
 
-        // Listener para autocompletar campos cuando escriben el Codigo
-        txtCodigoMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.isEmpty()) {
-                txtNombreMedicamento.clear();
-                txtDescripcionMedicamento.clear();
-                txtPresentacionMedicamento.clear();
-                return;
-            }
-            Medicamento encontrado = gestorMedicamento.buscarPorCodigo(newVal);
-            if (encontrado != null) {
-                txtNombreMedicamento.setText(encontrado.getNombre());
-                txtPresentacionMedicamento.setText(encontrado.getPresentacion());
-                txtDescripcionMedicamento.setText(encontrado.getDescripcion());
-            } else {
-                txtNombreMedicamento.clear();
-                txtDescripcionMedicamento.clear();
-                txtPresentacionMedicamento.clear();
-            }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error al inicializar", e.getMessage());
+        }
     }
-
-    // ---------------- Lógica CRUD ----------------
 
     @FXML
     private void GuardarModificarEliminarMedicamento() {
         try {
+            String codigo = txtCodigoMedicamento.getText().trim();
             String nombre = txtNombreMedicamento.getText().trim();
             String presentacion = txtPresentacionMedicamento.getText().trim();
-            String identificacion = txtCodigoMedicamento.getText().trim();
             String descripcion = txtDescripcionMedicamento.getText().trim();
 
-            if (nombre.isEmpty() || presentacion.isEmpty() || identificacion.isEmpty() || descripcion.isEmpty()) {
+            if (codigo.isEmpty() || nombre.isEmpty() || presentacion.isEmpty() || descripcion.isEmpty()) {
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }
 
-            if (btnGuardarMedicamento.isSelected()) {
-                // Crear nuevo Medicamento
-                Medicamento nuevo = new Medicamento(identificacion,nombre, presentacion, descripcion);
+            Medicamento m = new Medicamento(codigo, nombre, presentacion, descripcion);
 
-                for (Medicamento m : gestorMedicamento.getMedicamentos()) {
-                    if (m.getCodigo().equals(identificacion)) {
-                        mostrarAlerta("Médico ya existe", "Ya existe un medicamento con esa identificación: " + nuevo.getCodigo());
-                        limpiarCampos();
-                        return;
-                    }
-                }
-                gestorMedicamento.agregarMedicamento(nuevo);
-                listaObservable.add(nuevo);
+            if (btnGuardarMedicamento.isSelected()) {
+                medicamentoLogica.create(m);
+                listaObservable.add(m);
 
             } else if (btnModificarMedicamento.isSelected()) {
-                Medicamento existente = gestorMedicamento.buscarPorCodigo(identificacion);
-                if (existente == null) {
-                    mostrarAlerta("No encontrado", "No existe un medicamento con ese ID");
-                    limpiarCampos();
-                    return;
-                }
-                existente.setNombre(nombre);
-                existente.setPresentacion(presentacion);
-                existente.setDescripcion(descripcion);
-
-                tableMedicamentos.refresh();
+                medicamentoLogica.update(m);
+                refrescarTabla();
 
             } else if (btnBorrarMedicamento.isSelected()) {
-                Medicamento aEliminar = gestorMedicamento.buscarPorCodigo(identificacion);
-                if (aEliminar == null) {
-                    mostrarAlerta("No encontrado", "No existe un medicamento con ese ID: " + identificacion);
-                    return;
+                boolean eliminado = medicamentoLogica.deleteByCodigo(codigo);
+                if (eliminado) {
+                    listaObservable.removeIf(x -> x.getCodigo().equalsIgnoreCase(codigo));
+                } else {
+                    mostrarAlerta("No encontrado", "No existe un medicamento con ese código: " + codigo);
                 }
-                gestorMedicamento.eliminarMedicamento(aEliminar);
-                listaObservable.remove(aEliminar);
             }
 
             limpiarCampos();
@@ -175,27 +153,33 @@ public class MedicamentosController {
 
     @FXML
     private void buscarMedicamento() {
-        String criterioID = txtCodigoMedicamento.getText().trim().toLowerCase();
-        String criterioNombre = txtNombreMedicamento.getText().trim().toLowerCase();
-        String criterioPresentacion = txtPresentacionMedicamento.getText().trim().toLowerCase();
-        String criterioDescripcion = txtDescripcionMedicamento.getText().trim().toLowerCase();
+        String query = String.join(" ",
+                txtCodigoMedicamento.getText(),
+                txtNombreMedicamento.getText(),
+                txtPresentacionMedicamento.getText(),
+                txtDescripcionMedicamento.getText()
+        ).trim();
 
-        ObservableList<Medicamento> filtrados = FXCollections.observableArrayList();
-
-        for (Medicamento m : gestorMedicamento.getMedicamentos()) {
-            boolean coincideID = criterioID.isEmpty() || m.getCodigo().toLowerCase().contains(criterioID);
-            boolean coincideNombre = criterioNombre.isEmpty() || m.getNombre().toLowerCase().contains(criterioNombre);
-            boolean coincidePresentacion= criterioPresentacion.isEmpty() || m.getPresentacion().toLowerCase().contains(criterioPresentacion);
-            boolean coincideDescripcion= criterioDescripcion.isEmpty() || m.getDescripcion().toLowerCase().contains(criterioDescripcion);
-
-            if (coincideID && coincideNombre && coincidePresentacion && coincideDescripcion) {
-                filtrados.add(m);
-            }
+        if (query.isEmpty()) {
+            refrescarTabla();
+            return;
         }
 
-        listaObservable.setAll(filtrados);
+        List<Medicamento> resultado = medicamentoLogica.search(query);
+        listaObservable.setAll(resultado);
     }
 
+    private void toggleMode(String mode) {
+        btnGuardarMedicamento.setSelected(mode.equals("guardar"));
+        btnBorrarMedicamento.setSelected(mode.equals("borrar"));
+        btnModificarMedicamento.setSelected(mode.equals("modificar"));
+        btnBuscarMedicamento.setSelected(mode.equals("buscar"));
+
+        boolean editable = !mode.equals("borrar");
+        txtDescripcionMedicamento.setEditable(editable);
+        txtNombreMedicamento.setEditable(editable);
+        txtPresentacionMedicamento.setEditable(editable);
+    }
 
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -213,12 +197,10 @@ public class MedicamentosController {
         txtDescripcionMedicamento.clear();
     }
 
-    // ---------------- Tabla ----------------
     public void refrescarTabla() {
-        listaObservable.setAll(gestorMedicamento.getMedicamentos());
+        listaObservable.setAll(medicamentoLogica.findAll());
     }
 
-    // ---------------- Animación ----------------
     public void mostrarListaConAnimacion() {
         if (vBoxPortadaMedicamentos.isVisible()) {
             javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.seconds(1));
@@ -232,5 +214,3 @@ public class MedicamentosController {
         }
     }
 }
-
-
