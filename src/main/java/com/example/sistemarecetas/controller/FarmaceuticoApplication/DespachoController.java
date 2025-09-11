@@ -145,7 +145,7 @@ public class DespachoController {
             if (actualizado) {
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización de Estado",
                         "El estado de la receta de " + recetaSeleccionada.getPaciente().getNombre() +
-                                " ha sido actualizado a: " + recetaSeleccionada.getEstado() + " satdisfactoriamente.");
+                                " ha sido actualizado a: " + recetaSeleccionada.getEstado() + " satisfactoriamente.");
             } else {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error de Estado",
                         "Ocurrió un error del sistema, no se pudo actualizar el estado." +

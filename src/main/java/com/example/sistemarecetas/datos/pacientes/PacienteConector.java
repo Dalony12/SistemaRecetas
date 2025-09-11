@@ -5,18 +5,18 @@ import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "clientesData")
+@XmlRootElement(name = "pacientesData")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PacienteConector {
-    @XmlElementWrapper(name = "clientes")
-    @XmlElement(name = "Cliente")
-    private List<PacienteEntity> clientes = new ArrayList();
+    @XmlElementWrapper(name = "pacientes")
+    @XmlElement(name = "Paciente")
+    private List<PacienteEntity> pacientes = new ArrayList();
 
-    public List<PacienteEntity> getClientes() {
-        return clientes;
+    public List<PacienteEntity> getPacientes() {
+        return pacientes;
     }
 
-    public void setClientes(List<PacienteEntity> clientes) {
-        this.clientes = clientes;
+    public void setPacientes(List<PacienteEntity> pacientes) {
+        this.pacientes = pacientes;
     }
 }
