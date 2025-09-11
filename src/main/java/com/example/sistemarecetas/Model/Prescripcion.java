@@ -6,6 +6,9 @@ public class Prescripcion {
     private String indicaciones;
     private int duracionDias;
 
+    public Prescripcion() {
+    }
+
     public Prescripcion(Medicamento medicamento, int cantidad, String indicaciones, int duracionDias) {
         this.medicamento = medicamento;
         this.cantidad = cantidad;

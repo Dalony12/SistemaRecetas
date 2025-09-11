@@ -6,6 +6,9 @@ public class Medicamento {
     private String descripcion;
     private String presentacion;
 
+    public Medicamento() {
+    }
+
     public Medicamento(String codigo, String nombre, String presentacion, String descripcion) {
         this.codigo = codigo;
         this.nombre = nombre;

@@ -1,6 +1,7 @@
 package com.example.sistemarecetas.datos.recetas;
 
 
+import com.example.sistemarecetas.Model.Prescripcion;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
@@ -18,14 +19,18 @@ public class RecetaDatos {
     private RecetaConector cache;
 
     public RecetaDatos(String filePath) {
-        try{
+        try {
             this.xmlPath = Path.of(Objects.requireNonNull(filePath));
-            this.ctx = JAXBContext.newInstance(RecetaConector.class, RecetaEntity.class);
-        }
-        catch(Exception e){
-            throw new RuntimeException(e.getMessage());
+            this.ctx = JAXBContext.newInstance(
+                    RecetaConector.class,
+                    RecetaEntity.class,
+                    Prescripcion.class
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Error al inicializar JAXBContext: " + e.getMessage());
         }
     }
+
 
     public synchronized RecetaConector load() {
         try {

@@ -1,12 +1,12 @@
 package com.example.sistemarecetas.controller.MedicoApplication;
 
-import com.example.sistemarecetas.Gestores.GestorMedicamentos;
-import com.example.sistemarecetas.Gestores.GestorPacientes;
-import com.example.sistemarecetas.Gestores.GestorRecetas;
 import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Paciente;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
+import com.example.sistemarecetas.logica.medicamentos.MedicamentoLogica;
+import com.example.sistemarecetas.logica.pacientes.PacientesLogica;
+import com.example.sistemarecetas.logica.recetas.RecetasLogica;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -17,7 +17,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +47,9 @@ public class PrescripcionController {
     @FXML
     private TableColumn<Prescripcion, Integer> colDuracion;
 
-    private GestorPacientes gestorPacientes = GestorPacientes.getInstancia();
-    private GestorMedicamentos gestorMedicamentos = GestorMedicamentos.getInstancia();
-    private GestorRecetas gestorRecetas = GestorRecetas.getInstancia();
-
+    private RecetasLogica recetasLogica;
+    private PacientesLogica pacientesLogica;
+    private MedicamentoLogica medicamentoLogica;
     private List<Prescripcion> listaMedicamentos;
     private Receta receta = null;
     private Medicamento medicamento = null;
@@ -55,47 +58,68 @@ public class PrescripcionController {
 
     @FXML
     public void initialize() {
+        try {
+            // Ruta dinámica al archivo XML
+            String rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "recetas.xml").toString();
+            File archivo = new File(rutaXML);
 
-        // Crear medicamentos de prueba
-        Medicamento med1 = new Medicamento("MED001", "Paracetamol", "Tableta 500mg", "lola");
-        Medicamento med2 = new Medicamento("MED002", "Ibuprofeno", "Cápsula 200mg", "lola");
-        gestorMedicamentos.agregarMedicamento(med1);
-        gestorMedicamentos.agregarMedicamento(med2);
-
-        Paciente pa = new Paciente("123", "Rosalinda", 673884, LocalDate.of(1995, 5, 21));
-        gestorPacientes.agregarPaciente(pa);
-
-        colMedicamento.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getMedicamento().getNombre())
-        );
-
-        colPresentacion.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getMedicamento().getPresentacion())
-        );
-
-        colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
-        colIndicaciones.setCellValueFactory(new PropertyValueFactory<>("indicaciones"));
-        colDuracion.setCellValueFactory(new PropertyValueFactory<>("duracionDias"));
-
-        tblMedicamentoReceta.setItems(FXCollections.observableArrayList());
-
-        listaMedicamentos = new ArrayList<>();
-
-        tblMedicamentoReceta.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            btnEliminarMedicamento.setDisable(newSelection == null);
-        });
-
-        dtpFechaRetiroPres.setDayCellFactory(picker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-
-                if (date.isBefore(LocalDate.now())) {
-                    setDisable(true);
-                    setStyle("-fx-background-color: #ffc0cb;");
+            // Crear archivo si no existe
+            if (!archivo.exists()) {
+                archivo.getParentFile().mkdirs();
+                String contenidoInicial = """
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        <recetas>
+                        </recetas>
+                        """;
+                try (FileWriter writer = new FileWriter(archivo)) {
+                    writer.write(contenidoInicial);
+                    System.out.println("Archivo recetas.xml creado en: " + rutaXML);
                 }
             }
-        });
+
+            String rutaPacientesXML = Paths.get(System.getProperty("user.dir"), "datos", "pacientes.xml").toString();
+            pacientesLogica = new PacientesLogica(rutaPacientesXML);
+
+            String rutaPacientesXMLMedicamentos = Paths.get(System.getProperty("user.dir"), "datos", "medicamentos.xml").toString();
+            medicamentoLogica = new MedicamentoLogica(rutaPacientesXMLMedicamentos);
+
+            // Inicializar lógica y tabla
+            recetasLogica = new RecetasLogica(rutaXML);
+            listaMedicamentos = new ArrayList<>();
+            tblMedicamentoReceta.setItems(FXCollections.observableArrayList());
+
+
+            colMedicamento.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(cellData.getValue().getMedicamento().getNombre())
+            );
+
+            colPresentacion.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(cellData.getValue().getMedicamento().getPresentacion())
+            );
+
+            colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+            colIndicaciones.setCellValueFactory(new PropertyValueFactory<>("indicaciones"));
+            colDuracion.setCellValueFactory(new PropertyValueFactory<>("duracionDias"));
+
+            tblMedicamentoReceta.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                btnEliminarMedicamento.setDisable(newSelection == null);
+            });
+
+            dtpFechaRetiroPres.setDayCellFactory(picker -> new DateCell() {
+                @Override
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+
+                    if (date.isBefore(LocalDate.now())) {
+                        setDisable(true);
+                        setStyle("-fx-background-color: #ffc0cb;");
+                    }
+                }
+            });
+        }  catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error al inicializar", e.getMessage());
+        }
     }
 
     @FXML
@@ -116,6 +140,9 @@ public class PrescripcionController {
             Parent root = loader.load();
 
             BuscarMedicamentoController controller = loader.getController();
+
+            // 🔥 Aquí le pasás la lista de pacientes desde tu lógica modular
+            controller.setListaMedicamentos(medicamentoLogica.findAll());
 
             Stage stage = crearVentanaModal(root, "Buscar Medicamento");
 
@@ -143,6 +170,10 @@ public class PrescripcionController {
             Parent root = loader.load();
 
             buscarPacienteController controller = loader.getController();
+
+            // 🔥 Aquí le pasás la lista de pacientes desde tu lógica modular
+            controller.setListaPacientes(pacientesLogica.findAll());
+
 
             Stage stage = crearVentanaModal(root, "Buscar Paciente");
 
@@ -203,11 +234,6 @@ public class PrescripcionController {
     @FXML
     private void guardarPrescripcion() {
         try {
-            if (gestorPacientes == null) {
-                mostrarAlerta("Error de Sistema", "El gestor de pacientes no está disponible");
-                return;
-            }
-
             LocalDate fechaRetiro = dtpFechaRetiroPres.getValue();
 
             if (paciente == null || fechaRetiro == null) {
@@ -227,12 +253,12 @@ public class PrescripcionController {
 
             if (receta == null) {
                 receta = new Receta(paciente, listaMedicamentos, fechaRetiro);
-                gestorRecetas.agregarReceta(receta);
+                recetasLogica.create(receta);
             } else {
                 receta.setPaciente(paciente);
                 receta.setMedicamentos(listaMedicamentos);
                 receta.setFechaRetiro(fechaRetiro);
-                gestorRecetas.agregarReceta(receta);
+                recetasLogica.create(receta);
             }
 
             mostrarAlerta("Receta guardada", "La receta fue registrada correctamente.");

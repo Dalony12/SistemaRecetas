@@ -13,8 +13,8 @@ public class PacientesMapper {
         PacienteEntity entity = new PacienteEntity();
         entity.setId(m.getId());
         entity.setNombre(m.getNombre());
-        entity.setTelefono(m.getTelefono());
         entity.setFechaNacimiento(m.getFechaNacimiento());
+        entity.setTelefono(m.getTelefono());
         return entity;
     }
 
