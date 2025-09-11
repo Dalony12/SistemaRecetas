@@ -3,13 +3,16 @@ package com.example.sistemarecetas.controller.MedicoApplication;
 import com.example.sistemarecetas.Gestores.GestorRecetas;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
+import com.example.sistemarecetas.logica.recetas.RecetasLogica;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class HistorialController {
@@ -28,16 +31,21 @@ public class HistorialController {
 
     // Lista observable + gestor
     private ObservableList<Receta> listaObservable;
-    private GestorRecetas gestorRecetas = GestorRecetas.getInstancia();
 
     @FXML
     public void initialize() {
 
-        // Inicializar lista y tabla
-        listaObservable = FXCollections.observableArrayList(gestorRecetas.getRecetas());
-        tableRecetas.setItems(listaObservable);
+        try {
+            String rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "recetas.xml").toString();
+            RecetasLogica recetasLogica = new RecetasLogica(rutaXML);
+            List<Receta> recetas = recetasLogica.findAll();
 
-        colPersona.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPaciente().getNombre()));
+            listaObservable = FXCollections.observableArrayList(recetas);
+            tableRecetas.setItems(listaObservable);
+
+
+
+            colPersona.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPaciente().getNombre()));
         colConfeccion.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getFechaConfeccion().toString()));
         colRetiro.setCellValueFactory(data -> new SimpleStringProperty(
                 data.getValue().getFechaRetiro() != null ? data.getValue().getFechaRetiro().toString() : "Pendiente"
@@ -72,28 +80,21 @@ public class HistorialController {
                     setText(null);
                     setTooltip(null);
                 } else {
-                    setText(item.length() > 20 ? item.substring(0, 20) + "..." : item);
+                    setText(item); // sin recorte
                     setTooltip(new Tooltip(item));
                 }
             }
         });
 
-        colInidcaiones.setCellValueFactory(data -> {
-            List<Prescripcion> lista = data.getValue().getMedicamentos();
-            StringBuilder sb = new StringBuilder();
-            //String indicaciones = "";
-            for (Prescripcion p : lista) {
-                sb.append(p.getIndicaciones());
-                //indicaciones += p.getIndicaciones() + ", ";
-            }
-            /*if (!indicaciones.isEmpty()) {
-                indicaciones = indicaciones.substring(0, indicaciones.length() - 2);
-            }*/
-            if (!sb.isEmpty()) sb.setLength(sb.length() - 2);
-            return new SimpleStringProperty(sb.toString());
-        });
+            colInidcaiones.setCellValueFactory(data -> {
+                String indicaciones = data.getValue().getMedicamentos().stream()
+                        .map(Prescripcion::getIndicaciones)
+                        .collect(Collectors.joining(", "));
+                return new SimpleStringProperty(indicaciones);
+            });
 
-        colCantidadDías.setCellValueFactory(data -> {
+
+            colCantidadDías.setCellValueFactory(data -> {
             List<Prescripcion> lista = data.getValue().getMedicamentos();
             String dias = "";
             for (Prescripcion p : lista) {
@@ -108,25 +109,28 @@ public class HistorialController {
         txtNombreHistorialRecetas.textProperty().addListener((obs, oldVal, newVal) -> {
             filtrarRecetas();
         });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error al cargar historial", e.getMessage());
+        }
+
     }
 
     private void filtrarRecetas() {
-        String criterioNombre = txtNombreHistorialRecetas.getText().trim().toLowerCase();
-
-        ObservableList<Receta> filtradas = FXCollections.observableArrayList();
-
-        for (Receta r : gestorRecetas.getRecetas()) {
-            String idPaciente = r.getPaciente().getId().toLowerCase();
-            String nombrePaciente = r.getPaciente().getNombre().toLowerCase();
-
-            boolean coincideNombre = criterioNombre.isEmpty() || nombrePaciente.contains(criterioNombre);
-
-            if (coincideNombre) {
-                filtradas.add(r);
-            }
-        }
-
-        listaObservable.setAll(filtradas);
+        String criterio = txtNombreHistorialRecetas.getText().trim().toLowerCase();
+        List<Receta> filtradas = listaObservable.stream()
+                .filter(r -> r.getPaciente().getNombre().toLowerCase().contains(criterio))
+                .collect(Collectors.toList());
+        tableRecetas.setItems(FXCollections.observableArrayList(filtradas));
     }
 
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.ERROR);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
 }
+

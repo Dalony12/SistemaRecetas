@@ -21,6 +21,18 @@ public class Receta {
         this.estado = "En proceso";
     }
 
+    public Receta(Paciente paciente, List<Prescripcion> medicamentos,
+                  LocalDate fechaConfeccion, LocalDate fechaRetiro,
+                  int confeccionado, String estado) {
+        this.paciente = paciente;
+        this.medicamentos = new ArrayList<>(medicamentos);
+        this.fechaConfeccion = fechaConfeccion;
+        this.fechaRetiro = fechaRetiro;
+        this.confeccionado = confeccionado;
+        this.estado = estado;
+    }
+
+
     public Paciente getPaciente() {
         return paciente;
     }

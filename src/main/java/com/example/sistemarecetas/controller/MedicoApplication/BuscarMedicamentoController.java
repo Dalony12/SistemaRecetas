@@ -1,13 +1,15 @@
 package com.example.sistemarecetas.controller.MedicoApplication;
 
-import com.example.sistemarecetas.Gestores.GestorMedicamentos;
 import com.example.sistemarecetas.Model.Medicamento;
+import com.example.sistemarecetas.Model.Paciente;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+
+import java.util.List;
 
 
 public class BuscarMedicamentoController {
@@ -23,10 +25,7 @@ public class BuscarMedicamentoController {
     @FXML private TableColumn<Medicamento, String> colNombre;
     @FXML private TableColumn<Medicamento, String> colPresentacion;
 
-    // Lista observable + gestor
     private ObservableList<Medicamento> listaObservable;
-    private  GestorMedicamentos gestorMedicamentos= GestorMedicamentos.getInstancia();
-
 
     @FXML
     public void initialize() {
@@ -34,8 +33,10 @@ public class BuscarMedicamentoController {
         cmbFiltrarMedicamentoPresc.setItems(FXCollections.observableArrayList("ID", "Nombre"));
         cmbFiltrarMedicamentoPresc.setValue("Nombre");
 
-        listaObservable = FXCollections.observableArrayList(gestorMedicamentos.getMedicamentos());
+        // Aquí asumimos que listaObservable ya fue cargada desde otro módulo
+        listaObservable = FXCollections.observableArrayList(); // Se puede setear externamente
         tblMedicamentoPresc.setItems(listaObservable);
+
 
         // Configurar columnas
         colCodigo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCodigo()));
@@ -108,6 +109,10 @@ public class BuscarMedicamentoController {
         stage.close();
 
 
+    }
+
+    public void setListaMedicamentos(List<Medicamento> medicamentos) {
+        listaObservable.setAll(medicamentos);
     }
 
 }

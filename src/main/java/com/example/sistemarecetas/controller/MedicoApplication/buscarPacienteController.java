@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class buscarPacienteController {
 
     @FXML private ComboBox<String> cmbFiltrarPacientePresc;
@@ -23,14 +25,13 @@ public class buscarPacienteController {
 
     private Paciente pacienteSeleccionado;
     private ObservableList<Paciente> listaObservable;
-    private GestorPacientes gestorPacientes = GestorPacientes.getInstancia();
 
     @FXML
     public void initialize() {
         cmbFiltrarPacientePresc.setItems(FXCollections.observableArrayList("ID", "Nombre"));
         cmbFiltrarPacientePresc.setValue("Nombre");
 
-        listaObservable = FXCollections.observableArrayList(gestorPacientes.getPacientes());
+        listaObservable = FXCollections.observableArrayList(); // Se setea desde otro módulo
         tblPacientePresc.setItems(listaObservable);
 
         colIDPaciente.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getId()));
@@ -96,4 +97,9 @@ public class buscarPacienteController {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
+
+    public void setListaPacientes(List<Paciente> pacientes) {
+        listaObservable.setAll(pacientes);
+    }
+
 }
