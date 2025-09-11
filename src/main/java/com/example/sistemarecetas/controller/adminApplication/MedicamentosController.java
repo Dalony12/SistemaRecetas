@@ -87,6 +87,30 @@ public class MedicamentosController {
                 if (newVal) toggleMode("buscar");
             });
 
+            txtPresentacionMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (btnBuscarMedicamento.isSelected()) {
+                    buscarMedicamento();
+                }
+            });
+
+            txtNombreMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (btnBuscarMedicamento.isSelected()) {
+                    buscarMedicamento();
+                }
+            });
+
+            txtDescripcionMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (btnBuscarMedicamento.isSelected()) {
+                    buscarMedicamento();
+                }
+            });
+
+            txtCodigoMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (btnBuscarMedicamento.isSelected()) {
+                    buscarMedicamento();
+                }
+            });
+
             txtCodigoMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal.isEmpty()) {
                     limpiarCampos();
