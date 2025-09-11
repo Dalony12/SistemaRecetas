@@ -1,10 +1,11 @@
 package com.example.sistemarecetas.datos.medicos;
 
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import java.time.LocalDate;
+
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MedicoEntity {

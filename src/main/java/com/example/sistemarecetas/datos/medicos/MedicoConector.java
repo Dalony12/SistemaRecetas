@@ -1,14 +1,14 @@
 package com.example.sistemarecetas.datos.medicos;
 
+
 import jakarta.xml.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "medicosData")
+@XmlRootElement(name = "medicos")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MedicoConector {
-    @XmlElementWrapper(name = "medicos")
     @XmlElement(name = "Medico")
     private List<MedicoEntity> medicos = new ArrayList();
 

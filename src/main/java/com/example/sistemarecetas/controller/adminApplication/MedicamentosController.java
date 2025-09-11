@@ -1,5 +1,6 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
+import com.example.sistemarecetas.Model.Farmaceutico;
 import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.logica.medicamentos.MedicamentoLogica;
 import javafx.animation.TranslateTransition;
@@ -88,6 +89,19 @@ public class MedicamentosController {
             });
 
             txtCodigoMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (btnBuscarMedicamento.isSelected()) {
+                    buscarMedicamento();
+                }
+            });
+
+            txtNombreMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (btnBuscarMedicamento.isSelected()) {
+                    buscarMedicamento();
+                }
+            });
+
+
+            txtCodigoMedicamento.textProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal.isEmpty()) {
                     limpiarCampos();
                     return;
@@ -153,19 +167,16 @@ public class MedicamentosController {
 
     @FXML
     private void buscarMedicamento() {
-        String query = String.join(" ",
-                txtCodigoMedicamento.getText(),
-                txtNombreMedicamento.getText(),
-                txtPresentacionMedicamento.getText(),
-                txtDescripcionMedicamento.getText()
-        ).trim();
+        String id = txtCodigoMedicamento.getText().trim();
+        String nombre = txtNombreMedicamento.getText().trim();
 
-        if (query.isEmpty()) {
+        // si todo está vacío, refrescamos la tabla
+        if (id.isEmpty() && nombre.isEmpty()) {
             refrescarTabla();
             return;
         }
 
-        List<Medicamento> resultado = medicamentoLogica.search(query);
+        List<Medicamento> resultado = medicamentoLogica.search(id, nombre);
         listaObservable.setAll(resultado);
     }
 

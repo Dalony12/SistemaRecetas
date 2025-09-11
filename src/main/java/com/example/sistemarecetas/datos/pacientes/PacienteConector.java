@@ -5,10 +5,9 @@ import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "pacientesData")
+@XmlRootElement(name = "pacientes")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PacienteConector {
-    @XmlElementWrapper(name = "pacientes")
     @XmlElement(name = "Paciente")
     private List<PacienteEntity> pacientes = new ArrayList();
 

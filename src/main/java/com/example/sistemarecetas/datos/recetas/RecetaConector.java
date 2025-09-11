@@ -1,14 +1,14 @@
 package com.example.sistemarecetas.datos.recetas;
 
+
 import jakarta.xml.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "recetasData")
+@XmlRootElement(name = "recetas")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RecetaConector {
-    @XmlElementWrapper(name = "recetas")
     @XmlElement(name = "Receta")
     private List<RecetaEntity> recetas = new ArrayList();
 

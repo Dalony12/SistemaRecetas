@@ -1,5 +1,6 @@
 package com.example.sistemarecetas.datos.prescripciones;
 
+
 import com.example.sistemarecetas.datos.LocalDateAdapter;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
