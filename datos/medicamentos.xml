@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<medicamentos>
+    <medicamento>
+        <codigo>1</codigo>
+        <nombre>Paracetamol</nombre>
+        <descripcion>Pastilla para el dolor</descripcion>
+        <presentacion>Blister</presentacion>
+    </medicamento>
+    <medicamento>
+        <codigo>2</codigo>
+        <nombre>Ibuprofeno</nombre>
+        <descripcion>Pastilla para dolores</descripcion>
+        <presentacion>Blister</presentacion>
+    </medicamento>
+</medicamentos>
