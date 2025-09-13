@@ -141,7 +141,7 @@ public class PrescripcionController {
 
             BuscarMedicamentoController controller = loader.getController();
 
-            // 🔥 Aquí le pasás la lista de pacientes desde tu lógica modular
+            // Aquí le pasás la lista de pacientes desde tu lógica modular
             controller.setListaMedicamentos(medicamentoLogica.findAll());
 
             Stage stage = crearVentanaModal(root, "Buscar Medicamento");
@@ -171,7 +171,7 @@ public class PrescripcionController {
 
             buscarPacienteController controller = loader.getController();
 
-            // 🔥 Aquí le pasás la lista de pacientes desde tu lógica modular
+            // Aquí le pasás la lista de pacientes desde tu lógica modular
             controller.setListaPacientes(pacientesLogica.findAll());
 
 
