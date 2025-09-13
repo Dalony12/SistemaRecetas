@@ -11,9 +11,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DateCell;
-import javafx.scene.control.DatePicker;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.*;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -23,11 +22,12 @@ public class DashboardController implements Initializable {
     private static final String RUTA_RECETAS = java.nio.file.Paths
             .get(System.getProperty("user.dir"), "datos", "recetas.xml")
             .toString();
-    @FXML private LineChart<Number, LocalDate> graficoLineal;
+    @FXML private LineChart<String, Number> graficoLineal;
     @FXML private PieChart graficoPastel;
     @FXML private ComboBox<String> cmbMedicamento;
     @FXML private DatePicker fechaInicioDashboard;
     @FXML private DatePicker fechaFinDashboard;
+    @FXML Button btnEnviar;
 
     private DashboardLogica service;
 
@@ -52,16 +52,35 @@ public class DashboardController implements Initializable {
         ObservableList<String> medicamentos = FXCollections.observableArrayList(nombresUnicos);
         cmbMedicamento.setItems(medicamentos);
 
-        cargarGraficos();
+        cargarGraficoPie();
+        cargarGraficoLineal();
     }
 
-    private void cargarGraficos() {
+    @FXML
+    private void cargarGraficoLineal() {
         LocalDate fechaInicio = fechaInicioDashboard.getValue();
         LocalDate fechaFin = fechaFinDashboard.getValue();
         String medicamento = cmbMedicamento.getValue();
 
-        //service.graficoLinea(fechaInicio, fechaFin, medicamento);
+        if (fechaInicio == null || fechaFin == null || medicamento == null || medicamento.isEmpty()) {
+            mostrarAlerta("Campos vacios", "Debe de completar todo los espacios.");
+            return;
+        }
 
+        Map<String, Long> datos = service.prescripcionesPorMes(fechaInicio, fechaFin, medicamento);
+
+        graficoLineal.getData().clear();
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Cantidad de Prescripciones de " + medicamento);
+
+        for (Map.Entry<String, Long> entry : datos.entrySet()) {
+            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+
+        graficoLineal.getData().add(series);
+    }
+
+    private void cargarGraficoPie() {
         Map<String, Long> conteoPorEstado = service.recetaPorEstado();
         graficoPastel.getData().clear();
 
@@ -76,4 +95,11 @@ public class DashboardController implements Initializable {
         }
     }
 
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
 }

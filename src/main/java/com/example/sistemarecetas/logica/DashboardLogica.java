@@ -1,11 +1,15 @@
 package com.example.sistemarecetas.logica;
 
+import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
 import com.example.sistemarecetas.logica.recetas.RecetasLogica;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class DashboardLogica {
     private final RecetasLogica recetasLogica;
@@ -39,5 +43,24 @@ public class DashboardLogica {
             conteoPorEstado.computeIfPresent(estado, (key, value) -> value + 1);
         }
         return conteoPorEstado;
+    }
+
+    public Map<String, Long> prescripcionesPorMes(LocalDate fechaInicio, LocalDate fechaFinal, String medicamento) {
+        Map<String, Long> prescripcionesPorMes = new TreeMap<>();
+        List<Receta> listaRecetas = recetasLogica.findAll();
+
+        for (Receta receta : listaRecetas) {
+            if (receta.getFechaConfeccion().isAfter(fechaInicio.minusDays(1)) && receta.getFechaConfeccion().isBefore(fechaFinal.plusDays(1))) {
+                for (Prescripcion p : receta.getMedicamentos()) {
+                    if (p.getMedicamento().getNombre().equals(medicamento)) {
+                        YearMonth mesReceta = YearMonth.from(receta.getFechaConfeccion());
+                        String AnnioMes = mesReceta.getMonth().toString();
+
+                        prescripcionesPorMes.put(AnnioMes, prescripcionesPorMes.getOrDefault(AnnioMes, 0L) + 1);
+                    }
+                }
+            }
+        }
+        return prescripcionesPorMes;
     }
 }
