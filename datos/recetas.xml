@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<recetas>
+    <Receta>
+        <paciente>
+            <id>paciente-111</id>
+            <nombre>Javier</nombre>
+            <telefono>88319288</telefono>
+            <fechaNacimiento>2005-08-21</fechaNacimiento>
+        </paciente>
+        <medicamentos>
+            <prescripcion>
+                <cantidad>5</cantidad>
+                <duracionDias>15</duracionDias>
+                <indicaciones>Tomeselas</indicaciones>
+                <medicamento>
+                    <codigo>2</codigo>
+                    <descripcion>Blister</descripcion>
+                    <nombre>Ibuprofeno</nombre>
+                    <presentacion>Pastilla para dolores</presentacion>
+                </medicamento>
+            </prescripcion>
+        </medicamentos>
+        <fechaConfeccion>2025-09-14</fechaConfeccion>
+        <fechaRetiro>2025-09-21</fechaRetiro>
+        <confeccionado>1</confeccionado>
+        <estado>Entregado</estado>
+    </Receta>
+</recetas>

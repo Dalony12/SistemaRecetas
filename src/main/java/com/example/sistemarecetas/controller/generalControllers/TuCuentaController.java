@@ -3,9 +3,9 @@ package com.example.sistemarecetas.controller.generalControllers;
 import com.example.sistemarecetas.Model.Medico;
 import com.example.sistemarecetas.Model.Farmaceutico;
 import com.example.sistemarecetas.Model.Usuario;
-import com.example.sistemarecetas.Gestores.GestorMedicos;
-import com.example.sistemarecetas.Gestores.GestorFarmaceuticos;
 import com.example.sistemarecetas.domain.UsuarioActual;
+import com.example.sistemarecetas.logica.medicos.MedicosLogica;
+import com.example.sistemarecetas.logica.farmaceutas.FarmaceutasLogica;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
@@ -16,17 +16,16 @@ public class TuCuentaController {
     @FXML private PasswordField txtVerificarContrasena;
 
     private Usuario usuarioActivo;
-    private Object gestor; // Guardará GestorMedicos o GestorFarmaceuticos según el usuario
+    private MedicosLogica medicosLogica;
+    private FarmaceutasLogica farmaceutasLogica;
 
     @FXML
     private void initialize() {
         usuarioActivo = UsuarioActual.getInstancia().getUsuario();
 
-        if (usuarioActivo instanceof Medico) {
-            gestor = GestorMedicos.getInstancia();
-        } else if (usuarioActivo instanceof Farmaceutico) {
-            gestor = GestorFarmaceuticos.getInstancia();
-        }
+        // Inicializar lógica (cargar desde los XML)
+        medicosLogica = new MedicosLogica("datos/medicos.xml");
+        farmaceutasLogica = new FarmaceutasLogica("datos/farmaceutas.xml");
     }
 
     @FXML
@@ -48,11 +47,19 @@ public class TuCuentaController {
 
         boolean actualizado = false;
 
-        // Actualizar según tipo de usuario
-        if (usuarioActivo instanceof Medico) {
-            actualizado = ((GestorMedicos) gestor).actualizarPassword(usuarioActivo.getId(), nueva);
-        } else if (usuarioActivo instanceof Farmaceutico) {
-            actualizado = ((GestorFarmaceuticos) gestor).actualizarPassword(usuarioActivo.getId(), nueva);
+        try {
+            if (usuarioActivo instanceof Medico medico) {
+                medico.setPassword(nueva);
+                medicosLogica.update(medico);
+                actualizado = true;
+            } else if (usuarioActivo instanceof Farmaceutico farmaceutico) {
+                farmaceutico.setPassword(nueva);
+                farmaceutasLogica.update(farmaceutico);
+                actualizado = true;
+            }
+        } catch (Exception e) {
+            mostrarAlerta("Error", "No se pudo actualizar la contraseña: " + e.getMessage());
+            return;
         }
 
         if (!actualizado) {

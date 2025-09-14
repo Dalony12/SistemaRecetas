@@ -1,8 +1,8 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
-import com.example.sistemarecetas.Gestores.GestorRecetas;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
+import com.example.sistemarecetas.logica.recetas.RecetasLogica;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,12 +13,11 @@ import javafx.scene.control.TextField;
 
 import java.util.List;
 
-
 public class HistorialController {
 
     @FXML private TextField txtNombreHistorialRecetas;
 
-    //Tabla de los datos
+    // Tabla de los datos
     @FXML private TableView<Receta> tableRecetas;
     @FXML private TableColumn<Receta, String> colPersona;
     @FXML private TableColumn<Receta, String> colMedicamentos;
@@ -28,14 +27,17 @@ public class HistorialController {
     @FXML private TableColumn<Receta, String> colInidcaiones;
     @FXML private TableColumn<Receta, String> colCantidadDías;
 
-    // Lista observable + gestor
+    // Lista observable + lógica
     private ObservableList<Receta> listaObservable;
-    private GestorRecetas gestorRecetas = GestorRecetas.getInstancia();
+    private RecetasLogica recetasLogica;
 
     @FXML
     public void initialize() {
+        // Inicializar la lógica (ajusta la ruta al XML real de recetas)
+        recetasLogica = new RecetasLogica("datos/recetas.xml");
+
         // Inicializar lista y tabla
-        listaObservable = FXCollections.observableArrayList(gestorRecetas.getRecetas());
+        listaObservable = FXCollections.observableArrayList(recetasLogica.findAll());
         tableRecetas.setItems(listaObservable);
 
         colPersona.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPaciente().getNombre()));
@@ -88,9 +90,7 @@ public class HistorialController {
             return new SimpleStringProperty(dias);
         });
 
-        txtNombreHistorialRecetas.textProperty().addListener((obs, oldVal, newVal) -> {
-            filtrarRecetas();
-        });
+        txtNombreHistorialRecetas.textProperty().addListener((obs, oldVal, newVal) -> filtrarRecetas());
     }
 
     private void filtrarRecetas() {
@@ -98,8 +98,7 @@ public class HistorialController {
 
         ObservableList<Receta> filtradas = FXCollections.observableArrayList();
 
-        for (Receta r : gestorRecetas.getRecetas()) {
-            String idPaciente = r.getPaciente().getId().toLowerCase();
+        for (Receta r : recetasLogica.findAll()) {
             String nombrePaciente = r.getPaciente().getNombre().toLowerCase();
 
             boolean coincideNombre = criterioNombre.isEmpty() || nombrePaciente.contains(criterioNombre);
@@ -111,5 +110,4 @@ public class HistorialController {
 
         listaObservable.setAll(filtradas);
     }
-
 }

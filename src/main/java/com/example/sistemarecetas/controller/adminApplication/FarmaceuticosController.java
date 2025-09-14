@@ -29,7 +29,7 @@ public class FarmaceuticosController {
     @FXML private TableColumn<Farmaceutico, String> colIDFarma;
     @FXML private TableColumn<Farmaceutico, String> colNombreFarma;
 
-    // Botones de acción (pueden ser RadioButton o ToggleButton)
+    // Botones de acción
     @FXML private RadioButton btnGuardarFarmaceutico;
     @FXML private RadioButton btnBorrarFarmaceutico;
     @FXML private RadioButton btnModificarFarmaceutico;
@@ -41,7 +41,6 @@ public class FarmaceuticosController {
 
     private ObservableList<Farmaceutico> listaObservable;
     private FarmaceutasLogica farmaeutaLogica;
-
 
     @FXML
     public void initialize() {
@@ -60,7 +59,7 @@ public class FarmaceuticosController {
                     """;
                 try (FileWriter writer = new FileWriter(archivo)) {
                     writer.write(contenidoInicial);
-                    System.out.println("Archivo medicamentos.xml creado en: " + rutaXML);
+                    System.out.println("Archivo farmaceutas.xml creado en: " + rutaXML);
                 }
             }
 
@@ -72,6 +71,7 @@ public class FarmaceuticosController {
             colIDFarma.setCellValueFactory(new PropertyValueFactory<>("id"));
             colNombreFarma.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 
+            // Eventos de botones
             btnGuardarFarmaceutico.selectedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) toggleMode("guardar");
             });
@@ -85,6 +85,7 @@ public class FarmaceuticosController {
                 if (newVal) toggleMode("buscar");
             });
 
+            // Búsqueda reactiva
             txtIDFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {
                 if (btnBuscarFarmaceutico.isSelected()) {
                     buscarFarmaceuta();
@@ -97,6 +98,7 @@ public class FarmaceuticosController {
                 }
             });
 
+            // Autocompletar nombre al escribir ID existente
             txtIDFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal.isEmpty()) {
                     limpiarCampos();
@@ -116,7 +118,6 @@ public class FarmaceuticosController {
             mostrarAlerta("Error al inicializar", e.getMessage());
         }
     }
-
 
     @FXML
     private void GuardarModificarEliminarFarmaceuta() {
@@ -161,7 +162,6 @@ public class FarmaceuticosController {
         String id = txtIDFarmaceuta.getText().trim();
         String nombre = txtNombreFarmaceuta.getText().trim();
 
-        // si todo está vacío, refrescamos la tabla
         if (id.isEmpty() && nombre.isEmpty()) {
             refrescarTabla();
             return;
@@ -193,10 +193,8 @@ public class FarmaceuticosController {
     private void limpiarCampos() {
         txtIDFarmaceuta.clear();
         txtNombreFarmaceuta.clear();
-
     }
 
-    // ---------------- Tabla ----------------
     public void refrescarTabla() {
         listaObservable.setAll(farmaeutaLogica.findAll());
     }
@@ -215,4 +213,5 @@ public class FarmaceuticosController {
         }
     }
 }
+
 

@@ -1,7 +1,7 @@
 package com.example.sistemarecetas.controller.MedicoApplication;
 
-import com.example.sistemarecetas.Gestores.GestorPacientes;
 import com.example.sistemarecetas.Model.Paciente;
+import com.example.sistemarecetas.logica.pacientes.PacientesLogica;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,13 +25,17 @@ public class buscarPacienteController {
 
     private Paciente pacienteSeleccionado;
     private ObservableList<Paciente> listaObservable;
+    private PacientesLogica pacientesLogica;
 
     @FXML
     public void initialize() {
         cmbFiltrarPacientePresc.setItems(FXCollections.observableArrayList("ID", "Nombre"));
         cmbFiltrarPacientePresc.setValue("Nombre");
 
-        listaObservable = FXCollections.observableArrayList(); // Se setea desde otro módulo
+        // Inicializar la lógica (ajusta la ruta al XML real de pacientes)
+        pacientesLogica = new PacientesLogica("datos/pacientes.xml");
+
+        listaObservable = FXCollections.observableArrayList(pacientesLogica.findAll());
         tblPacientePresc.setItems(listaObservable);
 
         colIDPaciente.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getId()));
@@ -52,17 +56,15 @@ public class buscarPacienteController {
         String filtro = cmbFiltrarPacientePresc.getValue();
         String texto = txtBuscarPacientePresc.getText().trim().toLowerCase();
 
-        ObservableList<Paciente> filtrados = FXCollections.observableArrayList();
-
-        for (Paciente p : listaObservable) {
-            if (filtro.equals("ID") && p.getId().toLowerCase().contains(texto)) {
-                filtrados.add(p);
-            } else if (filtro.equals("Nombre") && p.getNombre().toLowerCase().contains(texto)) {
-                filtrados.add(p);
-            }
+        List<Paciente> pacientesFiltrados;
+        if (filtro.equals("ID")) {
+            pacientesFiltrados = pacientesLogica.search(texto, "");
+        } else { // Nombre
+            pacientesFiltrados = pacientesLogica.search("", texto);
         }
 
-        tblPacientePresc.setItems(filtrados);
+        listaObservable.setAll(pacientesFiltrados);
+        tblPacientePresc.setItems(listaObservable);
     }
 
     @FXML
@@ -84,6 +86,7 @@ public class buscarPacienteController {
     @FXML
     private void cancelarBusqueda() {
         txtBuscarPacientePresc.clear();
+        listaObservable.setAll(pacientesLogica.findAll());
         tblPacientePresc.setItems(listaObservable);
 
         Stage stage = (Stage) btnCancelarPaciente.getScene().getWindow();
@@ -101,5 +104,4 @@ public class buscarPacienteController {
     public void setListaPacientes(List<Paciente> pacientes) {
         listaObservable.setAll(pacientes);
     }
-
 }

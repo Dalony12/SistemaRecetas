@@ -15,13 +15,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="392.0" prefWidth="573.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.controller.MedicoApplication.PrescripcionController">
+<AnchorPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistemarecetas.controller.MedicoApplication.PrescripcionController">
    <children>
       <Pane prefHeight="400.0" prefWidth="600.0">
          <children>
             <VBox layoutX="-6.0" prefHeight="400.0" prefWidth="606.0">
                <children>
-                  <Pane prefHeight="95.0" prefWidth="606.0" styleClass="card2" stylesheets="@../../styles/Styles.css">
+                  <Pane prefHeight="114.0" prefWidth="606.0" styleClass="card2" stylesheets="@../../styles/Styles.css">
                      <children>
                         <Button id="btnBuscarPaciente" fx:id="btnBuscarPaciente" layoutX="54.0" layoutY="31.0" mnemonicParsing="false" onAction="#abrirBuscarPaciente" prefHeight="33.0" prefWidth="231.0" style="-fx-background-color: #00008a;" styleClass="button-primary" text="Buscar Paciente" />
                         <Button id="btnAgregarMedicamento" fx:id="btnAgregarMedicamento" layoutX="331.0" layoutY="31.0" mnemonicParsing="false" onAction="#abrirBuscarMedicamento" prefHeight="33.0" prefWidth="231.0" style="-fx-background-color: #00008a;" styleClass="button-primary" text="Agregar Medicamento" />
@@ -71,7 +71,7 @@
                         <Label layoutX="235.0" layoutY="17.0" style="-fx-font-size: 20;" styleClass="title" stylesheets="@../../styles/Styles.css" text="Receta Médica" />
                      </children>
                   </Pane>
-                  <Pane prefHeight="62.0" prefWidth="606.0" stylesheets="@../../styles/Styles.css">
+                  <Pane prefHeight="102.0" prefWidth="606.0" stylesheets="@../../styles/Styles.css">
                      <children>
                         <Button fx:id="btnGuardarReceta" layoutX="52.0" layoutY="11.0" lineSpacing="10.0" onAction="#guardarPrescripcion" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #bababa;" styleClass="button-primary" text="Guardar">
                            <font>
