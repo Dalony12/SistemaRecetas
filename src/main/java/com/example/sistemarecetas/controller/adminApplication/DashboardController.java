@@ -4,7 +4,6 @@ import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
 import com.example.sistemarecetas.logica.DashboardLogica;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -53,31 +52,35 @@ public class DashboardController implements Initializable {
         cmbMedicamento.setItems(medicamentos);
 
         cargarGraficoPie();
-        cargarGraficoLineal();
     }
 
     @FXML
     private void cargarGraficoLineal() {
-        LocalDate fechaInicio = fechaInicioDashboard.getValue();
-        LocalDate fechaFin = fechaFinDashboard.getValue();
-        String medicamento = cmbMedicamento.getValue();
+        try {
+            LocalDate fechaInicio = fechaInicioDashboard.getValue();
+            LocalDate fechaFin = fechaFinDashboard.getValue();
+            String medicamento = cmbMedicamento.getValue();
 
-        if (fechaInicio == null || fechaFin == null || medicamento == null || medicamento.isEmpty()) {
-            mostrarAlerta("Campos vacios", "Debe de completar todo los espacios.");
-            return;
+            if (fechaInicio == null || fechaFin == null || medicamento == null || medicamento.isEmpty()) {
+                mostrarAlerta("Campos incompletos", "Debe de completar todo los espacios.");
+                return;
+            }
+
+            Map<String, Long> datos = service.prescripcionesPorMes(fechaInicio, fechaFin, medicamento);
+
+            graficoLineal.getData().clear();
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Cantidad de Prescripciones de " + medicamento);
+
+            for (Map.Entry<String, Long> entry : datos.entrySet()) {
+                series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+            }
+
+            graficoLineal.getData().add(series);
+        } catch(Exception e) {
+            mostrarAlerta("Cargar gráfico", "No se pudo cargar el gráfico");
+            e.printStackTrace();
         }
-
-        Map<String, Long> datos = service.prescripcionesPorMes(fechaInicio, fechaFin, medicamento);
-
-        graficoLineal.getData().clear();
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Cantidad de Prescripciones de " + medicamento);
-
-        for (Map.Entry<String, Long> entry : datos.entrySet()) {
-            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
-        }
-
-        graficoLineal.getData().add(series);
     }
 
     private void cargarGraficoPie() {
