@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<medicos>
+    <Medico>
+        <id>med-111</id>
+        <nombre>Josue</nombre>
+        <password>2196</password>
+        <especialidad>Anestesiologo</especialidad>
+    </Medico>
+</medicos>

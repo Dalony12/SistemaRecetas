@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<farmaceuticos>
+    <Farmaceutico>
+        <id>far-111</id>
+        <nombre>Derek</nombre>
+        <password>far-111</password>
+    </Farmaceutico>
+</farmaceuticos>

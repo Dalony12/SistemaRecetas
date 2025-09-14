@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<pacientes>
+    <Paciente>
+        <id>paciente-111</id>
+        <nombre>Javier</nombre>
+        <telefono>88319288</telefono>
+        <fechaNacimiento>2005-08-21</fechaNacimiento>
+    </Paciente>
+</pacientes>

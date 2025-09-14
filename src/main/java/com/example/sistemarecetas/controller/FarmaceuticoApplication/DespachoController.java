@@ -1,9 +1,8 @@
 package com.example.sistemarecetas.controller.FarmaceuticoApplication;
 
-import com.example.sistemarecetas.Gestores.GestorPacientes;
-import com.example.sistemarecetas.Gestores.GestorRecetas;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
+import com.example.sistemarecetas.logica.recetas.RecetasLogica;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,11 +34,14 @@ public class DespachoController {
     @FXML
     private TextField txtBuscarClienetDespacho;
 
-    private ObservableList<Receta> listaObservable;  // 🔹 Todas las recetas
-    private GestorPacientes gestorPacientes = GestorPacientes.getInstancia();
+    private ObservableList<Receta> listaObservable;
+    private RecetasLogica recetasLogica;
 
     public void initialize() {
-        // para el combox para poder buscar por id o por nombre
+        // Crear la lógica (ajusta la ruta a tu archivo XML real)
+        recetasLogica = new RecetasLogica("datos/recetas.xml");
+
+        // para el comboBox de filtros
         cmbFiltrarPaciencteDespacho.setItems(FXCollections.observableArrayList("ID", "Nombre"));
         cmbFiltrarPaciencteDespacho.setValue("Nombre");
 
@@ -106,8 +108,7 @@ public class DespachoController {
         });
 
         // Cargar recetas en lista observable
-        GestorRecetas gestor = GestorRecetas.getInstancia();
-        listaObservable = FXCollections.observableArrayList(gestor.getRecetas());
+        listaObservable = FXCollections.observableArrayList(recetasLogica.findAll());
         tblBuscarPacientesDespacho.setItems(listaObservable);
 
         // Conectar filtros
@@ -136,20 +137,17 @@ public class DespachoController {
         tblBuscarPacientesDespacho.setItems(filtradas);
     }
 
-    // Método para validar y actualizar estado en el gestor
+    // Método para validar y actualizar estado usando la lógica
     private void cambiarEstado(Receta recetaSeleccionada) {
         if (recetaSeleccionada != null) {
-            GestorRecetas gestorRecetas = GestorRecetas.getInstancia();
-            boolean actualizado = gestorRecetas.actualizarEstadoReceta(recetaSeleccionada, recetaSeleccionada.getEstado());
-
-            if (actualizado) {
+            try {
+                recetasLogica.update(recetaSeleccionada);
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización de Estado",
                         "El estado de la receta de " + recetaSeleccionada.getPaciente().getNombre() +
                                 " ha sido actualizado a: " + recetaSeleccionada.getEstado() + " satisfactoriamente.");
-            } else {
+            } catch (Exception e) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error de Estado",
-                        "Ocurrió un error del sistema, no se pudo actualizar el estado." +
-                                " Por favor, intente nuevamente.");
+                        "No se pudo actualizar la receta: " + e.getMessage());
             }
         }
     }

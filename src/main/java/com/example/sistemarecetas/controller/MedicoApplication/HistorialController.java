@@ -1,6 +1,5 @@
 package com.example.sistemarecetas.controller.MedicoApplication;
 
-import com.example.sistemarecetas.Gestores.GestorRecetas;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
 import com.example.sistemarecetas.logica.recetas.RecetasLogica;
