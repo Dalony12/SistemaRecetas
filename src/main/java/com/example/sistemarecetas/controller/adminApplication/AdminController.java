@@ -39,5 +39,4 @@ public class AdminController {
 
     @FXML
     public void abrirHistorial(Event event) { }
-
 }
