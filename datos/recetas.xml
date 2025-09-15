@@ -9,9 +9,84 @@
         </paciente>
         <medicamentos>
             <prescripcion>
+                <cantidad>15</cantidad>
+                <duracionDias>30</duracionDias>
+                <indicaciones>Media por mes.</indicaciones>
+                <medicamento>
+                    <codigo>1</codigo>
+                    <descripcion>Blister</descripcion>
+                    <nombre>Paracetamol</nombre>
+                    <presentacion>Pastilla para el dolor</presentacion>
+                </medicamento>
+            </prescripcion>
+        </medicamentos>
+        <fechaConfeccion>2025-09-15</fechaConfeccion>
+        <fechaRetiro>2025-09-25</fechaRetiro>
+        <confeccionado>1</confeccionado>
+        <estado>Lista</estado>
+    </Receta>
+    <Receta>
+        <paciente>
+            <id>paciente-111</id>
+            <nombre>Javier</nombre>
+            <telefono>88319288</telefono>
+            <fechaNacimiento>2005-08-21</fechaNacimiento>
+        </paciente>
+        <medicamentos>
+            <prescripcion>
+                <cantidad>3</cantidad>
+                <duracionDias>5</duracionDias>
+                <indicaciones>tomar antes de comer</indicaciones>
+                <medicamento>
+                    <codigo>1</codigo>
+                    <descripcion>Blister</descripcion>
+                    <nombre>Paracetamol</nombre>
+                    <presentacion>Pastilla para el dolor</presentacion>
+                </medicamento>
+            </prescripcion>
+        </medicamentos>
+        <fechaConfeccion>2025-09-15</fechaConfeccion>
+        <fechaRetiro>2025-09-16</fechaRetiro>
+        <confeccionado>1</confeccionado>
+        <estado>En proceso</estado>
+    </Receta>
+    <Receta>
+        <paciente>
+            <id>paciente-111</id>
+            <nombre>Javier</nombre>
+            <telefono>88319288</telefono>
+            <fechaNacimiento>2005-08-21</fechaNacimiento>
+        </paciente>
+        <medicamentos>
+            <prescripcion>
+                <cantidad>15</cantidad>
+                <duracionDias>30</duracionDias>
+                <indicaciones>Media por mes.</indicaciones>
+                <medicamento>
+                    <codigo>1</codigo>
+                    <descripcion>Blister</descripcion>
+                    <nombre>Paracetamol</nombre>
+                    <presentacion>Pastilla para el dolor</presentacion>
+                </medicamento>
+            </prescripcion>
+        </medicamentos>
+        <fechaConfeccion>2025-09-15</fechaConfeccion>
+        <fechaRetiro>2025-09-25</fechaRetiro>
+        <confeccionado>1</confeccionado>
+        <estado>En proceso</estado>
+    </Receta>
+    <Receta>
+        <paciente>
+            <id>paciente-111</id>
+            <nombre>Javier</nombre>
+            <telefono>88319288</telefono>
+            <fechaNacimiento>2005-08-21</fechaNacimiento>
+        </paciente>
+        <medicamentos>
+            <prescripcion>
                 <cantidad>5</cantidad>
-                <duracionDias>15</duracionDias>
-                <indicaciones>Tomeselas</indicaciones>
+                <duracionDias>5</duracionDias>
+                <indicaciones>Antes de dormir</indicaciones>
                 <medicamento>
                     <codigo>2</codigo>
                     <descripcion>Blister</descripcion>
@@ -20,9 +95,9 @@
                 </medicamento>
             </prescripcion>
         </medicamentos>
-        <fechaConfeccion>2025-09-14</fechaConfeccion>
-        <fechaRetiro>2025-09-21</fechaRetiro>
+        <fechaConfeccion>2025-09-15</fechaConfeccion>
+        <fechaRetiro>2025-09-23</fechaRetiro>
         <confeccionado>1</confeccionado>
-        <estado>Entregado</estado>
+        <estado>En proceso</estado>
     </Receta>
 </recetas>

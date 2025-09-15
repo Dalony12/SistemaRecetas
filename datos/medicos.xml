@@ -6,4 +6,10 @@
         <password>2196</password>
         <especialidad>Anestesiologo</especialidad>
     </Medico>
+    <Medico>
+        <id>med-222</id>
+        <nombre>Juan Quesada Vilchez</nombre>
+        <password>med-222</password>
+        <especialidad>General</especialidad>
+    </Medico>
 </medicos>
