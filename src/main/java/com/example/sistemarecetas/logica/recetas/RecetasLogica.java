@@ -5,6 +5,9 @@ import com.example.sistemarecetas.Model.Receta;
 import com.example.sistemarecetas.datos.recetas.RecetaConector;
 import com.example.sistemarecetas.datos.recetas.RecetaDatos;
 import com.example.sistemarecetas.datos.recetas.RecetaEntity;
+import com.example.sistemarecetas.logica.medicamentos.MedicamentoLogica;
+import com.example.sistemarecetas.logica.pacientes.PacientesLogica;
+import com.example.sistemarecetas.logica.pacientes.PacientesMapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,10 +15,13 @@ import java.util.stream.Collectors;
 public class RecetasLogica {
 
     private final RecetaDatos store;
+    private final PacientesLogica pacientesLogica;
+    private final MedicamentoLogica medicamentosLogica;
 
-    /** rutaArchivoEj: "datos/recetas.xml" */
-    public RecetasLogica(String rutaArchivo) {
-        this.store = new RecetaDatos(rutaArchivo);
+    public RecetasLogica(String rutaArchivoRecetas, String rutaArchivoPacientes, String rutaArchivoMedicamentos) {
+        this.store = new RecetaDatos(rutaArchivoRecetas);
+        this.pacientesLogica = new PacientesLogica(rutaArchivoPacientes);
+        this.medicamentosLogica = new MedicamentoLogica(rutaArchivoMedicamentos);
     }
 
     // --------- Lectura ---------
@@ -23,7 +29,7 @@ public class RecetasLogica {
     public List<Receta> findAll() {
         RecetaConector data = store.load();
         return data.getRecetas().stream()
-                .map(RecetaMapper::toModel)
+                .map(this::mapToModel)
                 .collect(Collectors.toList());
     }
 
@@ -32,7 +38,7 @@ public class RecetasLogica {
         return data.getRecetas().stream()
                 .filter(x -> x.getPaciente().getId().equalsIgnoreCase(idPaciente))
                 .findFirst()
-                .map(RecetaMapper::toModel);
+                .map(this::mapToModel);
     }
 
     public List<Receta> searchByNombrePaciente(String nombre) {
@@ -41,7 +47,7 @@ public class RecetasLogica {
 
         return data.getRecetas().stream()
                 .filter(x -> x.getPaciente().getNombre().toLowerCase().contains(criterio))
-                .map(RecetaMapper::toModel)
+                .map(this::mapToModel)
                 .collect(Collectors.toList());
     }
 
@@ -51,10 +57,10 @@ public class RecetasLogica {
         validarNueva(nueva);
         RecetaConector data = store.load();
 
-        RecetaEntity entity = RecetaMapper.toXml(nueva);
+        RecetaEntity entity = mapToXml(nueva);
         data.getRecetas().add(entity);
         store.save(data);
-        return RecetaMapper.toModel(entity);
+        return mapToModel(entity);
     }
 
     public Receta update(Receta receta) {
@@ -66,7 +72,7 @@ public class RecetasLogica {
         for (int i = 0; i < data.getRecetas().size(); i++) {
             RecetaEntity actual = data.getRecetas().get(i);
             if (actual.getPaciente().getId().equalsIgnoreCase(receta.getPaciente().getId())) {
-                data.getRecetas().set(i, RecetaMapper.toXml(receta));
+                data.getRecetas().set(i, mapToXml(receta));
                 store.save(data);
                 return receta;
             }
@@ -82,7 +88,35 @@ public class RecetasLogica {
         return removed;
     }
 
-    // --------- Helpers ---------
+    // --------- Mapping usando lógica central ---------
+
+    private Receta mapToModel(RecetaEntity e) {
+        // cargar paciente completo desde la lógica de pacientes
+        var paciente = pacientesLogica.findByCodigo(e.getPaciente().getId())
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado: " + e.getPaciente().getId()));
+
+        // mapear prescripciones con medicamentos completos
+        List<Prescripcion> prescripciones = e.getMedicamentos().stream()
+                .map(p -> {
+                    var med = medicamentosLogica.findByCodigo(p.getMedicamento().getCodigo())
+                            .orElseThrow(() -> new RuntimeException("Medicamento no encontrado: " + p.getMedicamento().getCodigo()));
+                    return new Prescripcion(med, p.getCantidad(), p.getIndicaciones(), p.getDuracionDias());
+                }).collect(Collectors.toList());
+
+        return new Receta(paciente, prescripciones, e.getFechaConfeccion(),
+                e.getFechaRetiro(), e.getConfeccionado(), e.getEstado());
+    }
+
+    private RecetaEntity mapToXml(Receta r) {
+        // mapear paciente a entity
+        var pacienteEntity = PacientesMapper.toXml(r.getPaciente());
+
+        // mapear prescripciones sin tocar los medicamentos (solo codigo y datos necesarios)
+        return new RecetaEntity(pacienteEntity, r.getMedicamentos(), r.getFechaConfeccion(),
+                r.getFechaRetiro(), r.getConfeccionado(), r.getEstado());
+    }
+
+    // --------- Validaciones ---------
 
     private void validarNueva(Receta r) {
         if (r == null) throw new IllegalArgumentException("Receta nula.");

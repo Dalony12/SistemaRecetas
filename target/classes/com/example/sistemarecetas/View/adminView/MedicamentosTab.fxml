@@ -14,7 +14,7 @@
             <TableColumn fx:id="colCodigo" prefWidth="50.0" text="Código" />
             <TableColumn fx:id="colNombre" text="Nombre" />
             <TableColumn fx:id="colPresentacion" minWidth="4.0" prefWidth="90.0" text="Presentación" />
-            <TableColumn fx:id="colDescripcion" minWidth="4.0" prefWidth="95.0" text="Descripción" />
+            <TableColumn fx:id="colDescripcion" minWidth="4.0" prefWidth="99.0" text="Descripción" />
         </columns>
     </TableView>
 

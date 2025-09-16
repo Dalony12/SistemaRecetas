@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Receta {
+
     private Paciente paciente;
     private List<Prescripcion> medicamentos;
     private LocalDate fechaConfeccion;

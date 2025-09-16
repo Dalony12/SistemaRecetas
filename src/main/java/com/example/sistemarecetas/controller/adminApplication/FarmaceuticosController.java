@@ -2,6 +2,7 @@ package com.example.sistemarecetas.controller.adminApplication;
 
 import com.example.sistemarecetas.Model.Farmaceutico;
 import com.example.sistemarecetas.logica.farmaceutas.FarmaceutasLogica;
+import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,103 +20,127 @@ import java.util.Optional;
 
 public class FarmaceuticosController {
 
-    private static FarmaceuticosController instance; // Singleton
+    private static FarmaceuticosController instance;
     public FarmaceuticosController() { instance = this; }
     public static FarmaceuticosController getInstance() { return instance; }
 
-    // Panel y tabla
     @FXML private VBox vBoxPortadaFarmaceuta;
     @FXML private TableView<Farmaceutico> tableFarmaceuticos;
     @FXML private TableColumn<Farmaceutico, String> colIDFarma;
     @FXML private TableColumn<Farmaceutico, String> colNombreFarma;
 
-    // Botones de acción
     @FXML private RadioButton btnGuardarFarmaceutico;
     @FXML private RadioButton btnBorrarFarmaceutico;
     @FXML private RadioButton btnModificarFarmaceutico;
     @FXML private RadioButton btnBuscarFarmaceutico;
 
-    // Campos del formulario
     @FXML private TextField txtIDFarmaceuta;
     @FXML private TextField txtNombreFarmaceuta;
 
     private ObservableList<Farmaceutico> listaObservable;
-    private FarmaceutasLogica farmaeutaLogica;
+    private FarmaceutasLogica farmaceutaLogica;
+
+    private String currentMode = "guardar"; // modo activo
 
     @FXML
     public void initialize() {
         try {
-            // Ruta dinámica al archivo XML
             String rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "farmaceutas.xml").toString();
             File archivo = new File(rutaXML);
 
-            // Crear archivo si no existe
             if (!archivo.exists()) {
                 archivo.getParentFile().mkdirs();
                 String contenidoInicial = """
-                    <?xml version="1.0" encoding="UTF-8"?>
-                    <farmaceuticos>
-                    </farmaceuticos>
-                    """;
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        <farmaceuticos>
+                        </farmaceuticos>
+                        """;
                 try (FileWriter writer = new FileWriter(archivo)) {
                     writer.write(contenidoInicial);
-                    System.out.println("Archivo farmaceutas.xml creado en: " + rutaXML);
                 }
             }
 
-            // Inicializar lógica y tabla
-            farmaeutaLogica = new FarmaceutasLogica(rutaXML);
-            listaObservable = FXCollections.observableArrayList(farmaeutaLogica.findAll());
+            farmaceutaLogica = new FarmaceutasLogica(rutaXML);
+            listaObservable = FXCollections.observableArrayList(farmaceutaLogica.findAll());
             tableFarmaceuticos.setItems(listaObservable);
 
             colIDFarma.setCellValueFactory(new PropertyValueFactory<>("id"));
             colNombreFarma.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 
-            // Eventos de botones
-            btnGuardarFarmaceutico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleMode("guardar");
-            });
-            btnBorrarFarmaceutico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleMode("borrar");
-            });
-            btnModificarFarmaceutico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleMode("modificar");
-            });
-            btnBuscarFarmaceutico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleMode("buscar");
-            });
+            // Inicializar modo por defecto
+            toggleMode("guardar");
 
-            // Búsqueda reactiva
+            // Eventos de botones
+            btnGuardarFarmaceutico.setOnAction(e -> toggleMode("guardar"));
+            btnBorrarFarmaceutico.setOnAction(e -> toggleMode("borrar"));
+            btnModificarFarmaceutico.setOnAction(e -> toggleMode("modificar"));
+            btnBuscarFarmaceutico.setOnAction(e -> toggleMode("buscar"));
+
+            // Reacción de campos
             txtIDFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {
-                if (btnBuscarFarmaceutico.isSelected()) {
-                    buscarFarmaceuta();
-                }
+                handleIDChange(newVal);
             });
 
             txtNombreFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {
-                if (btnBuscarFarmaceutico.isSelected()) {
-                    buscarFarmaceuta();
+                if (currentMode.equals("guardar") && !newVal.isEmpty() && txtIDFarmaceuta.getText().isEmpty()) {
+                    // Construir ID automáticamente
+                    txtIDFarmaceuta.setText("far-" + (farmaceutaLogica.generarNextID()));
                 }
-            });
-
-            // Autocompletar nombre al escribir ID existente
-            txtIDFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal.isEmpty()) {
-                    limpiarCampos();
-                    return;
-                }
-                Optional<Farmaceutico> encontrado = farmaeutaLogica.findByCodigo(newVal);
-                if (encontrado.isPresent()) {
-                    Farmaceutico m = encontrado.get();
-                    txtNombreFarmaceuta.setText(m.getNombre());
-                } else {
-                    txtNombreFarmaceuta.clear();
-                }
+                if (currentMode.equals("buscar")) buscarFarmaceuta();
             });
 
         } catch (Exception e) {
-            e.printStackTrace();
             mostrarAlerta("Error al inicializar", e.getMessage());
+        }
+    }
+
+    public void cargarFarmaceuticos() {
+        if (farmaceutaLogica != null) {
+            listaObservable.setAll(farmaceutaLogica.findAll());
+        }
+    }
+
+    private void handleIDChange(String newVal) {
+        if (!newVal.startsWith("far-")) {
+            txtIDFarmaceuta.setText("far-" + newVal.replace("far-", ""));
+        }
+
+        if (currentMode.equals("modificar") || currentMode.equals("buscar") || currentMode.equals("borrar")) {
+            Optional<Farmaceutico> encontrado = farmaceutaLogica.findByCodigo(txtIDFarmaceuta.getText());
+            if (encontrado.isPresent()) {
+                txtNombreFarmaceuta.setText(encontrado.get().getNombre());
+                txtNombreFarmaceuta.setEditable(currentMode.equals("modificar"));
+            } else {
+                if (!currentMode.equals("buscar")) txtNombreFarmaceuta.clear();
+            }
+        }
+
+        if (currentMode.equals("buscar")) buscarFarmaceuta();
+    }
+
+    private void toggleMode(String mode) {
+        currentMode = mode;
+
+        btnGuardarFarmaceutico.setSelected(mode.equals("guardar"));
+        btnBorrarFarmaceutico.setSelected(mode.equals("borrar"));
+        btnModificarFarmaceutico.setSelected(mode.equals("modificar"));
+        btnBuscarFarmaceutico.setSelected(mode.equals("buscar"));
+
+        txtIDFarmaceuta.setEditable(true);
+        txtNombreFarmaceuta.clear();
+        txtIDFarmaceuta.setText("far-");
+
+        switch (mode) {
+            case "guardar":
+                txtNombreFarmaceuta.setEditable(true);
+                break;
+            case "borrar":
+            case "buscar":
+                txtNombreFarmaceuta.setEditable(false);
+                break;
+            case "modificar":
+                txtNombreFarmaceuta.setEditable(false); // se desbloquea al encontrar
+                break;
         }
     }
 
@@ -132,25 +157,23 @@ public class FarmaceuticosController {
 
             Farmaceutico m = new Farmaceutico(id, nombre, id);
 
-            if (btnGuardarFarmaceutico.isSelected()) {
-                farmaeutaLogica.create(m);
-                listaObservable.add(m);
-
-            } else if (btnModificarFarmaceutico.isSelected()) {
-                farmaeutaLogica.update(m);
-                refrescarTabla();
-
-            } else if (btnBorrarFarmaceutico.isSelected()) {
-                boolean eliminado = farmaeutaLogica.deleteByCodigo(id);
-                if (eliminado) {
-                    listaObservable.removeIf(x -> x.getId().equalsIgnoreCase(id));
-                } else {
-                    mostrarAlerta("No encontrado", "No existe un farmaceutico con ese ID: " + id);
-                }
+            switch (currentMode) {
+                case "guardar":
+                    farmaceutaLogica.create(m);
+                    listaObservable.add(m);
+                    break;
+                case "modificar":
+                    farmaceutaLogica.update(m);
+                    refrescarTabla();
+                    break;
+                case "borrar":
+                    boolean eliminado = farmaceutaLogica.deleteByCodigo(id);
+                    if (eliminado) listaObservable.removeIf(x -> x.getId().equalsIgnoreCase(id));
+                    else mostrarAlerta("No encontrado", "No existe un farmaceutico con ese ID: " + id);
+                    break;
             }
 
             limpiarCampos();
-            refrescarTabla();
 
         } catch (Exception e) {
             mostrarAlerta("Error", e.getMessage());
@@ -167,42 +190,23 @@ public class FarmaceuticosController {
             return;
         }
 
-        List<Farmaceutico> resultado = farmaeutaLogica.search(id, nombre);
+        List<Farmaceutico> resultado = farmaceutaLogica.search(id, nombre);
         listaObservable.setAll(resultado);
-    }
-
-    private void toggleMode(String mode) {
-        btnGuardarFarmaceutico.setSelected(mode.equals("guardar"));
-        btnBorrarFarmaceutico.setSelected(mode.equals("borrar"));
-        btnModificarFarmaceutico.setSelected(mode.equals("modificar"));
-        btnBuscarFarmaceutico.setSelected(mode.equals("buscar"));
-
-        boolean editable = !mode.equals("borrar");
-        txtNombreFarmaceuta.setEditable(editable);
-    }
-
-    private void mostrarAlerta(String titulo, String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
     }
 
     @FXML
     private void limpiarCampos() {
-        txtIDFarmaceuta.clear();
+        txtIDFarmaceuta.setText("far-");
         txtNombreFarmaceuta.clear();
     }
 
     public void refrescarTabla() {
-        listaObservable.setAll(farmaeutaLogica.findAll());
+        listaObservable.setAll(farmaceutaLogica.findAll());
     }
 
-    // ---------------- Animación ----------------
     public void mostrarListaConAnimacion() {
         if (vBoxPortadaFarmaceuta.isVisible()) {
-            javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.seconds(1));
+            PauseTransition pause = new PauseTransition(Duration.seconds(1));
             pause.setOnFinished(event -> {
                 TranslateTransition transition = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaFarmaceuta);
                 transition.setToX(-vBoxPortadaFarmaceuta.getWidth() - 20);
@@ -212,6 +216,12 @@ public class FarmaceuticosController {
             pause.play();
         }
     }
+
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
 }
-
-

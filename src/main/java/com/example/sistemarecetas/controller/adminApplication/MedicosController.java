@@ -1,9 +1,8 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
-import com.example.sistemarecetas.Model.Farmaceutico;
 import com.example.sistemarecetas.Model.Medico;
-import com.example.sistemarecetas.logica.farmaceutas.FarmaceutasLogica;
 import com.example.sistemarecetas.logica.medicos.MedicosLogica;
+import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,101 +20,55 @@ import java.util.Optional;
 
 public class MedicosController {
 
-    private static MedicosController instance; // Singleton
+    private static MedicosController instance;
     public MedicosController() { instance = this; }
     public static MedicosController getInstance() { return instance; }
 
-    // Panel y tabla
     @FXML private VBox vBoxPortadaMedicos;
     @FXML private TableView<Medico> tableMedicos;
     @FXML private TableColumn<Medico, String> colID;
     @FXML private TableColumn<Medico, String> colNombre;
     @FXML private TableColumn<Medico, String> colEspecialidad;
 
-    // Botones de acción (pueden ser RadioButton o ToggleButton)
     @FXML private RadioButton btnGuardarMedico;
     @FXML private RadioButton btnBorrarMedico;
     @FXML private RadioButton btnModificarMedico;
     @FXML private RadioButton btnBuscarMedico;
 
-    // Campos del formulario
     @FXML private TextField txtIDMedico;
     @FXML private TextField txtNombreMedico;
     @FXML private TextField txtEspecialidadMedico;
 
     private ObservableList<Medico> listaObservable;
     private MedicosLogica medicosLogica;
+    private String rutaXML;
 
     @FXML
     public void initialize() {
         try {
-            // Ruta dinámica al archivo XML
-            String rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "medicos.xml").toString();
+            rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "medicos.xml").toString();
             File archivo = new File(rutaXML);
 
-            // Crear archivo si no existe
             if (!archivo.exists()) {
                 archivo.getParentFile().mkdirs();
-                String contenidoInicial = """
-                    <?xml version="1.0" encoding="UTF-8"?>
-                    <medicos>
-                    </medicos>
-                    """;
                 try (FileWriter writer = new FileWriter(archivo)) {
-                    writer.write(contenidoInicial);
-                    System.out.println("Archivo medicamentos.xml creado en: " + rutaXML);
+                    writer.write("""
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        <medicos>
+                        </medicos>
+                        """);
                 }
             }
 
-            // Inicializar lógica y tabla
             medicosLogica = new MedicosLogica(rutaXML);
             listaObservable = FXCollections.observableArrayList(medicosLogica.findAll());
             tableMedicos.setItems(listaObservable);
 
-        colID.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colEspecialidad.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
+            colID.setCellValueFactory(new PropertyValueFactory<>("id"));
+            colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+            colEspecialidad.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
 
-            btnGuardarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleMode("guardar");
-            });
-            btnBorrarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleMode("borrar");
-            });
-            btnModificarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleMode("modificar");
-            });
-            btnBuscarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleMode("buscar");
-            });
-
-            txtIDMedico.textProperty().addListener((obs, oldVal, newVal) -> {
-                if (btnBuscarMedico.isSelected()) {
-                    buscarMedico();
-                }
-            });
-
-            txtNombreMedico.textProperty().addListener((obs, oldVal, newVal) -> {
-                if (btnBuscarMedico.isSelected()) {
-                    buscarMedico();
-                }
-            });
-
-            txtIDMedico.textProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal.isEmpty()) {
-                    limpiarCampos();
-                    return;
-                }
-                Optional<Medico> encontrado = medicosLogica.findByCodigo(newVal);
-                if (encontrado.isPresent()) {
-                    Medico m = encontrado.get();
-                    txtNombreMedico.setText(m.getNombre());
-                    txtEspecialidadMedico.setText(m.getEspecialidad());
-                } else {
-                    txtNombreMedico.clear();
-                    txtEspecialidadMedico.clear();
-                }
-            });
+            configurarListeners();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,7 +76,34 @@ public class MedicosController {
         }
     }
 
-    // ---------------- Lógica CRUD ----------------
+    private void configurarListeners() {
+        btnGuardarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("guardar"); });
+        btnBorrarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("borrar"); });
+        btnModificarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("modificar"); });
+        btnBuscarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("buscar"); });
+
+        txtIDMedico.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (btnBuscarMedico.isSelected()) buscarMedico();
+            if (newVal.isEmpty()) limpiarCampos();
+            else autocompletarMedico(newVal);
+        });
+
+        txtNombreMedico.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (btnBuscarMedico.isSelected()) buscarMedico();
+        });
+    }
+
+    private void autocompletarMedico(String id) {
+        Optional<Medico> encontrado = medicosLogica.findByCodigo(id);
+        if (encontrado.isPresent()) {
+            Medico m = encontrado.get();
+            txtNombreMedico.setText(m.getNombre());
+            txtEspecialidadMedico.setText(m.getEspecialidad());
+        } else {
+            txtNombreMedico.clear();
+            txtEspecialidadMedico.clear();
+        }
+    }
 
     @FXML
     private void GuardarModificarEliminarMedico() {
@@ -141,23 +121,15 @@ public class MedicosController {
 
             if (btnGuardarMedico.isSelected()) {
                 medicosLogica.create(m);
-                listaObservable.add(m);
-
             } else if (btnModificarMedico.isSelected()) {
                 medicosLogica.update(m);
-                refrescarTabla();
-
             } else if (btnBorrarMedico.isSelected()) {
                 boolean eliminado = medicosLogica.deleteByCodigo(id);
-                if (eliminado) {
-                    listaObservable.removeIf(x -> x.getId().equalsIgnoreCase(id));
-                } else {
-                    mostrarAlerta("No encontrado", "No existe un medico con ese ID: " + id);
-                }
+                if (!eliminado) mostrarAlerta("No encontrado", "No existe un medico con ese ID: " + id);
             }
 
             limpiarCampos();
-            refrescarTabla();
+            cargarMedicos();
 
         } catch (Exception e) {
             mostrarAlerta("Error", e.getMessage());
@@ -169,16 +141,14 @@ public class MedicosController {
         String id = txtIDMedico.getText().trim();
         String nombre = txtNombreMedico.getText().trim();
 
-        // si todo está vacío, refrescamos la tabla
         if (id.isEmpty() && nombre.isEmpty()) {
-            refrescarTabla();
+            cargarMedicos();
             return;
         }
 
         List<Medico> resultado = medicosLogica.search(id, nombre);
         listaObservable.setAll(resultado);
     }
-
 
     private void toggleMode(String mode) {
         btnGuardarMedico.setSelected(mode.equals("guardar"));
@@ -187,19 +157,8 @@ public class MedicosController {
         btnBuscarMedico.setSelected(mode.equals("buscar"));
 
         txtIDMedico.setEditable(true);
-        txtNombreMedico.setEditable(true);
-        txtEspecialidadMedico.setEditable(true);
-
-        switch (mode) {
-            case "buscar":
-                txtEspecialidadMedico.setEditable(false);
-                break;
-            case "borrar":
-                txtNombreMedico.setEditable(false);
-                txtEspecialidadMedico.setEditable(false);
-
-                break;
-        }
+        txtNombreMedico.setEditable(!mode.equals("borrar"));
+        txtEspecialidadMedico.setEditable(!mode.equals("borrar") && !mode.equals("buscar"));
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {
@@ -217,16 +176,13 @@ public class MedicosController {
         txtEspecialidadMedico.clear();
     }
 
-    // ---------------- Tabla ----------------
-    public void refrescarTabla() {
+    public void cargarMedicos() {
         listaObservable.setAll(medicosLogica.findAll());
     }
 
-    // ---------------- Animación ----------------
     public void mostrarListaConAnimacion() {
         if (vBoxPortadaMedicos.isVisible()) {
-            // Pausa de 1 segundo antes de iniciar la animación
-            javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.seconds(1));
+            PauseTransition pause = new PauseTransition(Duration.seconds(1));
             pause.setOnFinished(event -> {
                 TranslateTransition transition = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaMedicos);
                 transition.setToX(-vBoxPortadaMedicos.getWidth() - 20);
@@ -237,4 +193,3 @@ public class MedicosController {
         }
     }
 }
-

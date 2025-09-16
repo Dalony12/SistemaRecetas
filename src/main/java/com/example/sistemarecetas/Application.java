@@ -13,16 +13,8 @@ public class Application extends javafx.application.Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("View/login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 516, 256);
         stage.setTitle("Sistema de Recetas");
-        stage.setScene(scene);
-
-        // Impide que la ventana sea redimensionable
-        stage.setResizable(false);
-
-        // Centrar la ventana en la pantalla
-        stage.centerOnScreen();
-
+        stage.setScene(scene); stage.setResizable(false); stage.centerOnScreen();
         stage.getIcons().add(new Image(Application.class.getResourceAsStream("Images/icono.png")));
-
         stage.show();
     }
 }

@@ -14,10 +14,12 @@ import java.util.TreeMap;
 public class DashboardLogica {
     private final RecetasLogica recetasLogica;
 
-    public DashboardLogica(String rutaXmlClientes) {
-        this.recetasLogica = new RecetasLogica(rutaXmlClientes);
+    /** Constructor actualizado con todas las rutas necesarias */
+    public DashboardLogica(String rutaRecetas, String rutaPacientes, String rutaMedicamentos) {
+        this.recetasLogica = new RecetasLogica(rutaRecetas, rutaPacientes, rutaMedicamentos);
     }
 
+    /** Constructor alternativo si ya tienes una instancia de RecetasLogica */
     public DashboardLogica(RecetasLogica logica) {
         this.recetasLogica = logica;
     }
@@ -54,9 +56,9 @@ public class DashboardLogica {
                 for (Prescripcion p : receta.getMedicamentos()) {
                     if (p.getMedicamento().getNombre().equals(medicamento)) {
                         YearMonth mesReceta = YearMonth.from(receta.getFechaConfeccion());
-                        String AnnioMes = mesReceta.getMonth().toString();
+                        String annioMes = mesReceta.getMonth().toString();
 
-                        prescripcionesPorMes.put(AnnioMes, prescripcionesPorMes.getOrDefault(AnnioMes, 0L) + 1);
+                        prescripcionesPorMes.put(annioMes, prescripcionesPorMes.getOrDefault(annioMes, 0L) + 1);
                     }
                 }
             }
