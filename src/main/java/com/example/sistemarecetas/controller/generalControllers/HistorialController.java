@@ -39,7 +39,7 @@ public class HistorialController {
     }
 
     @FXML
-    public void initialize() {
+    public void cargarHistorial() {
         try {
             String rutaRecetas = Paths.get(System.getProperty("user.dir"), "datos", "recetas.xml").toString();
             String rutaPacientes = Paths.get(System.getProperty("user.dir"), "datos", "pacientes.xml").toString();
@@ -56,13 +56,6 @@ public class HistorialController {
 
         } catch (Exception e) {
             mostrarAlerta("Error al cargar historial", e.getMessage());
-        }
-    }
-
-    /** 🔑 Permite recargar todas las recetas en la tabla desde la lógica */
-    public void cargarHistorial() {
-        if (recetasLogica != null) {
-            listaObservable.setAll(recetasLogica.findAll());
         }
     }
 

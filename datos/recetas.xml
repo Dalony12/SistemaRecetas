@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <recetas>
     <Receta>
+        <codigo>REC-001</codigo>
         <paciente>
             <id>pac-111</id>
             <nombre>Javier</nombre>
@@ -9,109 +10,9 @@
         </paciente>
         <medicamentos>
             <prescripcion>
-                <cantidad>5</cantidad>
+                <cantidad>2</cantidad>
                 <duracionDias>5</duracionDias>
-                <indicaciones>Antes de dormir</indicaciones>
-                <medicamento>
-                    <codigo>2</codigo>
-                    <descripcion>Blister</descripcion>
-                    <nombre>Ibuprofeno</nombre>
-                    <presentacion>Pastilla para dolores</presentacion>
-                </medicamento>
-            </prescripcion>
-        </medicamentos>
-        <fechaConfeccion>2025-09-15</fechaConfeccion>
-        <fechaRetiro>2025-09-23</fechaRetiro>
-        <confeccionado>1</confeccionado>
-        <estado>Entregada</estado>
-    </Receta>
-    <Receta>
-        <paciente>
-            <id>pac-111</id>
-            <nombre>Javier</nombre>
-            <telefono>88319288</telefono>
-            <fechaNacimiento>2005-08-21</fechaNacimiento>
-        </paciente>
-        <medicamentos>
-            <prescripcion>
-                <cantidad>3</cantidad>
-                <duracionDias>5</duracionDias>
-                <indicaciones>tomar antes de comer</indicaciones>
-                <medicamento>
-                    <codigo>1</codigo>
-                    <descripcion>Blister</descripcion>
-                    <nombre>Paracetamol</nombre>
-                    <presentacion>Pastilla para el dolor</presentacion>
-                </medicamento>
-            </prescripcion>
-        </medicamentos>
-        <fechaConfeccion>2025-09-15</fechaConfeccion>
-        <fechaRetiro>2025-09-16</fechaRetiro>
-        <confeccionado>1</confeccionado>
-        <estado>En proceso</estado>
-    </Receta>
-    <Receta>
-        <paciente>
-            <id>pac-111</id>
-            <nombre>Javier</nombre>
-            <telefono>88319288</telefono>
-            <fechaNacimiento>2005-08-21</fechaNacimiento>
-        </paciente>
-        <medicamentos>
-            <prescripcion>
-                <cantidad>15</cantidad>
-                <duracionDias>30</duracionDias>
-                <indicaciones>Media por mes.</indicaciones>
-                <medicamento>
-                    <codigo>1</codigo>
-                    <descripcion>Blister</descripcion>
-                    <nombre>Paracetamol</nombre>
-                    <presentacion>Pastilla para el dolor</presentacion>
-                </medicamento>
-            </prescripcion>
-        </medicamentos>
-        <fechaConfeccion>2025-09-15</fechaConfeccion>
-        <fechaRetiro>2025-09-25</fechaRetiro>
-        <confeccionado>1</confeccionado>
-        <estado>En proceso</estado>
-    </Receta>
-    <Receta>
-        <paciente>
-            <id>pac-111</id>
-            <nombre>Javier</nombre>
-            <telefono>88319288</telefono>
-            <fechaNacimiento>2005-08-21</fechaNacimiento>
-        </paciente>
-        <medicamentos>
-            <prescripcion>
-                <cantidad>5</cantidad>
-                <duracionDias>5</duracionDias>
-                <indicaciones>Antes de dormir</indicaciones>
-                <medicamento>
-                    <codigo>2</codigo>
-                    <descripcion>Blister</descripcion>
-                    <nombre>Ibuprofeno</nombre>
-                    <presentacion>Pastilla para dolores</presentacion>
-                </medicamento>
-            </prescripcion>
-        </medicamentos>
-        <fechaConfeccion>2025-09-15</fechaConfeccion>
-        <fechaRetiro>2025-09-23</fechaRetiro>
-        <confeccionado>1</confeccionado>
-        <estado>En proceso</estado>
-    </Receta>
-    <Receta>
-        <paciente>
-            <id>pac-111</id>
-            <nombre>Javier</nombre>
-            <telefono>88319288</telefono>
-            <fechaNacimiento>2005-08-21</fechaNacimiento>
-        </paciente>
-        <medicamentos>
-            <prescripcion>
-                <cantidad>1</cantidad>
-                <duracionDias>1</duracionDias>
-                <indicaciones>mucha</indicaciones>
+                <indicaciones>1 antes de comer y otra antes de dormir</indicaciones>
                 <medicamento>
                     <codigo>2</codigo>
                     <descripcion>Blister</descripcion>
@@ -121,11 +22,12 @@
             </prescripcion>
         </medicamentos>
         <fechaConfeccion>2025-09-16</fechaConfeccion>
-        <fechaRetiro>2025-10-05</fechaRetiro>
+        <fechaRetiro>2025-10-04</fechaRetiro>
         <confeccionado>1</confeccionado>
-        <estado>Entregada</estado>
+        <estado>Lista</estado>
     </Receta>
     <Receta>
+        <codigo>REC-002</codigo>
         <paciente>
             <id>pac-111</id>
             <nombre>Javier</nombre>
@@ -136,18 +38,33 @@
             <prescripcion>
                 <cantidad>1</cantidad>
                 <duracionDias>1</duracionDias>
-                <indicaciones>56</indicaciones>
+                <indicaciones>una para el dolor de cabeza</indicaciones>
                 <medicamento>
-                    <codigo>2</codigo>
+                    <codigo>1</codigo>
                     <descripcion>Blister</descripcion>
-                    <nombre>Ibuprofeno</nombre>
-                    <presentacion>Pastilla para dolores</presentacion>
+                    <nombre>Paracetamol</nombre>
+                    <presentacion>Pastilla para el dolor</presentacion>
                 </medicamento>
             </prescripcion>
+        </medicamentos>
+        <fechaConfeccion>2025-09-16</fechaConfeccion>
+        <fechaRetiro>2025-09-28</fechaRetiro>
+        <confeccionado>1</confeccionado>
+        <estado>Entregada</estado>
+    </Receta>
+    <Receta>
+        <codigo>REC-003</codigo>
+        <paciente>
+            <id>pac-111</id>
+            <nombre>Javier</nombre>
+            <telefono>88319288</telefono>
+            <fechaNacimiento>2005-08-21</fechaNacimiento>
+        </paciente>
+        <medicamentos>
             <prescripcion>
-                <cantidad>1</cantidad>
-                <duracionDias>1</duracionDias>
-                <indicaciones>12</indicaciones>
+                <cantidad>10</cantidad>
+                <duracionDias>15</duracionDias>
+                <indicaciones>Para malestar </indicaciones>
                 <medicamento>
                     <codigo>2</codigo>
                     <descripcion>Blister</descripcion>
@@ -159,9 +76,10 @@
         <fechaConfeccion>2025-09-16</fechaConfeccion>
         <fechaRetiro>2025-10-12</fechaRetiro>
         <confeccionado>1</confeccionado>
-        <estado>En proceso</estado>
+        <estado>Entregada</estado>
     </Receta>
     <Receta>
+        <codigo>REC-001</codigo>
         <paciente>
             <id>pac-111</id>
             <nombre>Javier</nombre>
@@ -170,9 +88,9 @@
         </paciente>
         <medicamentos>
             <prescripcion>
-                <cantidad>1</cantidad>
-                <duracionDias>1</duracionDias>
-                <indicaciones>2</indicaciones>
+                <cantidad>3</cantidad>
+                <duracionDias>3</duracionDias>
+                <indicaciones>tomar en comida</indicaciones>
                 <medicamento>
                     <codigo>1</codigo>
                     <descripcion>Blister</descripcion>
@@ -182,11 +100,12 @@
             </prescripcion>
         </medicamentos>
         <fechaConfeccion>2025-09-16</fechaConfeccion>
-        <fechaRetiro>2025-09-18</fechaRetiro>
+        <fechaRetiro>2025-09-29</fechaRetiro>
         <confeccionado>1</confeccionado>
-        <estado>En proceso</estado>
+        <estado>Confeccionada</estado>
     </Receta>
     <Receta>
+        <codigo>REC-001</codigo>
         <paciente>
             <id>pac-111</id>
             <nombre>Javier</nombre>
@@ -195,9 +114,9 @@
         </paciente>
         <medicamentos>
             <prescripcion>
-                <cantidad>1</cantidad>
-                <duracionDias>1</duracionDias>
-                <indicaciones>mucha</indicaciones>
+                <cantidad>6</cantidad>
+                <duracionDias>6</duracionDias>
+                <indicaciones>Para el dolor del cuello</indicaciones>
                 <medicamento>
                     <codigo>2</codigo>
                     <descripcion>Blister</descripcion>
@@ -207,33 +126,8 @@
             </prescripcion>
         </medicamentos>
         <fechaConfeccion>2025-09-16</fechaConfeccion>
-        <fechaRetiro>2025-10-05</fechaRetiro>
+        <fechaRetiro>2025-10-03</fechaRetiro>
         <confeccionado>1</confeccionado>
-        <estado>En proceso</estado>
-    </Receta>
-    <Receta>
-        <paciente>
-            <id>pac-111</id>
-            <nombre>Javier</nombre>
-            <telefono>88319288</telefono>
-            <fechaNacimiento>2005-08-21</fechaNacimiento>
-        </paciente>
-        <medicamentos>
-            <prescripcion>
-                <cantidad>1</cantidad>
-                <duracionDias>1</duracionDias>
-                <indicaciones>5</indicaciones>
-                <medicamento>
-                    <codigo>2</codigo>
-                    <descripcion>Blister</descripcion>
-                    <nombre>Ibuprofeno</nombre>
-                    <presentacion>Pastilla para dolores</presentacion>
-                </medicamento>
-            </prescripcion>
-        </medicamentos>
-        <fechaConfeccion>2025-09-16</fechaConfeccion>
-        <fechaRetiro>2025-09-19</fechaRetiro>
-        <confeccionado>1</confeccionado>
-        <estado>En proceso</estado>
+        <estado>Confeccionada</estado>
     </Receta>
 </recetas>

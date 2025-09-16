@@ -10,6 +10,7 @@ public class RecetaMapper {
         if (r == null) return null;
 
         return new RecetaEntity(
+                r.getCodigo(),
                 PacientesMapper.toXml(r.getPaciente()),
                 r.getMedicamentos(),
                 r.getFechaConfeccion(),
@@ -23,6 +24,7 @@ public class RecetaMapper {
         if (e == null) return null;
 
         return new Receta(
+                e.getCodigo(),
                 PacientesMapper.toModel(e.getPaciente()),
                 e.getMedicamentos(),
                 e.getFechaConfeccion(),

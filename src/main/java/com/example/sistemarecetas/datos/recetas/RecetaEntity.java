@@ -14,9 +14,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RecetaEntity {
+
+    @XmlElement(name = "codigo")          // <--- NUEVO
+    private String codigo;
 
     @XmlElement(name = "paciente")
     private PacienteEntity paciente;
@@ -36,9 +38,16 @@ public class RecetaEntity {
 
     public RecetaEntity() {}
 
-    public RecetaEntity(PacienteEntity paciente, List<Prescripcion> medicamentos,
-                        LocalDate fechaConfeccion, LocalDate fechaRetiro,
-                        int confeccionado, String estado) {
+    // Constructor para guardar/leer
+    public RecetaEntity(String codigo,
+                        PacienteEntity paciente,
+                        List<Prescripcion> medicamentos,
+                        LocalDate fechaConfeccion,
+                        LocalDate fechaRetiro,
+                        int confeccionado,
+                        String estado) {
+
+        this.codigo = codigo;              // <--- NUEVO
         this.paciente = paciente;
         this.medicamentos = medicamentos;
         this.fechaConfeccion = fechaConfeccion;
@@ -47,7 +56,8 @@ public class RecetaEntity {
         this.estado = estado;
     }
 
-    // Getters y setters
+    // --- Getters y setters ---
+    public String getCodigo() { return codigo; }
     public PacienteEntity getPaciente() { return paciente; }
     public void setPaciente(PacienteEntity paciente) { this.paciente = paciente; }
 

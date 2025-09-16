@@ -36,9 +36,10 @@ public class DashboardLogica {
         List<Receta> recetas = recetasLogica.findAll();
         Map<String, Long> conteoPorEstado = new HashMap<>();
 
+        conteoPorEstado.put("Confeccionada",0L);
         conteoPorEstado.put("En proceso", 0L);
         conteoPorEstado.put("Lista", 0L);
-        conteoPorEstado.put("Entregado", 0L);
+        conteoPorEstado.put("Entregada", 0L);
 
         for (Receta receta : recetas) {
             String estado = receta.getEstado();
