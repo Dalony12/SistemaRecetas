@@ -186,9 +186,20 @@ public class MedicosController {
         btnModificarMedico.setSelected(mode.equals("modificar"));
         btnBuscarMedico.setSelected(mode.equals("buscar"));
 
-        boolean editable = !mode.equals("borrar");
-        txtNombreMedico.setEditable(editable);
-        txtEspecialidadMedico.setEditable(editable);
+        txtIDMedico.setEditable(true);
+        txtNombreMedico.setEditable(true);
+        txtEspecialidadMedico.setEditable(true);
+
+        switch (mode) {
+            case "buscar":
+                txtEspecialidadMedico.setEditable(false);
+                break;
+            case "borrar":
+                txtNombreMedico.setEditable(false);
+                txtEspecialidadMedico.setEditable(false);
+
+                break;
+        }
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {

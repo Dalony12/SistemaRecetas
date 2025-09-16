@@ -32,7 +32,7 @@ public class HistorialController {
     private ObservableList<Receta> listaObservable;
 
     @FXML
-    public void initialize() {
+    public void cargarHistorial() {
 
         try {
             String rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "recetas.xml").toString();

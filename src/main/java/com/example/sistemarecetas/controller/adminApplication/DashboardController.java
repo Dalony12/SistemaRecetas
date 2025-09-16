@@ -17,7 +17,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
 
-public class DashboardController implements Initializable {
+public class DashboardController {
     private static final String RUTA_RECETAS = java.nio.file.Paths
             .get(System.getProperty("user.dir"), "datos", "recetas.xml")
             .toString();
@@ -30,8 +30,8 @@ public class DashboardController implements Initializable {
 
     private DashboardLogica service;
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
+
+    public void cargarDashboard() {
         this.service = new DashboardLogica(RUTA_RECETAS);
 
         List<Receta> lista = service.cargarRecetas();
