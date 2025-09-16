@@ -47,5 +47,15 @@ public class Prescripcion {
     public void setIndicaciones(String indicaciones) {
         this.indicaciones = indicaciones;
     }
+
+    @Override
+    public String toString() {
+        return "Prescripcion{" +
+                "medicamento=" + medicamento.toString() +
+                ", cantidad=" + cantidad +
+                ", indicaciones='" + indicaciones + '\'' +
+                ", duracionDias=" + duracionDias +
+                '}';
+    }
 }
 

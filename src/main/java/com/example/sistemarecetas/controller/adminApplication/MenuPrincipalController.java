@@ -14,18 +14,6 @@ import java.io.IOException;
 
 public class MenuPrincipalController {
 
-    public void clickComoSeUsaPrograma(MouseEvent mouseEvent) {
-    }
-
-    public void clickComoNavegoDentroPrograma(MouseEvent mouseEvent) {
-    }
-
-    public void clickComoUtilizarDashboard(MouseEvent mouseEvent) {
-    }
-
-    public void clickComoCerrarSesion(MouseEvent mouseEvent) {
-    }
-
     public void clickCerrarSesion(ActionEvent actionEvent) {
         try {
             // 1. Limpiar el usuario actual
@@ -51,5 +39,8 @@ public class MenuPrincipalController {
             alert.showAndWait();
             e.printStackTrace();
         }
+    }
+
+    public void clickContactarSoporte(MouseEvent mouseEvent) {
     }
 }
