@@ -5,13 +5,13 @@ module com.example.sistemarecetas {
     requires javafx.graphics;
     requires jakarta.xml.bind;
 
-    opens com.example.sistemarecetas.Model to javafx.base, jakarta.xml.bind;
-    opens com.example.sistemarecetas.datos.medicamentos to jakarta.xml.bind;
-    opens com.example.sistemarecetas.datos.farmaceutas to jakarta.xml.bind;
-    opens com.example.sistemarecetas.datos.pacientes to jakarta.xml.bind;
-    opens com.example.sistemarecetas.datos.medicos to jakarta.xml.bind;
-    opens com.example.sistemarecetas.datos.recetas to jakarta.xml.bind;
-    opens com.example.sistemarecetas.datos.prescripciones to jakarta.xml.bind;
+    opens com.example.sistemarecetas.Model to javafx.base, jakarta.xml.bind, org.glassfish.jaxb.runtime;
+    opens com.example.sistemarecetas.datos.medicamentos to jakarta.xml.bind, org.glassfish.jaxb.runtime;
+    opens com.example.sistemarecetas.datos.farmaceutas to jakarta.xml.bind, org.glassfish.jaxb.runtime;
+    opens com.example.sistemarecetas.datos.pacientes to jakarta.xml.bind, org.glassfish.jaxb.runtime;
+    opens com.example.sistemarecetas.datos.medicos to jakarta.xml.bind, org.glassfish.jaxb.runtime;
+    opens com.example.sistemarecetas.datos.recetas to jakarta.xml.bind, org.glassfish.jaxb.runtime;
+    opens com.example.sistemarecetas.datos.prescripciones to jakarta.xml.bind, org.glassfish.jaxb.runtime;
 
     opens com.example.sistemarecetas.controller.adminApplication to javafx.fxml;
     opens com.example.sistemarecetas.controller.FarmaceuticoApplication to javafx.fxml;
@@ -27,4 +27,3 @@ module com.example.sistemarecetas {
     exports com.example.sistemarecetas.datos;
     exports com.example.sistemarecetas;
 }
-

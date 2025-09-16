@@ -89,6 +89,27 @@ public class FarmaceutasLogica {
         throw new NoSuchElementException("No existe Faramaceutico con ID: " + farmaceutico.getId());
     }
 
+    public String generarNextID() {
+        List<Farmaceutico> lista = findAll();
+
+        int max = lista.stream()
+                .map(Farmaceutico::getId)
+                .filter(Objects::nonNull)
+                .filter(id -> id.startsWith("far-"))
+                .mapToInt(id -> {
+                    try {
+                        return Integer.parseInt(id.replace("far-", ""));
+                    } catch (NumberFormatException e) {
+                        return 0;
+                    }
+                })
+                .max()
+                .orElse(0);
+
+        return String.format("%03d", max + 1);
+    }
+
+
     public boolean deleteByCodigo(String codigo) {
         if (codigo == null || codigo.isBlank()) return false;
         FarmaceutaConector data = store.load();

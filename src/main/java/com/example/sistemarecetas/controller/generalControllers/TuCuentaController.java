@@ -12,6 +12,10 @@ import javafx.scene.control.PasswordField;
 
 public class TuCuentaController {
 
+    private static TuCuentaController instance;
+    public TuCuentaController() { instance = this; }
+    public static TuCuentaController getInstance() { return instance; }
+
     @FXML private PasswordField txtNuevaContrasena;
     @FXML private PasswordField txtVerificarContrasena;
 
@@ -28,18 +32,20 @@ public class TuCuentaController {
         farmaceutasLogica = new FarmaceutasLogica("datos/farmaceutas.xml");
     }
 
+    public void cargarDatosCuenta() {
+        limpiarCampos();
+    }
+
     @FXML
     private void EnviarContrasenaNueva() {
         String nueva = txtNuevaContrasena.getText().trim();
         String verificar = txtVerificarContrasena.getText().trim();
 
-        // Validación de campos vacíos
         if (nueva.isEmpty() || verificar.isEmpty()) {
             mostrarAlerta("Campos vacíos", "Por favor, completar todos los campos.");
             return;
         }
 
-        // Validación de coincidencia
         if (!nueva.equals(verificar)) {
             mostrarAlerta("Contraseñas no coinciden", "La nueva contraseña y la verificación no son iguales.");
             return;
@@ -67,9 +73,7 @@ public class TuCuentaController {
             return;
         }
 
-        // Actualizar también la contraseña en UsuarioActual
         usuarioActivo.setPassword(nueva);
-
         mostrarAlerta("Éxito", "La contraseña ha sido actualizada correctamente.");
         limpiarCampos();
     }

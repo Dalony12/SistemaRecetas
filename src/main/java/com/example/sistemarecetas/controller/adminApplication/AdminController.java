@@ -1,7 +1,7 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
-import com.example.sistemarecetas.controller.adminApplication.DashboardController;
-import com.example.sistemarecetas.controller.MedicoApplication.HistorialController;
+import com.example.sistemarecetas.controller.generalControllers.DashboardController;
+import com.example.sistemarecetas.controller.generalControllers.HistorialController;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
@@ -14,43 +14,54 @@ public class AdminController {
     @FXML private Tab tabMedicamentos;
     @FXML private Tab tabHistorial;
     @FXML private Tab tabDashboard;
-    @FXML private HistorialController includeHistorialController;
-    @FXML private DashboardController includeDashboardController;
 
     @FXML
     public void abrirMenuPrincipal(Event event) { }
 
     @FXML
     public void abrirMedicos(Event event) {
-        if (tabMedicos.isSelected()) {MedicosController.getInstance().mostrarListaConAnimacion();}
+        if (tabMedicos.isSelected()) {
+            MedicosController.getInstance().cargarMedicos(); // refresca los datos desde XML
+            MedicosController.getInstance().mostrarListaConAnimacion();
+        }
     }
 
     @FXML
     public void abrirFarmaceuticos(Event event) {
-        if (tabFarmaceuticos.isSelected()) {FarmaceuticosController.getInstance().mostrarListaConAnimacion();}
+        if (tabFarmaceuticos.isSelected()) {
+            FarmaceuticosController.getInstance().cargarFarmaceuticos(); // refresca datos desde XML
+            FarmaceuticosController.getInstance().mostrarListaConAnimacion();
+        }
     }
 
     @FXML
     public void abrirPacientes(Event event) {
-        if (tabPacientes.isSelected()) {PacientesController.getInstance().mostrarListaConAnimacion();}
+        if (tabPacientes.isSelected()) {
+            PacientesController.getInstance().cargarPacientes(); // refresca datos desde XML
+            PacientesController.getInstance().mostrarListaConAnimacion();
+        }
     }
 
     @FXML
     public void abrirMedicamentos(Event event) {
-        if (tabMedicamentos.isSelected()) {MedicamentosController.getInstance().mostrarListaConAnimacion();}
+        if (tabMedicamentos.isSelected()) {
+            MedicamentosController.getInstance().cargarMedicamentos(); // refresca datos desde XML
+            MedicamentosController.getInstance().mostrarListaConAnimacion();
+        }
     }
 
     @FXML
     public void abrirDashboard(Event event) {
         if (tabDashboard.isSelected()) {
-            includeDashboardController.cargarDashboard();
+            DashboardController.getInstance().cargarDashboard(); // refresca gráficos y combobox
         }
     }
 
     @FXML
     public void abrirHistorial(Event event) {
         if (tabHistorial.isSelected()) {
-            includeHistorialController.cargarHistorial();
+            HistorialController.getInstance().cargarHistorial(); // refresca la tabla de recetas
         }
     }
+
 }

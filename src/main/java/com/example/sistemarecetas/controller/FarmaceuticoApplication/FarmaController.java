@@ -1,44 +1,47 @@
 package com.example.sistemarecetas.controller.FarmaceuticoApplication;
 
-
-import com.example.sistemarecetas.controller.MedicoApplication.HistorialController;
-import com.example.sistemarecetas.controller.adminApplication.DashboardController;
+import com.example.sistemarecetas.controller.generalControllers.HistorialController;
+import com.example.sistemarecetas.controller.generalControllers.DashboardController;
+import com.example.sistemarecetas.controller.generalControllers.TuCuentaController;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 
 public class FarmaController {
 
-    @FXML private TabPane tabPane;
     @FXML private Tab tabMenuPrincipal;
     @FXML private Tab tabDashboard;
     @FXML private Tab tabHistorial;
     @FXML private Tab tabTuCuenta;
     @FXML private Tab tabDespacho;
-    @FXML private HistorialController includeHistorialController;
-    @FXML private DashboardController includeDashboardController ;
 
     @FXML
-    public void abrirMenuPrincipal(Event event) { }
+    public void abrirMenuPrincipal(Event event) {
+        if (!tabMenuPrincipal.isSelected()) return;
+    }
 
     @FXML
     public void abrirDashboard(Event event) {
-        if (tabDashboard.isSelected()) {
-            includeDashboardController.cargarDashboard();
-        }
+        if (!tabDashboard.isSelected()) return;
+        // Refrescar dashboard al seleccionarlo
+        DashboardController.getInstance().cargarDashboard();
     }
 
     @FXML
     public void abrirHistorial(Event event) {
-        if (tabHistorial.isSelected()) {
-            includeHistorialController.cargarHistorial();
-        }
+        if (!tabHistorial.isSelected()) return;
+        HistorialController.getInstance().cargarHistorial();
     }
 
     @FXML
-    public void abrirTuCuenta(Event event) { }
+    public void abrirTuCuenta(Event event) {
+        if (!tabTuCuenta.isSelected()) return;
+        TuCuentaController.getInstance().cargarDatosCuenta();
+    }
 
     @FXML
-    public void abrirDespacho(Event event) { }
+    public void abrirDespacho(Event event) {
+        if (!tabDespacho.isSelected()) return;
+        DespachoController.getInstance().refrescarTabla();
+    }
 }

@@ -2,7 +2,17 @@
 <farmaceuticos>
     <Farmaceutico>
         <id>far-111</id>
-        <nombre>Derek</nombre>
+        <nombre>Yendrick</nombre>
         <password>far-111</password>
+    </Farmaceutico>
+    <Farmaceutico>
+        <id>far-125</id>
+        <nombre>Gabriel</nombre>
+        <password>far-125</password>
+    </Farmaceutico>
+    <Farmaceutico>
+        <id>far-555</id>
+        <nombre>Josias</nombre>
+        <password>far-555</password>
     </Farmaceutico>
 </farmaceuticos>
