@@ -186,10 +186,23 @@ public class MedicamentosController {
         btnModificarMedicamento.setSelected(mode.equals("modificar"));
         btnBuscarMedicamento.setSelected(mode.equals("buscar"));
 
-        boolean editable = !mode.equals("borrar");
-        txtDescripcionMedicamento.setEditable(editable);
-        txtNombreMedicamento.setEditable(editable);
-        txtPresentacionMedicamento.setEditable(editable);
+        txtCodigoMedicamento.setEditable(true);
+        txtNombreMedicamento.setEditable(true);
+        txtDescripcionMedicamento.setEditable(true);
+        txtPresentacionMedicamento.setEditable(true);
+
+        switch (mode) {
+            case "borrar":
+                txtNombreMedicamento.setEditable(false);
+                txtDescripcionMedicamento.setEditable(false);
+                txtPresentacionMedicamento.setEditable(false);
+                break;
+
+            case "buscar":
+                txtDescripcionMedicamento.setEditable(false);
+                txtPresentacionMedicamento.setEditable(false);
+                break;
+        }
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {

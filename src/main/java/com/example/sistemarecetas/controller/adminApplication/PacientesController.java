@@ -191,10 +191,23 @@ public class PacientesController {
         btnModificarPaciente.setSelected(mode.equals("modificar"));
         btnBuscarPaciente.setSelected(mode.equals("buscar"));
 
-        boolean editable = !mode.equals("borrar");
-        txtNombrePaciente.setEditable(editable);
-        txtTelefonoPaciente.setEditable(editable);
-        dtpFechaNacimiento.setDisable(!editable);
+        txtIDPaciente.setEditable(true);
+        txtNombrePaciente.setEditable(true);
+        txtTelefonoPaciente.setEditable(true);
+        dtpFechaNacimiento.setDisable(false);
+
+        switch (mode) {
+            case "borrar":
+                txtNombrePaciente.setEditable(false);
+                txtTelefonoPaciente.setEditable(false);
+                dtpFechaNacimiento.setDisable(true);
+                break;
+
+            case "buscar":
+                txtTelefonoPaciente.setEditable(false);
+                dtpFechaNacimiento.setDisable(true);
+                break;
+        }
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {

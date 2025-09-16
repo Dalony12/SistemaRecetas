@@ -32,7 +32,7 @@ public class HistorialController {
     private RecetasLogica recetasLogica;
 
     @FXML
-    public void initialize() {
+    public void cargarHistorial() {
         // Inicializar la lógica (ajusta la ruta al XML real de recetas)
         recetasLogica = new RecetasLogica("datos/recetas.xml");
 
