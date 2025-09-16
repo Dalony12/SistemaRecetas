@@ -6,6 +6,9 @@ import java.util.List;
 
 public class Receta {
 
+    private static int contador = 1;
+
+    private String codigo;
     private Paciente paciente;
     private List<Prescripcion> medicamentos;
     private LocalDate fechaConfeccion;
@@ -14,17 +17,19 @@ public class Receta {
     private String estado;
 
     public Receta(Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro) {
+        this.codigo = generarCodigo();
         this.paciente = paciente;
         this.medicamentos = new ArrayList<>(medicamentos);
         this.fechaConfeccion = LocalDate.now();
         this.fechaRetiro = fechaRetiro;
         this.confeccionado = 1;
-        this.estado = "En proceso";
+        this.estado = "Confeccionada";
     }
 
-    public Receta(Paciente paciente, List<Prescripcion> medicamentos,
+    public Receta(String codigo, Paciente paciente, List<Prescripcion> medicamentos,
                   LocalDate fechaConfeccion, LocalDate fechaRetiro,
                   int confeccionado, String estado) {
+        this.codigo = codigo;
         this.paciente = paciente;
         this.medicamentos = new ArrayList<>(medicamentos);
         this.fechaConfeccion = fechaConfeccion;
@@ -33,6 +38,14 @@ public class Receta {
         this.estado = estado;
     }
 
+
+    private static String generarCodigo() {
+        return String.format("REC-%03d", contador++);
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
 
     public Paciente getPaciente() {
         return paciente;

@@ -64,26 +64,26 @@ public class RecetasLogica {
     }
 
     public Receta update(Receta receta) {
-        if (receta == null || receta.getPaciente() == null || receta.getPaciente().getId() == null)
-            throw new IllegalArgumentException("La receta requiere un paciente con ID válido.");
+        if (receta == null || receta.getCodigo() == null || receta.getCodigo().isBlank())
+            throw new IllegalArgumentException("La receta requiere un código válido.");
 
         RecetaConector data = store.load();
 
         for (int i = 0; i < data.getRecetas().size(); i++) {
             RecetaEntity actual = data.getRecetas().get(i);
-            if (actual.getPaciente().getId().equalsIgnoreCase(receta.getPaciente().getId())) {
+            if (actual.getCodigo().equalsIgnoreCase(receta.getCodigo())) {
                 data.getRecetas().set(i, mapToXml(receta));
                 store.save(data);
                 return receta;
             }
         }
-        throw new NoSuchElementException("No existe receta para el paciente con ID: " + receta.getPaciente().getId());
+        throw new NoSuchElementException("No existe receta con código: " + receta.getCodigo());
     }
 
-    public boolean deleteByPacienteId(String idPaciente) {
-        if (idPaciente == null || idPaciente.isBlank()) return false;
+    public boolean deleteByCodigo(String codigo) {
+        if (codigo == null || codigo.isBlank()) return false;
         RecetaConector data = store.load();
-        boolean removed = data.getRecetas().removeIf(x -> idPaciente.equalsIgnoreCase(x.getPaciente().getId()));
+        boolean removed = data.getRecetas().removeIf(x -> codigo.equalsIgnoreCase(x.getCodigo()));
         if (removed) store.save(data);
         return removed;
     }
@@ -103,8 +103,15 @@ public class RecetasLogica {
                     return new Prescripcion(med, p.getCantidad(), p.getIndicaciones(), p.getDuracionDias());
                 }).collect(Collectors.toList());
 
-        return new Receta(paciente, prescripciones, e.getFechaConfeccion(),
-                e.getFechaRetiro(), e.getConfeccionado(), e.getEstado());
+        return new Receta(
+                e.getCodigo(),
+                paciente,
+                prescripciones,
+                e.getFechaConfeccion(),
+                e.getFechaRetiro(),
+                e.getConfeccionado(),
+                e.getEstado()
+        );
     }
 
     private RecetaEntity mapToXml(Receta r) {
@@ -112,8 +119,15 @@ public class RecetasLogica {
         var pacienteEntity = PacientesMapper.toXml(r.getPaciente());
 
         // mapear prescripciones sin tocar los medicamentos (solo codigo y datos necesarios)
-        return new RecetaEntity(pacienteEntity, r.getMedicamentos(), r.getFechaConfeccion(),
-                r.getFechaRetiro(), r.getConfeccionado(), r.getEstado());
+        return new RecetaEntity(
+                r.getCodigo(),
+                pacienteEntity,
+                r.getMedicamentos(),
+                r.getFechaConfeccion(),
+                r.getFechaRetiro(),
+                r.getConfeccionado(),
+                r.getEstado()
+        );
     }
 
     // --------- Validaciones ---------
