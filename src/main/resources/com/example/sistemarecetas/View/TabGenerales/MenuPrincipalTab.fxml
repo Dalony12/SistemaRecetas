@@ -17,11 +17,11 @@
             <children>
                 <VBox alignment="CENTER" prefHeight="296.0" prefWidth="538.0" spacing="10.0" styleClass="background">
                     <children>
-                  <HBox alignment="CENTER" prefHeight="72.0" prefWidth="320.0">
-                     <children>
-                        <Button fx:id="btnCerrarSesion" mnemonicParsing="false" onAction="#clickCerrarSesion" prefHeight="52.0" prefWidth="171.0" style="-fx-font-size: 20;" styleClass="button-primary" text="Cerrar Sesión" />
-                     </children>
-                  </HBox>
+                        <HBox alignment="CENTER" prefHeight="72.0" prefWidth="320.0">
+                            <children>
+                                <Button fx:id="btnCerrarSesion" mnemonicParsing="false" onAction="#clickCerrarSesion" prefHeight="52.0" prefWidth="171.0" style="-fx-font-size: 20;" styleClass="button-primary" stylesheets="@../../styles/Styles.css" text="Cerrar Sesión" />
+                            </children>
+                        </HBox>
                         <HBox alignment="CENTER" prefHeight="34.0" prefWidth="320.0" spacing="10.0">
                             <children>
                                 <ImageView fitHeight="32.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
@@ -29,12 +29,12 @@
                                         <Image url="@../../Images/pregunta.png" />
                                     </image>
                                 </ImageView>
-      
-                              <Label fx:id="lblComoCerrarSesion" contentDisplay="CENTER" onMouseClicked="#clickContactarSoporte" prefHeight="38.0" prefWidth="132.0" styleClass="column-header-background" text="Contactar a soporte" textAlignment="CENTER" textFill="#1c9797" underline="true">
-                                  <font>
-                                      <Font size="15.0" />
-                                  </font>
-                              </Label>
+
+                                <Label fx:id="lblComoCerrarSesion" contentDisplay="CENTER" onMouseClicked="#clickContactarSoporte" prefHeight="38.0" prefWidth="132.0" styleClass="column-header-background" text="Contactar a soporte" textAlignment="CENTER" textFill="#1c9797" underline="true">
+                                    <font>
+                                        <Font size="15.0" />
+                                    </font>
+                                </Label>
                             </children>
                         </HBox>
                     </children>
@@ -52,7 +52,7 @@
             </children>
         </HBox>
 
-        <VBox alignment="BOTTOM_CENTER" layoutX="-3.0" layoutY="-12.0" prefHeight="80.0" prefWidth="606.0" styleClass="card">
+        <VBox alignment="BOTTOM_CENTER" layoutX="-3.0" layoutY="-12.0" prefHeight="80.0" prefWidth="606.0" styleClass="card" stylesheets="@../../styles/Styles.css">
             <children>
                 <Label alignment="CENTER" prefHeight="44.0" prefWidth="495.0" text="¡Bienvendo!" textAlignment="CENTER" textFill="WHITE">
                     <font>
