@@ -4,8 +4,8 @@ import com.example.sistemarecetas.Model.Medico;
 import com.example.sistemarecetas.Model.Farmaceutico;
 import com.example.sistemarecetas.Model.Usuario;
 import com.example.sistemarecetas.domain.UsuarioActual;
-import com.example.sistemarecetas.logica.medicos.MedicosLogica;
-import com.example.sistemarecetas.logica.farmaceutas.FarmaceutasLogica;
+import com.example.sistemarecetas.logica.MedicoLogica;
+import com.example.sistemarecetas.logica.FarmaceuticoLogica;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
@@ -20,16 +20,16 @@ public class TuCuentaController {
     @FXML private PasswordField txtVerificarContrasena;
 
     private Usuario usuarioActivo;
-    private MedicosLogica medicosLogica;
-    private FarmaceutasLogica farmaceutasLogica;
+    private MedicoLogica medicosLogica;
+    private FarmaceuticoLogica farmaceutasLogica;
 
     @FXML
     private void initialize() {
         usuarioActivo = UsuarioActual.getInstancia().getUsuario();
 
-        // Inicializar lógica (cargar desde los XML)
-        medicosLogica = new MedicosLogica("datos/medicos.xml");
-        farmaceutasLogica = new FarmaceutasLogica("datos/farmaceutas.xml");
+        // Inicializar lógica usando DB directamente
+        medicosLogica = new MedicoLogica();       // Constructor DB
+        farmaceutasLogica = new FarmaceuticoLogica(); // Constructor DB
     }
 
     public void cargarDatosCuenta() {
@@ -56,11 +56,11 @@ public class TuCuentaController {
         try {
             if (usuarioActivo instanceof Medico medico) {
                 medico.setPassword(nueva);
-                medicosLogica.update(medico);
+                medicosLogica.update(medico);  // Ahora va a DB
                 actualizado = true;
             } else if (usuarioActivo instanceof Farmaceutico farmaceutico) {
                 farmaceutico.setPassword(nueva);
-                farmaceutasLogica.update(farmaceutico);
+                farmaceutasLogica.update(farmaceutico);  // Ahora va a DB
                 actualizado = true;
             }
         } catch (Exception e) {

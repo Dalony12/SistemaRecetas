@@ -1,11 +1,9 @@
 package com.example.sistemarecetas.controller;
 
-import com.example.sistemarecetas.Model.Farmaceutico;
-import com.example.sistemarecetas.Model.Medico;
 import com.example.sistemarecetas.Model.Usuario;
 import com.example.sistemarecetas.domain.UsuarioActual;
-import com.example.sistemarecetas.logica.farmaceutas.FarmaceutasLogica;
-import com.example.sistemarecetas.logica.medicos.MedicosLogica;
+import com.example.sistemarecetas.logica.FarmaceuticoLogica;
+import com.example.sistemarecetas.logica.MedicoLogica;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -29,13 +27,12 @@ public class LoginController {
     @FXML private Label lblAyudaSoporte;
     @FXML private Label lblMensajeCampos;
 
-    // ---- NUEVO: lógica ----
-    private FarmaceutasLogica farmaceutasLogica;
-    private MedicosLogica medicosLogica;
+    private FarmaceuticoLogica farmaceutasLogica;
+    private MedicoLogica medicosLogica;
 
     @FXML
     private void initialize() {
-        // Ocultar inicialmente etiquetas de ayuda y mensaje
+        // Ocultar etiquetas de ayuda
         lblAyudaId.setVisible(false);
         lblAyudaPassword.setVisible(false);
         lblAyudaSoporte.setVisible(false);
@@ -46,13 +43,12 @@ public class LoginController {
         // Reiniciar usuario actual
         UsuarioActual.getInstancia().cerrarSesion();
 
-        // Inicialmente deshabilitar botón
         btnIniciarSesion.setDisable(true);
         lblMensajeCampos.setVisible(true);
 
-        // Listener para habilitar/deshabilitar botón según campos
         ChangeListener<String> textListener = (obs, oldText, newText) -> {
-            boolean habilitar = !txtId.getText().trim().isEmpty() && !txtContrasenaLogin.getText().trim().isEmpty();
+            boolean habilitar = !txtId.getText().trim().isEmpty() &&
+                    !txtContrasenaLogin.getText().trim().isEmpty();
             btnIniciarSesion.setDisable(!habilitar);
             lblMensajeCampos.setVisible(false);
         };
@@ -60,83 +56,63 @@ public class LoginController {
         txtId.textProperty().addListener(textListener);
         txtContrasenaLogin.textProperty().addListener(textListener);
 
-        // ---- Inicializar lógica con rutas a XML ----
-        farmaceutasLogica = new FarmaceutasLogica("datos/farmaceutas.xml");
-        medicosLogica = new MedicosLogica("datos/medicos.xml");
+        // Inicializar lógicas con base de datos
+        farmaceutasLogica = new FarmaceuticoLogica();
+        medicosLogica = new MedicoLogica();
     }
 
     @FXML
     private void clickIniciarSesion(ActionEvent event) {
-        // Bloquear inputs y mostrar animación
-        btnIniciarSesion.setVisible(false);
-        progressIndicator.setVisible(true);
-        txtId.setDisable(true);
-        txtContrasenaLogin.setDisable(true);
-        rbtAyuda.setDisable(true);
+        bloquearUI(true);
 
         String id = txtId.getText().trim();
         String password = txtContrasenaLogin.getText().trim();
 
         new Thread(() -> {
-            try { Thread.sleep(1500); } catch (InterruptedException e) { e.printStackTrace(); }
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 
             Platform.runLater(() -> {
-                // Restaurar estado UI
-                btnIniciarSesion.setVisible(true);
-                progressIndicator.setVisible(false);
-                txtId.setDisable(false);
-                txtContrasenaLogin.setDisable(false);
-                rbtAyuda.setDisable(false);
-
+                bloquearUI(false);
                 boolean encontrado = false;
 
                 try {
-                    // ----- ADMIN -----
+                    // ADMIN
                     if (id.equals("admin") && password.equals("1234")) {
-                        Usuario admin = new Usuario(id, "Administrador", password) {
-                            @Override
-                            public void mostrarInfo() {
-                                System.out.println("Usuario Administrador");
-                            }
+                        Usuario admin = new Usuario(0, id,"Administrador", password) {
+                            public void mostrarInfo() { System.out.println("Usuario Administrador"); }
                         };
                         UsuarioActual.getInstancia().setUsuario(admin, "Admin");
                         cargarVista("/com/example/sistemarecetas/View/adminView/admin-view.fxml", "Pantalla de Inicio");
                         encontrado = true;
                     }
 
-                    // ----- MÉDICO -----
+                    // MÉDICO
                     if (!encontrado) {
                         medicosLogica.findAll().stream()
-                                .filter(m -> m.getId().equals(id) && m.getPassword().equals(password))
+                                .filter(m -> m.getIdentificacion().equals(id) && m.getPassword().equals(password))
                                 .findFirst()
                                 .ifPresent(m -> {
                                     UsuarioActual.getInstancia().setUsuario(m, "Medico");
-                                    try {
-                                        cargarVista("/com/example/sistemarecetas/View/MedicoView/Medico-view.fxml", "Pantalla de Inicio");
-                                    } catch (Exception e) {
-                                        mostrarError("Error al cargar vista de médico: " + e.getMessage());
-                                    }
+                                    try { cargarVista("/com/example/sistemarecetas/View/MedicoView/Medico-view.fxml", "Pantalla de Inicio"); }
+                                    catch (Exception e) { mostrarError("Error al cargar vista de médico: " + e.getMessage()); }
                                 });
                         encontrado = UsuarioActual.getInstancia().getUsuario() != null;
                     }
 
-                    // ----- FARMACEUTA -----
+                    // FARMACÉUTICO
                     if (!encontrado) {
                         farmaceutasLogica.findAll().stream()
-                                .filter(f -> f.getId().equals(id) && f.getPassword().equals(password))
+                                .filter(f -> f.getIdentificacion().equals(id) && f.getPassword().equals(password))
                                 .findFirst()
                                 .ifPresent(f -> {
                                     UsuarioActual.getInstancia().setUsuario(f, "Farmaceutico");
-                                    try {
-                                        cargarVista("/com/example/sistemarecetas/View/farmaView/farma-view.fxml", "Pantalla de Inicio");
-                                    } catch (Exception e) {
-                                        mostrarError("Error al cargar vista de farmaceuta: " + e.getMessage());
-                                    }
+                                    try { cargarVista("/com/example/sistemarecetas/View/farmaView/farma-view.fxml", "Pantalla de Inicio"); }
+                                    catch (Exception e) { mostrarError("Error al cargar vista de farmaceuta: " + e.getMessage()); }
                                 });
                         encontrado = UsuarioActual.getInstancia().getUsuario() != null;
                     }
 
-                    // ----- NO ENCONTRADO -----
+                    // NO ENCONTRADO
                     if (!encontrado) {
                         mostrarInfo("Usuario o contraseña incorrectos.");
                         txtId.clear();
@@ -145,7 +121,7 @@ public class LoginController {
                     }
 
                 } catch (Exception e) {
-                    mostrarError("No fue posible iniciar sesión debido a un error: " + e.getMessage());
+                    mostrarError("No fue posible iniciar sesión: " + e.getMessage());
                     txtId.clear();
                     txtContrasenaLogin.clear();
                     lblMensajeCampos.setVisible(true);
@@ -154,7 +130,14 @@ public class LoginController {
         }).start();
     }
 
-    // Método de utilidad para cargar vistas
+    private void bloquearUI(boolean bloquear) {
+        btnIniciarSesion.setVisible(!bloquear);
+        progressIndicator.setVisible(bloquear);
+        txtId.setDisable(bloquear);
+        txtContrasenaLogin.setDisable(bloquear);
+        rbtAyuda.setDisable(bloquear);
+    }
+
     private void cargarVista(String fxmlPath, String tituloVentana) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root = loader.load();

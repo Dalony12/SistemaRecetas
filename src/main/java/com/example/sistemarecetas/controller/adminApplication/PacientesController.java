@@ -1,7 +1,8 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
 import com.example.sistemarecetas.Model.Paciente;
-import com.example.sistemarecetas.logica.pacientes.PacientesLogica;
+import com.example.sistemarecetas.logica.PacienteLogica;
+import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -12,12 +13,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public class PacientesController {
 
@@ -29,8 +26,8 @@ public class PacientesController {
     @FXML private TableView<Paciente> tablePacientes;
     @FXML private TableColumn<Paciente, String> colID;
     @FXML private TableColumn<Paciente, String> colNombre;
-    @FXML private TableColumn<Paciente, String> colFechaNacimiento;
-    @FXML private TableColumn<Paciente, String> colTelefono;
+    @FXML private TableColumn<Paciente, LocalDate> colFechaNacimiento;
+    @FXML private TableColumn<Paciente, Integer> colTelefono;
 
     @FXML private RadioButton btnGuardarPaciente;
     @FXML private RadioButton btnBorrarPaciente;
@@ -43,37 +40,22 @@ public class PacientesController {
     @FXML private TextField txtTelefonoPaciente;
 
     private ObservableList<Paciente> listaObservable;
-    private PacientesLogica pacienteLogica;
-    private String rutaXML;
+    private PacienteLogica pacienteLogica;
+    private String currentMode = "guardar";
 
     @FXML
     public void initialize() {
         try {
-            rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "pacientes.xml").toString();
-            File archivo = new File(rutaXML);
-
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                try (FileWriter writer = new FileWriter(archivo)) {
-                    writer.write("""
-                        <?xml version="1.0" encoding="UTF-8"?>
-                        <pacientes>
-                        </pacientes>
-                        """);
-                }
-            }
-
-            pacienteLogica = new PacientesLogica(rutaXML);
+            pacienteLogica = new PacienteLogica();
             listaObservable = FXCollections.observableArrayList(pacienteLogica.findAll());
             tablePacientes.setItems(listaObservable);
 
-            colID.setCellValueFactory(new PropertyValueFactory<>("id"));
+            colID.setCellValueFactory(new PropertyValueFactory<>("identificacion"));
             colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
             colFechaNacimiento.setCellValueFactory(new PropertyValueFactory<>("fechaNacimiento"));
             colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
 
             configurarListeners();
-
         } catch (Exception e) {
             e.printStackTrace();
             mostrarAlerta("Error al inicializar", e.getMessage());
@@ -81,57 +63,56 @@ public class PacientesController {
     }
 
     private void configurarListeners() {
-        btnGuardarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("guardar"); });
-        btnBorrarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("borrar"); });
-        btnModificarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("modificar"); });
-        btnBuscarPaciente.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("buscar"); });
+        btnGuardarPaciente.setOnAction(e -> toggleMode("guardar"));
+        btnBorrarPaciente.setOnAction(e -> toggleMode("borrar"));
+        btnModificarPaciente.setOnAction(e -> toggleMode("modificar"));
+        btnBuscarPaciente.setOnAction(e -> toggleMode("buscar"));
 
         txtIDPaciente.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarPaciente.isSelected()) buscarPaciente();
+            if (currentMode.equals("buscar")) buscarPaciente();
             if (newVal.isEmpty()) limpiarCampos();
             else autocompletarPaciente(newVal);
         });
 
         txtNombrePaciente.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarPaciente.isSelected()) buscarPaciente();
+            if (currentMode.equals("buscar")) buscarPaciente();
         });
     }
 
-    private void autocompletarPaciente(String id) {
-        Optional<Paciente> encontrado = pacienteLogica.findByCodigo(id);
-        if (encontrado.isPresent()) {
-            Paciente p = encontrado.get();
-            txtNombrePaciente.setText(p.getNombre());
-            txtTelefonoPaciente.setText(String.valueOf(p.getTelefono()));
-            dtpFechaNacimiento.setValue(p.getFechaNacimiento());
-        } else {
-            txtNombrePaciente.clear();
-            txtTelefonoPaciente.clear();
-            dtpFechaNacimiento.setValue(null);
+    private void autocompletarPaciente(String identificacion) {
+        try {
+            Paciente p = pacienteLogica.findByIdentificacion(identificacion);
+            if (p != null) {
+                txtNombrePaciente.setText(p.getNombre());
+                txtTelefonoPaciente.setText(String.valueOf(p.getTelefono()));
+                dtpFechaNacimiento.setValue(p.getFechaNacimiento());
+            } else limpiarCampos();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @FXML
     private void GuardarModificarEliminarPaciente() {
         try {
-            String id = txtIDPaciente.getText().trim();
+            String identificacion = txtIDPaciente.getText().trim();
             String nombre = txtNombrePaciente.getText().trim();
             String telefonoStr = txtTelefonoPaciente.getText().trim();
             LocalDate fechaNacimiento = dtpFechaNacimiento.getValue();
 
-            if (id.isEmpty() || nombre.isEmpty() || telefonoStr.isEmpty() || fechaNacimiento == null) {
+            if (identificacion.isEmpty() || nombre.isEmpty() || telefonoStr.isEmpty() || fechaNacimiento == null) {
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }
 
             int telefono = Integer.parseInt(telefonoStr);
-            Paciente p = new Paciente(id, nombre, telefono, fechaNacimiento);
+            Paciente p = new Paciente(identificacion, nombre, telefono, fechaNacimiento);
 
-            if (btnGuardarPaciente.isSelected()) pacienteLogica.create(p);
-            else if (btnModificarPaciente.isSelected()) pacienteLogica.update(p);
-            else if (btnBorrarPaciente.isSelected()) {
-                boolean eliminado = pacienteLogica.deleteByCodigo(id);
-                if (!eliminado) mostrarAlerta("No encontrado", "No existe un paciente con ese código: " + id);
+            if (currentMode.equals("guardar")) pacienteLogica.create(p);
+            else if (currentMode.equals("modificar")) pacienteLogica.update(p);
+            else if (currentMode.equals("borrar")) {
+                boolean eliminado = pacienteLogica.deleteByIdentificacion(identificacion);
+                if (!eliminado) mostrarAlerta("No encontrado", "No existe un paciente con esa identificación: " + identificacion);
             }
 
             limpiarCampos();
@@ -146,19 +127,52 @@ public class PacientesController {
 
     @FXML
     private void buscarPaciente() {
-        String id = txtIDPaciente.getText().trim();
+        String identificacion = txtIDPaciente.getText().trim();
         String nombre = txtNombrePaciente.getText().trim();
 
-        if (id.isEmpty() && nombre.isEmpty()) {
-            cargarPacientes();
-            return;
-        }
+        try {
+            if (identificacion.isEmpty() && nombre.isEmpty()) {
+                cargarPacientes();
+                return;
+            }
 
-        List<Paciente> resultado = pacienteLogica.search(id, nombre);
-        listaObservable.setAll(resultado);
+            List<Paciente> resultado = pacienteLogica.search(identificacion, nombre);
+            listaObservable.setAll(resultado);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void mostrarListaConAnimacion() {
+        if (vBoxPortadaPaciente.isVisible()) {
+
+            PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
+            pause.setOnFinished(event -> {
+
+                TranslateTransition translate = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaPaciente);
+                translate.setToX(-vBoxPortadaPaciente.getWidth() - 20);
+
+                FadeTransition fade = new FadeTransition(Duration.seconds(1.5), vBoxPortadaPaciente);
+                fade.setFromValue(1);
+                fade.setToValue(0);
+
+                translate.setOnFinished(e -> {
+                    vBoxPortadaPaciente.setVisible(false);
+                    vBoxPortadaPaciente.setTranslateX(0);
+                    vBoxPortadaPaciente.setOpacity(1);
+                });
+
+                translate.play();
+                fade.play();
+            });
+
+            pause.play();
+        }
     }
 
     private void toggleMode(String mode) {
+        currentMode = mode;
+
         btnGuardarPaciente.setSelected(mode.equals("guardar"));
         btnBorrarPaciente.setSelected(mode.equals("borrar"));
         btnModificarPaciente.setSelected(mode.equals("modificar"));
@@ -187,19 +201,10 @@ public class PacientesController {
     }
 
     public void cargarPacientes() {
-        listaObservable.setAll(pacienteLogica.findAll());
-    }
-
-    public void mostrarListaConAnimacion() {
-        if (vBoxPortadaPaciente.isVisible()) {
-            PauseTransition pause = new PauseTransition(Duration.seconds(1));
-            pause.setOnFinished(event -> {
-                TranslateTransition transition = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaPaciente);
-                transition.setToX(-vBoxPortadaPaciente.getWidth() - 20);
-                transition.setOnFinished(e -> vBoxPortadaPaciente.setVisible(false));
-                transition.play();
-            });
-            pause.play();
+        try {
+            listaObservable.setAll(pacienteLogica.findAll());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

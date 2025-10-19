@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Receta {
-
-    private static int contador = 1;
-
-    private String codigo;
+    int id;
     private Paciente paciente;
     private List<Prescripcion> medicamentos;
     private LocalDate fechaConfeccion;
@@ -16,20 +13,10 @@ public class Receta {
     private int confeccionado;
     private String estado;
 
-    public Receta(Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro) {
-        this.codigo = generarCodigo();
-        this.paciente = paciente;
-        this.medicamentos = new ArrayList<>(medicamentos);
-        this.fechaConfeccion = LocalDate.now();
-        this.fechaRetiro = fechaRetiro;
-        this.confeccionado = 1;
-        this.estado = "Confeccionada";
-    }
-
-    public Receta(String codigo, Paciente paciente, List<Prescripcion> medicamentos,
+    public Receta(int id, Paciente paciente, List<Prescripcion> medicamentos,
                   LocalDate fechaConfeccion, LocalDate fechaRetiro,
                   int confeccionado, String estado) {
-        this.codigo = codigo;
+        this.id = id;
         this.paciente = paciente;
         this.medicamentos = new ArrayList<>(medicamentos);
         this.fechaConfeccion = fechaConfeccion;
@@ -38,14 +25,15 @@ public class Receta {
         this.estado = estado;
     }
 
-
-    private static String generarCodigo() {
-        return String.format("REC-%03d", contador++);
+    public Receta(Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro) {
+        this.paciente = paciente;
+        this.medicamentos = medicamentos;
+        this.fechaRetiro = fechaRetiro;
     }
 
-    public String getCodigo() {
-        return codigo;
-    }
+    public int getId() { return id;}
+
+    public  void setId(int id) { this.id = id; }
 
     public Paciente getPaciente() {
         return paciente;

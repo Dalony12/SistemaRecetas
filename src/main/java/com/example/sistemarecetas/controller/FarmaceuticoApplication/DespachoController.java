@@ -2,7 +2,7 @@ package com.example.sistemarecetas.controller.FarmaceuticoApplication;
 
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
-import com.example.sistemarecetas.logica.recetas.RecetasLogica;
+import com.example.sistemarecetas.logica.RecetaLogica;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,8 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.layout.Region;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
@@ -30,55 +28,29 @@ public class DespachoController {
     @FXML private TableColumn<Receta, String> colFechaConfeccion;
     @FXML private TableColumn<Receta, String> colFechaRetiro;
     @FXML private TableColumn<Receta, String> colEstado;
-    @FXML private ComboBox<String> cmbFiltrarPaciencteDespacho;
-    @FXML private TextField txtBuscarClienetDespacho;
+    @FXML private ComboBox<String> cmbFiltrarPacienteDespacho;
+    @FXML private TextField txtBuscarClienteDespacho;
 
     private ObservableList<Receta> listaObservable;
-    private RecetasLogica recetasLogica;
-
-    // Rutas de los archivos XML
-    private static final String RUTA_RECETAS = System.getProperty("user.dir") + "/datos/recetas.xml";
-    private static final String RUTA_PACIENTES = System.getProperty("user.dir") + "/datos/pacientes.xml";
-    private static final String RUTA_MEDICAMENTOS = System.getProperty("user.dir") + "/datos/medicamentos.xml";
+    private RecetaLogica recetasLogica;
 
     @FXML
     public void initialize() {
         try {
-            // Inicializa archivos si no existen
-            inicializarArchivo(RUTA_RECETAS, "recetas");
-            inicializarArchivo(RUTA_PACIENTES, "pacientes");
-            inicializarArchivo(RUTA_MEDICAMENTOS, "medicamentos");
+            // Inicializa la lógica de recetas con BD
+            recetasLogica = new RecetaLogica();
 
-            // Inicializa la lógica de recetas con las tres rutas
-            if (recetasLogica == null) {
-                recetasLogica = new RecetasLogica(RUTA_RECETAS, RUTA_PACIENTES, RUTA_MEDICAMENTOS);
-            }
-
-            if (cmbFiltrarPaciencteDespacho != null) {
-                cmbFiltrarPaciencteDespacho.setItems(FXCollections.observableArrayList("ID", "Nombre"));
-                cmbFiltrarPaciencteDespacho.setValue("Nombre");
+            // Configurar filtro
+            if (cmbFiltrarPacienteDespacho != null) {
+                cmbFiltrarPacienteDespacho.setItems(FXCollections.observableArrayList("Identificación", "Nombre"));
+                cmbFiltrarPacienteDespacho.setValue("Nombre");
             }
 
             configurarColumnas();
             configurarBindings();
-
             refrescarTabla();
         } catch (Exception ex) {
             logExceptionAndShowAlert("Error en initialize de DespachoController", ex);
-        }
-    }
-
-    private void inicializarArchivo(String ruta, String rootElement) {
-        try {
-            File archivo = new File(ruta);
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                try (FileWriter writer = new FileWriter(archivo)) {
-                    writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + rootElement + "></" + rootElement + ">");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -87,21 +59,7 @@ public class DespachoController {
             if (colNombre == null || colID == null) return;
 
             colNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPaciente().getNombre()));
-            colID.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPaciente().getId()));
-
-            colPrescripciones.setCellFactory(tc -> new TableCell<>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setTooltip(null);
-                    } else {
-                        setText(item.length() > 20 ? item.substring(0, 20) + "..." : item);
-                        setTooltip(new Tooltip(item));
-                    }
-                }
-            });
+            colID.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPaciente().getIdentificacion()));
 
             colPrescripciones.setCellValueFactory(c -> {
                 List<Prescripcion> lista = c.getValue().getMedicamentos();
@@ -117,6 +75,20 @@ public class DespachoController {
                 return new SimpleStringProperty(sb.toString());
             });
 
+            colPrescripciones.setCellFactory(tc -> new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setTooltip(null);
+                    } else {
+                        setText(item.length() > 20 ? item.substring(0, 20) + "..." : item);
+                        setTooltip(new Tooltip(item));
+                    }
+                }
+            });
+
             colFechaConfeccion.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFechaConfeccion().toString()));
             colFechaRetiro.setCellValueFactory(c -> new SimpleStringProperty(
                     c.getValue().getFechaRetiro() != null ? c.getValue().getFechaRetiro().toString() : "")
@@ -130,16 +102,14 @@ public class DespachoController {
                 tblBuscarPacientesDespacho.setEditable(true);
             }
 
-            if (colEstado != null) {
-                colEstado.setOnEditCommit(event -> {
-                    Receta receta = event.getRowValue();
-                    if (receta != null) {
-                        receta.setEstado(event.getNewValue());
-                        cambiarEstado(receta);
-                        refrescarTabla();
-                    }
-                });
-            }
+            colEstado.setOnEditCommit(event -> {
+                Receta receta = event.getRowValue();
+                if (receta != null) {
+                    receta.setEstado(event.getNewValue());
+                    cambiarEstado(receta);
+                    refrescarTabla();
+                }
+            });
         } catch (Exception ex) {
             logExceptionAndShowAlert("Error al configurar columnas en DespachoController", ex);
         }
@@ -147,10 +117,10 @@ public class DespachoController {
 
     private void configurarBindings() {
         try {
-            if (txtBuscarClienetDespacho != null)
-                txtBuscarClienetDespacho.textProperty().addListener((obs, o, n) -> filtrarPacientes());
-            if (cmbFiltrarPaciencteDespacho != null)
-                cmbFiltrarPaciencteDespacho.setOnAction(e -> filtrarPacientes());
+            if (txtBuscarClienteDespacho != null)
+                txtBuscarClienteDespacho.textProperty().addListener((obs, o, n) -> filtrarPacientes());
+            if (cmbFiltrarPacienteDespacho != null)
+                cmbFiltrarPacienteDespacho.setOnAction(e -> filtrarPacientes());
         } catch (Exception ex) {
             logExceptionAndShowAlert("Error al configurar bindings en DespachoController", ex);
         }
@@ -158,12 +128,9 @@ public class DespachoController {
 
     public void refrescarTabla() {
         try {
-            if (recetasLogica == null) {
-                recetasLogica = new RecetasLogica(RUTA_RECETAS, RUTA_PACIENTES, RUTA_MEDICAMENTOS);
-            }
-            List<Receta> todas = recetasLogica.findAll();
+            if (recetasLogica == null) recetasLogica = new RecetaLogica();
+            List<Receta> todas = recetasLogica.findAll(); // obtiene todas las recetas desde BD
             listaObservable = FXCollections.observableArrayList(todas);
-
             if (tblBuscarPacientesDespacho != null) {
                 tblBuscarPacientesDespacho.setItems(listaObservable);
                 filtrarPacientes();
@@ -175,10 +142,10 @@ public class DespachoController {
 
     private void filtrarPacientes() {
         try {
-            if (cmbFiltrarPaciencteDespacho == null || txtBuscarClienetDespacho == null || listaObservable == null) return;
+            if (cmbFiltrarPacienteDespacho == null || txtBuscarClienteDespacho == null || listaObservable == null) return;
 
-            String filtro = cmbFiltrarPaciencteDespacho.getValue();
-            String texto = txtBuscarClienetDespacho.getText().trim().toLowerCase();
+            String filtro = cmbFiltrarPacienteDespacho.getValue();
+            String texto = txtBuscarClienteDespacho.getText().trim().toLowerCase();
 
             if (texto.isEmpty()) {
                 tblBuscarPacientesDespacho.setItems(listaObservable);
@@ -188,10 +155,10 @@ public class DespachoController {
             ObservableList<Receta> filtradas = FXCollections.observableArrayList();
 
             for (Receta receta : listaObservable) {
-                String id = receta.getPaciente().getId().toLowerCase();
+                String id = receta.getPaciente().getIdentificacion().toLowerCase();
                 String nombre = receta.getPaciente().getNombre().toLowerCase();
 
-                if ((filtro.equals("ID") && id.contains(texto)) ||
+                if ((filtro.equals("Identificación") && id.contains(texto)) ||
                         (filtro.equals("Nombre") && nombre.contains(texto))) {
                     filtradas.add(receta);
                 }
@@ -206,10 +173,7 @@ public class DespachoController {
     private void cambiarEstado(Receta recetaSeleccionada) {
         if (recetaSeleccionada == null) return;
         try {
-            if (recetasLogica == null) {
-                recetasLogica = new RecetasLogica(RUTA_RECETAS, RUTA_PACIENTES, RUTA_MEDICAMENTOS);
-            }
-            recetasLogica.update(recetaSeleccionada);
+            recetasLogica.update(recetaSeleccionada); // actualiza estado en BD
             mostrarAlerta(Alert.AlertType.INFORMATION, "Estado actualizado",
                     "La receta de " + recetaSeleccionada.getPaciente().getNombre() +
                             " cambió a: " + recetaSeleccionada.getEstado());
@@ -232,7 +196,6 @@ public class DespachoController {
         ex.printStackTrace();
         StringWriter sw = new StringWriter();
         ex.printStackTrace(new PrintWriter(sw));
-        String stack = sw.toString();
-        mostrarAlerta(Alert.AlertType.ERROR, titulo, ex.getMessage() == null ? ex.toString() : ex.getMessage());
+        mostrarAlerta(Alert.AlertType.ERROR, titulo, ex.getMessage() != null ? ex.getMessage() : ex.toString());
     }
 }

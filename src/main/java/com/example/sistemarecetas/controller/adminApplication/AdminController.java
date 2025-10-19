@@ -63,5 +63,4 @@ public class AdminController {
             HistorialController.getInstance().cargarHistorial(); // refresca la tabla de recetas
         }
     }
-
 }

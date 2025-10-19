@@ -1,52 +1,39 @@
 package com.example.sistemarecetas.Model;
 
 public class Prescripcion {
+    private int id;
     private Medicamento medicamento;
     private int cantidad;
     private String indicaciones;
     private int duracionDias;
 
-    public Prescripcion() {
-    }
-
     public Prescripcion(Medicamento medicamento, int cantidad, String indicaciones, int duracionDias) {
+        this.id = id;
         this.medicamento = medicamento;
         this.cantidad = cantidad;
         this.indicaciones = indicaciones;
         this.duracionDias = duracionDias;
     }
 
-    public Medicamento getMedicamento() {
-        return medicamento;
-    }
+    public int getId() { return id; }
 
-    public void setMedicamento(Medicamento medicamento) {
-        this.medicamento = medicamento;
-    }
+    public void setId(int id) { this.id = id; }
 
-    public int getCantidad() {
-        return cantidad;
-    }
+    public Medicamento getMedicamento() { return medicamento;}
 
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
-    }
+    public void setMedicamento(Medicamento medicamento) { this.medicamento = medicamento;}
 
-    public int getDuracionDias() {
-        return duracionDias;
-    }
+    public int getCantidad() { return cantidad;}
 
-    public void setDuracionDias(int duracionDias) {
-        this.duracionDias = duracionDias;
-    }
+    public void setCantidad(int cantidad) { this.cantidad = cantidad; }
 
-    public String getIndicaciones() {
-        return indicaciones;
-    }
+    public int getDuracionDias() { return duracionDias; }
 
-    public void setIndicaciones(String indicaciones) {
-        this.indicaciones = indicaciones;
-    }
+    public void setDuracionDias(int duracionDias) { this.duracionDias = duracionDias; }
+
+    public String getIndicaciones() { return indicaciones;}
+
+    public void setIndicaciones(String indicaciones) { this.indicaciones = indicaciones;}
 
     @Override
     public String toString() {
@@ -58,4 +45,3 @@ public class Prescripcion {
                 '}';
     }
 }
-
