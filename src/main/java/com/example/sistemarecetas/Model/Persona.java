@@ -1,19 +1,23 @@
 package com.example.sistemarecetas.Model;
 
 public abstract class Persona {
-    private String id;
+    private int id;
+    private String identificacion;
     private String nombre;
 
-    public Persona(String id, String nombre) {
-        this.id = id;
-        this.nombre = nombre;
+    public Persona(int id, String identificacion, String nombre) {
+        this.id = id; this.identificacion = identificacion ; this.nombre = nombre;
     }
 
-    public String getId() {
+    public String getIdentificacion() { return identificacion;}
+
+    public void setIdentificacion(String identificacion) { this.identificacion = identificacion; }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -24,7 +28,4 @@ public abstract class Persona {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
-    public abstract void mostrarInfo();
-
 }

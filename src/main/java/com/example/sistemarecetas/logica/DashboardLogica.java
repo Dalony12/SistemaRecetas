@@ -2,40 +2,40 @@ package com.example.sistemarecetas.logica;
 
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
-import com.example.sistemarecetas.logica.recetas.RecetasLogica;
-
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
+/**
+ * Lógica de dashboard para mostrar métricas de recetas y prescripciones.
+ * Adaptada a base de datos MySQL usando RecetasLogica.
+ */
 public class DashboardLogica {
-    private final RecetasLogica recetasLogica;
 
-    /** Constructor actualizado con todas las rutas necesarias */
-    public DashboardLogica(String rutaRecetas, String rutaPacientes, String rutaMedicamentos) {
-        this.recetasLogica = new RecetasLogica(rutaRecetas, rutaPacientes, rutaMedicamentos);
+    private final RecetaLogica recetasLogica;
+
+    // Constructor sin parámetros para usar DB
+    public DashboardLogica() {
+        this.recetasLogica = new RecetaLogica(); // RecetasLogica ya adaptada a DB
     }
 
-    /** Constructor alternativo si ya tienes una instancia de RecetasLogica */
-    public DashboardLogica(RecetasLogica logica) {
-        this.recetasLogica = logica;
-    }
-
-    public List<Receta> cargarRecetas() {
+    /** Carga todas las recetas desde la base de datos */
+    public List<Receta> cargarRecetas() throws SQLException {
         return recetasLogica.findAll();
     }
 
-    public int totalRecetas() {
+    /** Total de recetas registradas */
+    public int totalRecetas() throws SQLException {
         return cargarRecetas().size();
     }
 
-    public Map<String, Long> recetaPorEstado() {
-        List<Receta> recetas = recetasLogica.findAll();
+    /** Conteo de recetas por estado (En proceso, Lista, Entregado) */
+    public Map<String, Long> recetaPorEstado() throws SQLException {
+        List<Receta> recetas = cargarRecetas();
         Map<String, Long> conteoPorEstado = new HashMap<>();
 
+        // Inicializamos todos los posibles estados
         conteoPorEstado.put("Confeccionada",0L);
         conteoPorEstado.put("En proceso", 0L);
         conteoPorEstado.put("Lista", 0L);
@@ -43,27 +43,41 @@ public class DashboardLogica {
 
         for (Receta receta : recetas) {
             String estado = receta.getEstado();
-            conteoPorEstado.computeIfPresent(estado, (key, value) -> value + 1);
+            if (estado != null && conteoPorEstado.containsKey(estado)) {
+                conteoPorEstado.put(estado, conteoPorEstado.get(estado) + 1);
+            }
         }
         return conteoPorEstado;
     }
 
-    public Map<String, Long> prescripcionesPorMes(LocalDate fechaInicio, LocalDate fechaFinal, String medicamento) {
+    /**
+     * Conteo de prescripciones por mes para un medicamento específico dentro de un rango de fechas.
+     * @param fechaInicio Fecha de inicio (inclusive)
+     * @param fechaFinal Fecha final (inclusive)
+     * @param medicamento Nombre del medicamento
+     * @return Mapa con clave "YYYY-MM" y valor cantidad de prescripciones
+     */
+    public Map<String, Long> prescripcionesPorMes(LocalDate fechaInicio, LocalDate fechaFinal, String medicamento) throws SQLException {
         Map<String, Long> prescripcionesPorMes = new TreeMap<>();
-        List<Receta> listaRecetas = recetasLogica.findAll();
+        List<Receta> listaRecetas = cargarRecetas();
 
         for (Receta receta : listaRecetas) {
-            if (receta.getFechaConfeccion().isAfter(fechaInicio.minusDays(1)) && receta.getFechaConfeccion().isBefore(fechaFinal.plusDays(1))) {
-                for (Prescripcion p : receta.getMedicamentos()) {
-                    if (p.getMedicamento().getNombre().equals(medicamento)) {
-                        YearMonth mesReceta = YearMonth.from(receta.getFechaConfeccion());
-                        String annioMes = mesReceta.getMonth().toString();
+            LocalDate fecha = receta.getFechaConfeccion();
+            if (fecha != null &&
+                    !fecha.isBefore(fechaInicio) &&
+                    !fecha.isAfter(fechaFinal)) {
 
-                        prescripcionesPorMes.put(annioMes, prescripcionesPorMes.getOrDefault(annioMes, 0L) + 1);
+                for (Prescripcion p : receta.getMedicamentos()) {
+                    if (p.getMedicamento() != null && p.getMedicamento().getNombre().equalsIgnoreCase(medicamento)) {
+                        YearMonth mesReceta = YearMonth.from(fecha);
+                        String claveMes = mesReceta.getYear() + "-" + String.format("%02d", mesReceta.getMonthValue());
+
+                        prescripcionesPorMes.put(claveMes, prescripcionesPorMes.getOrDefault(claveMes, 0L) + 1);
                     }
                 }
             }
         }
+
         return prescripcionesPorMes;
     }
 }

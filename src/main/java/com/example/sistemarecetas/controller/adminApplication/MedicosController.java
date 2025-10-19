@@ -1,7 +1,8 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
 import com.example.sistemarecetas.Model.Medico;
-import com.example.sistemarecetas.logica.medicos.MedicosLogica;
+import com.example.sistemarecetas.logica.MedicoLogica;
+import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -12,11 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 public class MedicosController {
 
@@ -40,31 +37,18 @@ public class MedicosController {
     @FXML private TextField txtEspecialidadMedico;
 
     private ObservableList<Medico> listaObservable;
-    private MedicosLogica medicosLogica;
-    private String rutaXML;
+    private MedicoLogica medicosLogica;
+
+    private String currentMode = "guardar";
 
     @FXML
     public void initialize() {
         try {
-            rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "medicos.xml").toString();
-            File archivo = new File(rutaXML);
-
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                try (FileWriter writer = new FileWriter(archivo)) {
-                    writer.write("""
-                        <?xml version="1.0" encoding="UTF-8"?>
-                        <medicos>
-                        </medicos>
-                        """);
-                }
-            }
-
-            medicosLogica = new MedicosLogica(rutaXML);
+            medicosLogica = new MedicoLogica();
             listaObservable = FXCollections.observableArrayList(medicosLogica.findAll());
             tableMedicos.setItems(listaObservable);
 
-            colID.setCellValueFactory(new PropertyValueFactory<>("id"));
+            colID.setCellValueFactory(new PropertyValueFactory<>("identificacion"));
             colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
             colEspecialidad.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
 
@@ -77,55 +61,55 @@ public class MedicosController {
     }
 
     private void configurarListeners() {
-        btnGuardarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("guardar"); });
-        btnBorrarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("borrar"); });
-        btnModificarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("modificar"); });
-        btnBuscarMedico.selectedProperty().addListener((obs, oldVal, newVal) -> { if (newVal) toggleMode("buscar"); });
+        btnGuardarMedico.setOnAction(e -> toggleMode("guardar"));
+        btnBorrarMedico.setOnAction(e -> toggleMode("borrar"));
+        btnModificarMedico.setOnAction(e -> toggleMode("modificar"));
+        btnBuscarMedico.setOnAction(e -> toggleMode("buscar"));
 
         txtIDMedico.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarMedico.isSelected()) buscarMedico();
+            if (currentMode.equals("buscar")) buscarMedico();
             if (newVal.isEmpty()) limpiarCampos();
             else autocompletarMedico(newVal);
         });
 
         txtNombreMedico.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (btnBuscarMedico.isSelected()) buscarMedico();
+            if (currentMode.equals("buscar")) buscarMedico();
         });
     }
 
-    private void autocompletarMedico(String id) {
-        Optional<Medico> encontrado = medicosLogica.findByCodigo(id);
-        if (encontrado.isPresent()) {
-            Medico m = encontrado.get();
-            txtNombreMedico.setText(m.getNombre());
-            txtEspecialidadMedico.setText(m.getEspecialidad());
-        } else {
-            txtNombreMedico.clear();
-            txtEspecialidadMedico.clear();
+    private void autocompletarMedico(String identificacion) {
+        try {
+            Medico m = medicosLogica.findByIdentificacion(identificacion);
+            if (m != null) {
+                txtNombreMedico.setText(m.getNombre());
+                txtEspecialidadMedico.setText(m.getEspecialidad());
+            } else limpiarCampos();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @FXML
     private void GuardarModificarEliminarMedico() {
         try {
-            String id = txtIDMedico.getText().trim();
+            String identificacion = txtIDMedico.getText().trim();
             String nombre = txtNombreMedico.getText().trim();
             String especialidad = txtEspecialidadMedico.getText().trim();
 
-            if (id.isEmpty() || nombre.isEmpty() || especialidad.isEmpty()) {
+            if (identificacion.isEmpty() || nombre.isEmpty() || especialidad.isEmpty()) {
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }
 
-            Medico m = new Medico(id, nombre, id, especialidad);
+            Medico m = new Medico(identificacion, nombre, especialidad);
 
-            if (btnGuardarMedico.isSelected()) {
+            if (currentMode.equals("guardar")) {
                 medicosLogica.create(m);
-            } else if (btnModificarMedico.isSelected()) {
+            } else if (currentMode.equals("modificar")) {
                 medicosLogica.update(m);
-            } else if (btnBorrarMedico.isSelected()) {
-                boolean eliminado = medicosLogica.deleteByCodigo(id);
-                if (!eliminado) mostrarAlerta("No encontrado", "No existe un medico con ese ID: " + id);
+            } else if (currentMode.equals("borrar")) {
+                boolean eliminado = medicosLogica.deleteByIdentificacion(identificacion);
+                if (!eliminado) mostrarAlerta("No encontrado", "No existe un médico con esa identificación: " + identificacion);
             }
 
             limpiarCampos();
@@ -138,19 +122,56 @@ public class MedicosController {
 
     @FXML
     private void buscarMedico() {
-        String id = txtIDMedico.getText().trim();
+        String identificacion = txtIDMedico.getText().trim();
         String nombre = txtNombreMedico.getText().trim();
 
-        if (id.isEmpty() && nombre.isEmpty()) {
-            cargarMedicos();
-            return;
-        }
+        try {
+            if (identificacion.isEmpty() && nombre.isEmpty()) {
+                cargarMedicos();
+                return;
+            }
 
-        List<Medico> resultado = medicosLogica.search(id, nombre);
-        listaObservable.setAll(resultado);
+            List<Medico> resultado = medicosLogica.search(identificacion, nombre);
+            listaObservable.setAll(resultado);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void mostrarListaConAnimacion() {
+        if (vBoxPortadaMedicos.isVisible()) {
+
+            // Pequeña pausa antes de iniciar la animación
+            PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
+            pause.setOnFinished(event -> {
+
+                // Animación de desplazamiento hacia la izquierda
+                TranslateTransition translate = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaMedicos);
+                translate.setToX(-vBoxPortadaMedicos.getWidth() - 20);
+
+                // Fade-out simultáneo
+                FadeTransition fade = new FadeTransition(Duration.seconds(1.5), vBoxPortadaMedicos);
+                fade.setFromValue(1);
+                fade.setToValue(0);
+
+                // Cuando termina la animación, ocultar el VBox y resetear posición
+                translate.setOnFinished(e -> {
+                    vBoxPortadaMedicos.setVisible(false);
+                    vBoxPortadaMedicos.setTranslateX(0);
+                    vBoxPortadaMedicos.setOpacity(1);
+                });
+
+                translate.play();
+                fade.play();
+            });
+
+            pause.play();
+        }
     }
 
     private void toggleMode(String mode) {
+        currentMode = mode;
+
         btnGuardarMedico.setSelected(mode.equals("guardar"));
         btnBorrarMedico.setSelected(mode.equals("borrar"));
         btnModificarMedico.setSelected(mode.equals("modificar"));
@@ -177,19 +198,10 @@ public class MedicosController {
     }
 
     public void cargarMedicos() {
-        listaObservable.setAll(medicosLogica.findAll());
-    }
-
-    public void mostrarListaConAnimacion() {
-        if (vBoxPortadaMedicos.isVisible()) {
-            PauseTransition pause = new PauseTransition(Duration.seconds(1));
-            pause.setOnFinished(event -> {
-                TranslateTransition transition = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaMedicos);
-                transition.setToX(-vBoxPortadaMedicos.getWidth() - 20);
-                transition.setOnFinished(e -> vBoxPortadaMedicos.setVisible(false));
-                transition.play();
-            });
-            pause.play();
+        try {
+            listaObservable.setAll(medicosLogica.findAll());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

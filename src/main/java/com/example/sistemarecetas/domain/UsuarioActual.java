@@ -40,7 +40,7 @@ public class UsuarioActual {
     }
 
     public String getId() {
-        return usuario != null ? usuario.getId() : null;
+        return usuario != null ? String.valueOf(usuario.getId()) : null;
     }
 
     public String getNombre() {

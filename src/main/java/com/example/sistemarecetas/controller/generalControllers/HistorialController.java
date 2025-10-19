@@ -2,14 +2,13 @@ package com.example.sistemarecetas.controller.generalControllers;
 
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
-import com.example.sistemarecetas.logica.recetas.RecetasLogica;
+import com.example.sistemarecetas.logica.RecetaLogica;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,7 @@ public class HistorialController {
     @FXML private TableColumn<Receta, String> colCantidadDias;
 
     private ObservableList<Receta> listaObservable;
-    private RecetasLogica recetasLogica;
+    private RecetaLogica recetasLogica;
 
     public HistorialController() {
         instance = this;
@@ -39,19 +38,17 @@ public class HistorialController {
     }
 
     @FXML
-    public void cargarHistorial() {
+    public void initialize() {
         try {
-            String rutaRecetas = Paths.get(System.getProperty("user.dir"), "datos", "recetas.xml").toString();
-            String rutaPacientes = Paths.get(System.getProperty("user.dir"), "datos", "pacientes.xml").toString();
-            String rutaMedicamentos = Paths.get(System.getProperty("user.dir"), "datos", "medicamentos.xml").toString();
-
-            recetasLogica = new RecetasLogica(rutaRecetas, rutaPacientes, rutaMedicamentos);
+            // Creamos RecetasLogica directamente con DB
+            recetasLogica = new RecetaLogica(); // Constructor adaptado para DB
 
             listaObservable = FXCollections.observableArrayList(recetasLogica.findAll());
             tableRecetas.setItems(listaObservable);
 
             configurarColumnas();
 
+            // Listener para filtrar recetas por nombre del paciente
             txtNombreHistorialRecetas.textProperty().addListener((obs, oldVal, newVal) -> filtrarRecetas());
 
         } catch (Exception e) {
@@ -59,11 +56,16 @@ public class HistorialController {
         }
     }
 
+    /** Recargar todas las recetas en la tabla */
+    public void cargarHistorial() {
+        if (recetasLogica != null) {
+            listaObservable.setAll(recetasLogica.findAll());
+        }
+    }
+
     private void configurarColumnas() {
         colPersona.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPaciente().getNombre()));
-
         colConfeccion.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getFechaConfeccion().toString()));
-
         colRetiro.setCellValueFactory(data -> new SimpleStringProperty(
                 data.getValue().getFechaRetiro() != null ? data.getValue().getFechaRetiro().toString() : "Pendiente"
         ));

@@ -2,10 +2,10 @@ package com.example.sistemarecetas.Model;
 
 public class Administrador extends Usuario{
 
-    public Administrador(String nombre, String id, String password) {
-        super(id, nombre, password);
+    public Administrador(int id, String identificacion ,String nombre, String password) {
+        super(id, identificacion, nombre, password);
     }
-    @Override
+
     public void mostrarInfo() {
         System.out.println("Administrador [ID: " + getId() + ", Nombre: " + getNombre() + "]");
     }
