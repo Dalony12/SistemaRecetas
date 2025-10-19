@@ -39,6 +39,8 @@ public class MedicamentosController {
     @FXML private TextField txtPresentacionMedicamento;
     @FXML private TextArea txtDescripcionMedicamento;
 
+    @FXML private ProgressBar progressBar;
+
     private ObservableList<Medicamento> listaObservable;
     private MedicamentoLogica medicamentoLogica;
     private String currentMode = "guardar";

@@ -42,6 +42,8 @@ public class PrescripcionController {
     @FXML private TableColumn<Prescripcion, String> colIndicaciones;
     @FXML private TableColumn<Prescripcion, Integer> colDuracion;
 
+    @FXML private ProgressIndicator progressIndicator;
+
     private RecetaLogica recetasLogica;
     private PacienteLogica pacientesLogica;
     private MedicamentoLogica medicamentoLogica;

@@ -36,6 +36,8 @@ public class MedicosController {
     @FXML private TextField txtNombreMedico;
     @FXML private TextField txtEspecialidadMedico;
 
+    @FXML private ProgressBar progressBar;
+
     private ObservableList<Medico> listaObservable;
     private MedicoLogica medicosLogica;
 
