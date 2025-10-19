@@ -5,12 +5,8 @@ public class Paciente extends Persona {
     private int telefono;
     private LocalDate fechaNacimiento;
 
-    public Paciente(String id, String nombre) {
-        super(id, nombre);
-    }
-
-    public Paciente(String id, String nombre, int telefono, LocalDate fechaNacimiento) {
-        super(id, nombre);
+    public Paciente(int id, String identificacion, String nombre, int telefono, LocalDate fechaNacimiento) {
+        super(id, identificacion,nombre);
         this.telefono = telefono;
         this.fechaNacimiento = fechaNacimiento;
     }
@@ -31,7 +27,6 @@ public class Paciente extends Persona {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    @Override
     public void mostrarInfo() {
         System.out.println("Paciente [ID: " + getId() +
                 ", Nombre: " + getNombre() +

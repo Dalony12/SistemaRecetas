@@ -1,6 +1,7 @@
 package com.example.sistemarecetas.Model;
 
 public class Medicamento {
+    private int id;
     private String codigo;
     private String nombre;
     private String descripcion;
@@ -9,7 +10,8 @@ public class Medicamento {
     public Medicamento() {
     }
 
-    public Medicamento(String codigo, String nombre, String presentacion, String descripcion) {
+    public Medicamento(int id, String codigo, String nombre, String presentacion, String descripcion) {
+        this.id = id;
         this.codigo = codigo;
         this.nombre = nombre;
         this.presentacion = presentacion;

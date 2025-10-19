@@ -3,8 +3,8 @@ package com.example.sistemarecetas.Model;
 public class Medico extends Usuario  {
     private String especialidad;
 
-    public Medico(String id, String nombre, String password, String especialidad) {
-        super(id, nombre, password);
+    public Medico(int id, String identificacion ,String nombre, String password, String especialidad) {
+        super(id, identificacion, nombre, password);
         this.especialidad = especialidad;
     }
 
@@ -16,18 +16,6 @@ public class Medico extends Usuario  {
         this.especialidad = especialidad;
     }
 
-    @Override
-    public String getId() {
-        return super.getId();
-    }
-
-    @Override
-    public String getNombre() {
-        return super.getNombre();
-    }
-
-
-    @Override
     public void mostrarInfo() {
         System.out.println("Medico [ID: " + getId() +
                 ", Nombre: " + getNombre() +

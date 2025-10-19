@@ -4,6 +4,8 @@ module com.example.sistemarecetas {
     requires java.desktop;
     requires javafx.graphics;
     requires jakarta.xml.bind;
+    requires java.sql;
+    requires com.zaxxer.hikari;
 
     opens com.example.sistemarecetas.Model to javafx.base, jakarta.xml.bind, org.glassfish.jaxb.runtime;
     opens com.example.sistemarecetas.datos.medicamentos to jakarta.xml.bind, org.glassfish.jaxb.runtime;
