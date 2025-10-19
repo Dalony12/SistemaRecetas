@@ -4,6 +4,7 @@ import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Paciente;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
+import com.example.sistemarecetas.controller.Async;
 import com.example.sistemarecetas.logica.MedicamentoLogica;
 import com.example.sistemarecetas.logica.PacienteLogica;
 import com.example.sistemarecetas.logica.RecetaLogica;
@@ -19,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,7 @@ public class PrescripcionController {
     }
 
     @FXML private Button btnEliminarMedicamento;
+    @FXML private Button btnGuardarReceta;
     @FXML private DatePicker dtpFechaRetiroPres;
     @FXML private TextField txtNombrePacientePresc;
     @FXML private TableView<Prescripcion> tblMedicamentoReceta;
@@ -42,7 +45,7 @@ public class PrescripcionController {
     @FXML private TableColumn<Prescripcion, String> colIndicaciones;
     @FXML private TableColumn<Prescripcion, Integer> colDuracion;
 
-    @FXML private ProgressIndicator progressIndicator;
+    @FXML private ProgressIndicator progressIndicatorReceta;
 
     private RecetaLogica recetasLogica;
     private PacienteLogica pacientesLogica;
@@ -231,6 +234,33 @@ public class PrescripcionController {
             listaMedicamentos.remove(seleccionada);
             btnEliminarMedicamento.setDisable(true);
         }
+    }
+
+    /////////HILOS///////
+    public void guardarRecetaAsync(Receta c) {
+        btnGuardarReceta.setDisable(true);
+        progressIndicatorReceta.setVisible(true);
+
+        Async.run(
+                () -> { // Este es el proceso principal
+                    return recetasLogica.create(c);
+                },
+                guardado -> { // onSuccess
+                    progressIndicatorReceta.setVisible(false);
+                    btnGuardarReceta.setDisable(false);
+                    tblMedicamentoReceta.setItems(FXCollections.observableArrayList(guardado.getMedicamentos()));
+                    new Alert(Alert.AlertType.INFORMATION, "Cliente guardado").showAndWait();
+                },
+                ex -> { // onError
+                    progressIndicatorReceta.setVisible(false);
+                    btnGuardarReceta.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("No se pudo guardar el cliente");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {

@@ -1,6 +1,8 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
+import com.example.sistemarecetas.Model.Farmaceutico;
 import com.example.sistemarecetas.Model.Medicamento;
+import com.example.sistemarecetas.controller.Async;
 import com.example.sistemarecetas.logica.MedicamentoLogica;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
@@ -39,7 +41,7 @@ public class MedicamentosController {
     @FXML private TextField txtPresentacionMedicamento;
     @FXML private TextArea txtDescripcionMedicamento;
 
-    @FXML private ProgressBar progressBar;
+    @FXML private ProgressBar progressBarMedicamentos;
 
     private ObservableList<Medicamento> listaObservable;
     private MedicamentoLogica medicamentoLogica;
@@ -182,6 +184,63 @@ public class MedicamentosController {
         } catch (SQLException e) {
             mostrarAlerta("Error", e.getMessage());
         }
+    }
+
+    /////////HILOS///////
+    public void cargarMedicamentosAsync(){
+        progressBarMedicamentos.setVisible(true);
+        Async.run(
+                () -> {// Esta expresión representa el proceso principal
+                    try {
+                        // Sobre el proceso principal vamos a ejecutar un hilo con un proceso adicional
+                        return medicamentoLogica.findAll();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                listaClientes -> { // Este es el caso del onSuccess
+                    tableMedicamentos.getItems().setAll(listaClientes);
+                    progressBarMedicamentos.setVisible(false);
+                },
+                ex -> { // Este es el caso del onError
+                    progressBarMedicamentos.setVisible(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText("Error al cargar la lista de clientes.");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void guardarMedicamentoAsync(Medicamento c) {
+        btnGuardarMedicamento.setDisable(true);
+        progressBarMedicamentos.setVisible(true);
+
+        Async.run(
+                () -> { // Este es el proceso principal
+                    try {
+                        return medicamentoLogica.create(c);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                guardado -> { // onSuccess
+                    progressBarMedicamentos.setVisible(false);
+                    btnGuardarMedicamento.setDisable(false);
+                    tableMedicamentos.getItems().add(guardado);
+                    new Alert(Alert.AlertType.INFORMATION, "Cliente guardado").showAndWait();
+                },
+                ex -> { // onError
+                    progressBarMedicamentos.setVisible(false);
+                    btnGuardarMedicamento.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("No se pudo guardar el cliente");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
     }
 
     @FXML

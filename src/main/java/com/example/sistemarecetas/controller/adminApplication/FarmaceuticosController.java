@@ -1,6 +1,7 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
 import com.example.sistemarecetas.Model.Farmaceutico;
+import com.example.sistemarecetas.controller.Async;
 import com.example.sistemarecetas.logica.FarmaceuticoLogica;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
@@ -35,7 +36,7 @@ public class FarmaceuticosController {
     @FXML private TextField txtIDFarmaceuta;
     @FXML private TextField txtNombreFarmaceuta;
 
-    @FXML private ProgressBar progressBar;
+    @FXML private ProgressBar progressBarFarma;
 
     private ObservableList<Farmaceutico> listaObservable;
     private FarmaceuticoLogica farmaceutaLogica;
@@ -198,6 +199,63 @@ public class FarmaceuticosController {
                 .toList();
 
         listaObservable.setAll(resultado);
+    }
+
+    /////////HILOS///////
+    public void cargarFarmaceuticosAsync(){
+        progressBarFarma.setVisible(true);
+        Async.run(
+                () -> {// Esta expresión representa el proceso principal
+                    try {
+                        // Sobre el proceso principal vamos a ejecutar un hilo con un proceso adicional
+                        return farmaceutaLogica.findAll();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                listaClientes -> { // Este es el caso del onSuccess
+                    tableFarmaceuticos.getItems().setAll(listaClientes);
+                    progressBarFarma.setVisible(false);
+                },
+                ex -> { // Este es el caso del onError
+                    //progress.setVisible(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText("Error al cargar la lista de clientes.");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void guardarFarmaceuticoAsync(Farmaceutico c) {
+        btnGuardarFarmaceutico.setDisable(true);
+        progressBarFarma.setVisible(true);
+
+        Async.run(
+                () -> { // Este es el proceso principal
+                    try {
+                        return farmaceutaLogica.create(c);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                guardado -> { // onSuccess
+                    progressBarFarma.setVisible(false);
+                    btnGuardarFarmaceutico.setDisable(false);
+                    tableFarmaceuticos.getItems().add(guardado);
+                    new Alert(Alert.AlertType.INFORMATION, "Cliente guardado").showAndWait();
+                },
+                ex -> { // onError
+                    progressBarFarma.setVisible(false);
+                    btnGuardarFarmaceutico.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("No se pudo guardar el cliente");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
     }
 
     @FXML

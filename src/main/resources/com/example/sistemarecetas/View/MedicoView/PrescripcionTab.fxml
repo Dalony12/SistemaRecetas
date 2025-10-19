@@ -89,7 +89,7 @@
                               <Font size="11.0" />
                            </font>
                         </Button>
-                        <ProgressIndicator fx:id="progressIndicator" layoutX="81.0" layoutY="7.0" progress="0.0" visible="false" />
+                        <ProgressIndicator fx:id="progressIndicatorReceta" layoutX="81.0" layoutY="7.0" progress="0.0" visible="false" />
                      </children></Pane>
                </children>
             </VBox>

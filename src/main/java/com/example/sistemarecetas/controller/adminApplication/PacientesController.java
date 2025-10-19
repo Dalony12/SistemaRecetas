@@ -1,6 +1,8 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
+import com.example.sistemarecetas.Model.Medico;
 import com.example.sistemarecetas.Model.Paciente;
+import com.example.sistemarecetas.controller.Async;
 import com.example.sistemarecetas.logica.PacienteLogica;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
@@ -13,6 +15,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,7 +42,7 @@ public class PacientesController {
     @FXML private DatePicker dtpFechaNacimiento;
     @FXML private TextField txtTelefonoPaciente;
 
-    @FXML private ProgressBar progressBar;
+    @FXML private ProgressBar progressBarPacientes;
 
     private ObservableList<Paciente> listaObservable;
     private PacienteLogica pacienteLogica;
@@ -143,6 +146,63 @@ public class PacientesController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /////////HILOS///////
+    public void cargarPacientesAsync(){
+        progressBarPacientes.setVisible(true);
+        Async.run(
+                () -> {// Esta expresión representa el proceso principal
+                    try {
+                        // Sobre el proceso principal vamos a ejecutar un hilo con un proceso adicional
+                        return pacienteLogica.findAll();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                listaClientes -> { // Este es el caso del onSuccess
+                    tablePacientes.getItems().setAll(listaClientes);
+                    progressBarPacientes.setVisible(false);
+                },
+                ex -> { // Este es el caso del onError
+                    progressBarPacientes.setVisible(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText("Error al cargar la lista de clientes.");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void guardarPacienteAsync(Paciente c) {
+        btnGuardarPaciente.setDisable(true);
+        progressBarPacientes.setVisible(true);
+
+        Async.run(
+                () -> { // Este es el proceso principal
+                    try {
+                        return pacienteLogica.create(c);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                guardado -> { // onSuccess
+                    progressBarPacientes.setVisible(false);
+                    btnGuardarPaciente.setDisable(false);
+                    tablePacientes.getItems().add(guardado);
+                    new Alert(Alert.AlertType.INFORMATION, "Cliente guardado").showAndWait();
+                },
+                ex -> { // onError
+                    progressBarPacientes.setVisible(false);
+                    btnGuardarPaciente.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("No se pudo guardar el cliente");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
     }
 
     public void mostrarListaConAnimacion() {
