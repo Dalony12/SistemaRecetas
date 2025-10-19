@@ -39,6 +39,8 @@ public class PacientesController {
     @FXML private DatePicker dtpFechaNacimiento;
     @FXML private TextField txtTelefonoPaciente;
 
+    @FXML private ProgressBar progressBar;
+
     private ObservableList<Paciente> listaObservable;
     private PacienteLogica pacienteLogica;
     private String currentMode = "guardar";

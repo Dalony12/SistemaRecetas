@@ -35,6 +35,8 @@ public class FarmaceuticosController {
     @FXML private TextField txtIDFarmaceuta;
     @FXML private TextField txtNombreFarmaceuta;
 
+    @FXML private ProgressBar progressBar;
+
     private ObservableList<Farmaceutico> listaObservable;
     private FarmaceuticoLogica farmaceutaLogica;
 
