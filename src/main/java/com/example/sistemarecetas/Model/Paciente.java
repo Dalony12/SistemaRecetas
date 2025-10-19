@@ -6,9 +6,13 @@ public class Paciente extends Persona {
     private LocalDate fechaNacimiento;
 
     public Paciente(int id, String identificacion, String nombre, int telefono, LocalDate fechaNacimiento) {
-        super(id, identificacion,nombre);
-        this.telefono = telefono;
-        this.fechaNacimiento = fechaNacimiento;
+        super(id, identificacion, nombre);
+        this.telefono = telefono; this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public Paciente(String identificacion, String nombre, int telefono, LocalDate fechaNacimiento) {
+        super(0, identificacion, nombre);
+        this.telefono = telefono; this.fechaNacimiento = fechaNacimiento;
     }
 
     public int getTelefono() {

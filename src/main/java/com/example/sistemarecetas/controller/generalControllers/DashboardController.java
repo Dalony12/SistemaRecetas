@@ -12,19 +12,15 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DashboardController {
 
-    private static DashboardController instance; // 🔑 Singleton
-
-    private static final String RUTA_RECETAS = Paths.get(System.getProperty("user.dir"), "datos", "recetas.xml").toString();
-    private static final String RUTA_PACIENTES = Paths.get(System.getProperty("user.dir"), "datos", "pacientes.xml").toString();
-    private static final String RUTA_MEDICAMENTOS = Paths.get(System.getProperty("user.dir"), "datos", "medicamentos.xml").toString();
+    private static DashboardController instance;
 
     @FXML private LineChart<String, Number> graficoLineal;
     @FXML private PieChart graficoPastel;
@@ -36,53 +32,43 @@ public class DashboardController {
     private DashboardLogica service;
 
     public DashboardController() {
-        instance = this; // Cada vez que JavaFX cree la instancia del FXML, se setea el singleton
+        instance = this;
     }
 
     public static DashboardController getInstance() {
         return instance;
     }
 
-    public void cargarDashboard() {
-        // Asegurarse de que los archivos existen
-        inicializarArchivo(RUTA_RECETAS, "recetas");
-        inicializarArchivo(RUTA_PACIENTES, "pacientes");
-        inicializarArchivo(RUTA_MEDICAMENTOS, "medicamentos");
-
-        // Crear la lógica con las tres rutas
-        this.service = new DashboardLogica(RUTA_RECETAS, RUTA_PACIENTES, RUTA_MEDICAMENTOS);
-
-        List<Receta> lista = service.cargarRecetas();
-
-        Set<String> nombresUnicos = new HashSet<>();
-
-        for (Receta r : lista) {
-            List<Prescripcion> prescripciones = r.getMedicamentos();
-            for (Prescripcion p : prescripciones) {
-                Medicamento m = p.getMedicamento();
-                if (m != null) {
-                    nombresUnicos.add(m.getNombre());
-                }
-            }
-        }
-
-        ObservableList<String> medicamentos = FXCollections.observableArrayList(nombresUnicos);
-        cmbMedicamento.setItems(medicamentos);
-
-        cargarGraficoPie();
+    @FXML
+    public void initialize() {
+        // Inicializar el servicio directamente con la DB
+        this.service = new DashboardLogica(); // usa constructor sin archivos
+        cargarDashboard();
     }
 
-    /** Inicializa un archivo XML si no existe */
-    private void inicializarArchivo(String ruta, String rootElement) {
+
+    public void cargarDashboard() {
         try {
-            File archivo = new File(ruta);
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                try (FileWriter writer = new FileWriter(archivo)) {
-                    writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + rootElement + "></" + rootElement + ">");
+            List<Receta> lista = service.cargarRecetas();
+
+            // Obtener nombres únicos de medicamentos
+            Set<String> nombresUnicos = new HashSet<>();
+            for (Receta r : lista) {
+                List<Prescripcion> prescripciones = r.getMedicamentos();
+                for (Prescripcion p : prescripciones) {
+                    Medicamento m = p.getMedicamento();
+                    if (m != null) {
+                        nombresUnicos.add(m.getNombre());
+                    }
                 }
             }
+
+            ObservableList<String> medicamentos = FXCollections.observableArrayList(nombresUnicos);
+            cmbMedicamento.setItems(medicamentos);
+
+            cargarGraficoPie();
         } catch (Exception e) {
+            mostrarAlerta("Cargar Dashboard", "No se pudo cargar la información desde la base de datos.");
             e.printStackTrace();
         }
     }
@@ -95,7 +81,7 @@ public class DashboardController {
             String medicamento = cmbMedicamento.getValue();
 
             if (fechaInicio == null || fechaFin == null || medicamento == null || medicamento.isEmpty()) {
-                mostrarAlerta("Campos incompletos", "Debe de completar todo los espacios.");
+                mostrarAlerta("Campos incompletos", "Debe completar todos los espacios.");
                 return;
             }
 
@@ -117,17 +103,22 @@ public class DashboardController {
     }
 
     private void cargarGraficoPie() {
-        Map<String, Long> conteoPorEstado = service.recetaPorEstado();
-        graficoPastel.getData().clear();
+        try {
+            Map<String, Long> conteoPorEstado = service.recetaPorEstado();
+            graficoPastel.getData().clear();
 
-        for (Map.Entry<String, Long> entrada : conteoPorEstado.entrySet()) {
-            String estado = entrada.getKey();
-            long cantidad = entrada.getValue();
+            for (Map.Entry<String, Long> entrada : conteoPorEstado.entrySet()) {
+                String estado = entrada.getKey();
+                long cantidad = entrada.getValue();
 
-            if (cantidad > 0) {
-                PieChart.Data sector = new PieChart.Data(estado + " (" + cantidad + ")", cantidad);
-                graficoPastel.getData().add(sector);
+                if (cantidad > 0) {
+                    PieChart.Data sector = new PieChart.Data(estado + " (" + cantidad + ")", cantidad);
+                    graficoPastel.getData().add(sector);
+                }
             }
+        } catch (Exception e) {
+            mostrarAlerta("Cargar gráfico Pie", "No se pudo cargar el gráfico de pastel");
+            e.printStackTrace();
         }
     }
 

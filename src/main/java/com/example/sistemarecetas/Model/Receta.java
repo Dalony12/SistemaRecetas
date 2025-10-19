@@ -25,6 +25,12 @@ public class Receta {
         this.estado = estado;
     }
 
+    public Receta(Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro) {
+        this.paciente = paciente;
+        this.medicamentos = medicamentos;
+        this.fechaRetiro = fechaRetiro;
+    }
+
     public int getId() { return id;}
 
     public  void setId(int id) { this.id = id; }

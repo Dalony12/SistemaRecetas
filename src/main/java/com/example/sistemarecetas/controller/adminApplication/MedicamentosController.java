@@ -1,7 +1,7 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
 import com.example.sistemarecetas.Model.Medicamento;
-import com.example.sistemarecetas.logica.medicamentos.MedicamentoLogica;
+import com.example.sistemarecetas.logica.MedicamentoLogica;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -12,15 +12,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 public class MedicamentosController {
 
-    private static MedicamentosController instance; // Singleton
+    private static MedicamentosController instance;
     public MedicamentosController() { instance = this; }
     public static MedicamentosController getInstance() { return instance; }
 
@@ -43,27 +41,12 @@ public class MedicamentosController {
 
     private ObservableList<Medicamento> listaObservable;
     private MedicamentoLogica medicamentoLogica;
-    private String rutaXML;
-    private String currentMode = "guardar"; // modo activo
+    private String currentMode = "guardar";
 
     @FXML
     public void initialize() {
         try {
-            rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "medicamentos.xml").toString();
-            File archivo = new File(rutaXML);
-
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                try (FileWriter writer = new FileWriter(archivo)) {
-                    writer.write("""
-                        <?xml version="1.0" encoding="UTF-8"?>
-                        <medicamentos>
-                        </medicamentos>
-                        """);
-                }
-            }
-
-            medicamentoLogica = new MedicamentoLogica(rutaXML);
+            medicamentoLogica = new MedicamentoLogica();
             listaObservable = FXCollections.observableArrayList(medicamentoLogica.findAll());
             tableMedicamentos.setItems(listaObservable);
 
@@ -72,11 +55,10 @@ public class MedicamentosController {
             colPresentacion.setCellValueFactory(new PropertyValueFactory<>("presentacion"));
             colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
-            toggleMode("guardar"); // inicializamos modo por defecto
+            toggleMode("guardar");
             configurarListeners();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
             mostrarAlerta("Error al inicializar", e.getMessage());
         }
     }
@@ -91,7 +73,6 @@ public class MedicamentosController {
     }
 
     private void handleCodigoChange(String codigo) {
-        // Siempre permitir editar todos los campos en modo guardar
         if (currentMode.equals("guardar")) {
             setFieldEditable(txtNombreMedicamento, true);
             setFieldEditable(txtPresentacionMedicamento, true);
@@ -99,41 +80,37 @@ public class MedicamentosController {
             return;
         }
 
-        // Modo buscar, modificar o borrar
-        Optional<Medicamento> encontrado = medicamentoLogica.findByCodigo(codigo);
-        if (encontrado.isPresent()) {
-            Medicamento m = encontrado.get();
-            txtNombreMedicamento.setText(m.getNombre());
-            txtPresentacionMedicamento.setText(m.getPresentacion());
-            txtDescripcionMedicamento.setText(m.getDescripcion());
+        try {
+            Medicamento m = medicamentoLogica.findByCodigo(codigo);
+            if (m != null) {
+                txtNombreMedicamento.setText(m.getNombre());
+                txtPresentacionMedicamento.setText(m.getPresentacion());
+                txtDescripcionMedicamento.setText(m.getDescripcion());
 
-            boolean editable = currentMode.equals("modificar");
-            setFieldEditable(txtNombreMedicamento, editable);
-            setFieldEditable(txtPresentacionMedicamento, editable);
-            setFieldEditable(txtDescripcionMedicamento, editable);
-        } else {
-            // Si no existe
-            if (!currentMode.equals("buscar")) {
+                boolean editable = currentMode.equals("modificar");
+                setFieldEditable(txtNombreMedicamento, editable);
+                setFieldEditable(txtPresentacionMedicamento, editable);
+                setFieldEditable(txtDescripcionMedicamento, editable);
+            } else if (!currentMode.equals("buscar")) {
                 limpiarCampos(false);
                 setFieldEditable(txtNombreMedicamento, false);
                 setFieldEditable(txtPresentacionMedicamento, false);
                 setFieldEditable(txtDescripcionMedicamento, false);
             }
-        }
 
-        // En buscar, actualizar tabla
-        if (currentMode.equals("buscar")) buscarMedicamento();
+            if (currentMode.equals("buscar")) buscarMedicamento();
+
+        } catch (SQLException e) {
+            mostrarAlerta("Error al buscar medicamento", e.getMessage());
+        }
     }
+
 
     private void setFieldEditable(TextInputControl field, boolean editable) {
         field.setEditable(editable);
-        if (!editable) {
-            field.setStyle("-fx-control-inner-background: #f0f0f0;");
-            field.setTooltip(new Tooltip("Campo bloqueado"));
-        } else {
-            field.setStyle("");
-            field.setTooltip(null);
-        }
+        field.setStyle(editable ? "" : "-fx-control-inner-background: #f0f0f0;");
+        if (!editable) field.setTooltip(new Tooltip("Campo bloqueado"));
+        else field.setTooltip(null);
     }
 
     private void toggleMode(String mode) {
@@ -148,27 +125,8 @@ public class MedicamentosController {
         txtCodigoMedicamento.setStyle("");
         txtCodigoMedicamento.setTooltip(null);
 
-        switch (mode) {
-            case "guardar" -> {
-                setFieldEditable(txtNombreMedicamento, true);
-                setFieldEditable(txtPresentacionMedicamento, true);
-                setFieldEditable(txtDescripcionMedicamento, true);
-                cargarMedicamentos(); // restaurar lista completa
-            }
-            case "borrar", "modificar" -> {
-                setFieldEditable(txtNombreMedicamento, false);
-                setFieldEditable(txtPresentacionMedicamento, false);
-                setFieldEditable(txtDescripcionMedicamento, false);
-                cargarMedicamentos(); // restaurar lista completa
-            }
-            case "buscar" -> {
-                setFieldEditable(txtNombreMedicamento, false);
-                setFieldEditable(txtPresentacionMedicamento, false);
-                setFieldEditable(txtDescripcionMedicamento, false);
-            }
-        }
-
         limpiarCampos();
+        cargarMedicamentos();
     }
 
     @FXML
@@ -187,40 +145,45 @@ public class MedicamentosController {
             Medicamento m = new Medicamento(codigo, nombre, presentacion, descripcion);
 
             switch (currentMode) {
-                case "guardar" -> medicamentoLogica.create(m);
+                case "guardar" -> {
+                    Medicamento creado = medicamentoLogica.create(m);
+                    listaObservable.add(creado);
+                }
                 case "modificar" -> medicamentoLogica.update(m);
                 case "borrar" -> {
                     boolean eliminado = medicamentoLogica.deleteByCodigo(codigo);
-                    if (!eliminado) mostrarAlerta("No encontrado", "No existe un medicamento con ese código: " + codigo);
+                    if (!eliminado)
+                        mostrarAlerta("No encontrado", "No existe un medicamento con ese código: " + codigo);
                 }
             }
 
             limpiarCampos();
             cargarMedicamentos();
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             mostrarAlerta("Error", e.getMessage());
         }
     }
 
     @FXML
     private void buscarMedicamento() {
-        String id = txtCodigoMedicamento.getText().trim();
-        String nombre = txtNombreMedicamento.getText().trim();
+        try {
+            String codigo = txtCodigoMedicamento.getText().trim();
+            String nombre = txtNombreMedicamento.getText().trim();
 
-        if (id.isEmpty() && nombre.isEmpty()) {
-            cargarMedicamentos();
-            return;
+            List<Medicamento> resultado;
+            if (codigo.isEmpty() && nombre.isEmpty()) resultado = medicamentoLogica.findAll();
+            else resultado = medicamentoLogica.search(codigo, nombre);
+
+            listaObservable.setAll(resultado);
+
+        } catch (SQLException e) {
+            mostrarAlerta("Error", e.getMessage());
         }
-
-        List<Medicamento> resultado = medicamentoLogica.search(id, nombre);
-        listaObservable.setAll(resultado);
     }
 
     @FXML
-    private void limpiarCampos() {
-        limpiarCampos(true);
-    }
+    private void limpiarCampos() { limpiarCampos(true); }
 
     private void limpiarCampos(boolean limpiarCodigo) {
         if (limpiarCodigo) txtCodigoMedicamento.clear();
@@ -230,7 +193,11 @@ public class MedicamentosController {
     }
 
     public void cargarMedicamentos() {
-        listaObservable.setAll(medicamentoLogica.findAll());
+        try {
+            listaObservable.setAll(medicamentoLogica.findAll());
+        } catch (SQLException e) {
+            mostrarAlerta("Error", e.getMessage());
+        }
     }
 
     public void mostrarListaConAnimacion() {

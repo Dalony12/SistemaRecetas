@@ -4,9 +4,9 @@ import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Paciente;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
-import com.example.sistemarecetas.logica.medicamentos.MedicamentoLogica;
-import com.example.sistemarecetas.logica.pacientes.PacientesLogica;
-import com.example.sistemarecetas.logica.recetas.RecetasLogica;
+import com.example.sistemarecetas.logica.MedicamentoLogica;
+import com.example.sistemarecetas.logica.PacienteLogica;
+import com.example.sistemarecetas.logica.RecetaLogica;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -19,10 +19,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,50 +42,23 @@ public class PrescripcionController {
     @FXML private TableColumn<Prescripcion, String> colIndicaciones;
     @FXML private TableColumn<Prescripcion, Integer> colDuracion;
 
-    private RecetasLogica recetasLogica;
-    private PacientesLogica pacientesLogica;
+    private RecetaLogica recetasLogica;
+    private PacienteLogica pacientesLogica;
     private MedicamentoLogica medicamentoLogica;
     private List<Prescripcion> listaMedicamentos = new ArrayList<>();
     private Receta receta = null;
     private Medicamento medicamento = null;
     private Paciente paciente = null;
 
-    public PrescripcionController() {instance = this; }
+    public PrescripcionController() { instance = this; }
 
     @FXML
     public void initialize() {
         try {
-            // Inicializar rutas XML
-            String rutaRecetas = Paths.get(System.getProperty("user.dir"), "datos", "recetas.xml").toString();
-            File archivoRecetas = new File(rutaRecetas);
-            if (!archivoRecetas.exists()) {
-                archivoRecetas.getParentFile().mkdirs();
-                try (FileWriter writer = new FileWriter(archivoRecetas)) {
-                    writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><recetas></recetas>");
-                }
-            }
-
-            String rutaPacientes = Paths.get(System.getProperty("user.dir"), "datos", "pacientes.xml").toString();
-            File archivoPacientes = new File(rutaPacientes);
-            if (!archivoPacientes.exists()) {
-                archivoPacientes.getParentFile().mkdirs();
-                try (FileWriter writer = new FileWriter(archivoPacientes)) {
-                    writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><pacientes></pacientes>");
-                }
-            }
-
-            String rutaMedicamentos = Paths.get(System.getProperty("user.dir"), "datos", "medicamentos.xml").toString();
-            File archivoMedicamentos = new File(rutaMedicamentos);
-            if (!archivoMedicamentos.exists()) {
-                archivoMedicamentos.getParentFile().mkdirs();
-                try (FileWriter writer = new FileWriter(archivoMedicamentos)) {
-                    writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><medicamentos></medicamentos>");
-                }
-            }
-
-            recetasLogica = new RecetasLogica(rutaRecetas, rutaPacientes, rutaMedicamentos);
-            pacientesLogica = new PacientesLogica(Paths.get(System.getProperty("user.dir"), "datos", "pacientes.xml").toString());
-            medicamentoLogica = new MedicamentoLogica(Paths.get(System.getProperty("user.dir"), "datos", "medicamentos.xml").toString());
+            // Inicializamos la lógica usando BD
+            recetasLogica = new RecetaLogica();
+            pacientesLogica = new PacienteLogica();
+            medicamentoLogica = new MedicamentoLogica();
 
             tblMedicamentoReceta.setItems(FXCollections.observableArrayList(listaMedicamentos));
 
@@ -136,8 +105,8 @@ public class PrescripcionController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sistemarecetas/View/MedicoView/buscarPacienteTab.fxml"));
             Parent root = loader.load();
 
-            buscarPacienteController controller = loader.getController();
-            controller.setListaPacientes(pacientesLogica.findAll());
+            BuscarPacienteController controller = loader.getController();
+            controller.setListaPacientes(pacientesLogica.findAll()); // BD
 
             Stage stage = crearVentanaModal(root, "Buscar Paciente");
             stage.setOnHiding(event -> {
@@ -149,7 +118,7 @@ public class PrescripcionController {
             });
             stage.showAndWait();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             mostrarAlerta("Error", "No se pudo abrir la ventana de búsqueda de pacientes.");
         }
     }
@@ -161,11 +130,11 @@ public class PrescripcionController {
             Parent root = loader.load();
 
             BuscarMedicamentoController controller = loader.getController();
-            controller.setListaMedicamentos(medicamentoLogica.findAll());
+            controller.setListaMedicamentos(medicamentoLogica.findAll()); // BD
 
             Stage stage = crearVentanaModal(root, "Buscar Medicamento");
             stage.setOnHiding(event -> {
-                Medicamento seleccionado = controller.getMedicamento();
+                Medicamento seleccionado = controller.getMedicamentoSeleccionado();
                 if (seleccionado != null) {
                     this.medicamento = seleccionado;
                     abrirAsignacionDatos();
@@ -173,7 +142,7 @@ public class PrescripcionController {
             });
             stage.showAndWait();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             mostrarAlerta("Error", "No se pudo abrir la ventana de búsqueda de medicamentos.");
         }
     }
@@ -209,7 +178,7 @@ public class PrescripcionController {
             });
             stage.showAndWait();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             mostrarAlerta("Error", "No se pudo abrir la ventana de asignación.");
         }
     }
@@ -225,12 +194,12 @@ public class PrescripcionController {
 
             if (receta == null) {
                 receta = new Receta(paciente, listaMedicamentos, fechaRetiro);
-                recetasLogica.create(receta);
+                recetasLogica.create(receta); // BD
             } else {
                 receta.setPaciente(paciente);
                 receta.setMedicamentos(listaMedicamentos);
                 receta.setFechaRetiro(fechaRetiro);
-                recetasLogica.update(receta);
+                recetasLogica.update(receta); // BD
             }
 
             mostrarAlerta("Éxito", "Receta guardada correctamente.");

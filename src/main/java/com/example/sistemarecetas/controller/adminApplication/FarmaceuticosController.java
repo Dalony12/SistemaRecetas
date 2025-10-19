@@ -1,7 +1,7 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
 import com.example.sistemarecetas.Model.Farmaceutico;
-import com.example.sistemarecetas.logica.farmaceutas.FarmaceutasLogica;
+import com.example.sistemarecetas.logica.FarmaceuticoLogica;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -12,9 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,29 +36,17 @@ public class FarmaceuticosController {
     @FXML private TextField txtNombreFarmaceuta;
 
     private ObservableList<Farmaceutico> listaObservable;
-    private FarmaceutasLogica farmaceutaLogica;
+    private FarmaceuticoLogica farmaceutaLogica;
 
     private String currentMode = "guardar"; // modo activo
 
     @FXML
     public void initialize() {
         try {
-            String rutaXML = Paths.get(System.getProperty("user.dir"), "datos", "farmaceutas.xml").toString();
-            File archivo = new File(rutaXML);
+            // Inicializar la lógica usando DB
+            farmaceutaLogica = new FarmaceuticoLogica();
 
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                String contenidoInicial = """
-                        <?xml version="1.0" encoding="UTF-8"?>
-                        <farmaceuticos>
-                        </farmaceuticos>
-                        """;
-                try (FileWriter writer = new FileWriter(archivo)) {
-                    writer.write(contenidoInicial);
-                }
-            }
-
-            farmaceutaLogica = new FarmaceutasLogica(rutaXML);
+            // Cargar lista desde la DB
             listaObservable = FXCollections.observableArrayList(farmaceutaLogica.findAll());
             tableFarmaceuticos.setItems(listaObservable);
 
@@ -78,15 +64,21 @@ public class FarmaceuticosController {
 
             // Reacción de campos
             txtIDFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {
-                handleIDChange(newVal);
+                try {
+                    handleIDChange(newVal);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             });
 
             txtNombreFarmaceuta.textProperty().addListener((obs, oldVal, newVal) -> {
-                if (currentMode.equals("guardar") && !newVal.isEmpty() && txtIDFarmaceuta.getText().isEmpty()) {
-                    // Construir ID automáticamente
-                    txtIDFarmaceuta.setText("far-" + (farmaceutaLogica.generarNextID()));
+                if (currentMode.equals("buscar")) {
+                    try {
+                        buscarFarmaceuta();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-                if (currentMode.equals("buscar")) buscarFarmaceuta();
             });
 
         } catch (Exception e) {
@@ -95,18 +87,23 @@ public class FarmaceuticosController {
     }
 
     public void cargarFarmaceuticos() {
-        if (farmaceutaLogica != null) {
-            listaObservable.setAll(farmaceutaLogica.findAll());
+        try {
+            if (farmaceutaLogica != null) {
+                listaObservable.setAll(farmaceutaLogica.findAll());
+            }
+        } catch (Exception e) {
+            mostrarAlerta("Error al cargar farmacéuticos", e.getMessage());
         }
     }
 
-    private void handleIDChange(String newVal) {
-        if (!newVal.startsWith("far-")) {
-            txtIDFarmaceuta.setText("far-" + newVal.replace("far-", ""));
-        }
+    private void handleIDChange(String newVal) throws SQLException {
+        String identificacion = newVal.startsWith("far-") ? newVal : "far-" + newVal;
 
         if (currentMode.equals("modificar") || currentMode.equals("buscar") || currentMode.equals("borrar")) {
-            Optional<Farmaceutico> encontrado = farmaceutaLogica.findByCodigo(txtIDFarmaceuta.getText());
+            Optional<Farmaceutico> encontrado = farmaceutaLogica.findAll().stream()
+                    .filter(f -> f.getIdentificacion().equalsIgnoreCase(identificacion))
+                    .findFirst();
+
             if (encontrado.isPresent()) {
                 txtNombreFarmaceuta.setText(encontrado.get().getNombre());
                 txtNombreFarmaceuta.setEditable(currentMode.equals("modificar"));
@@ -147,29 +144,37 @@ public class FarmaceuticosController {
     @FXML
     private void GuardarModificarEliminarFarmaceuta() {
         try {
-            String id = txtIDFarmaceuta.getText().trim();
+            String identificacion = txtIDFarmaceuta.getText().trim();
             String nombre = txtNombreFarmaceuta.getText().trim();
 
-            if (id.isEmpty() || nombre.isEmpty()) {
+            if (identificacion.isEmpty() || nombre.isEmpty()) {
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }
 
-            Farmaceutico m = new Farmaceutico(id, nombre, id);
+            Farmaceutico m;
 
             switch (currentMode) {
                 case "guardar":
-                    farmaceutaLogica.create(m);
-                    listaObservable.add(m);
+                    // Nuevo farmacéutico, password por defecto = "user"
+                    m = new Farmaceutico(nombre, identificacion);
+                    Farmaceutico creado = farmaceutaLogica.create(m); // Inserta en DB y retorna con ID generado
+                    listaObservable.add(creado);
                     break;
+
                 case "modificar":
+                    // Para modificar, primero debemos obtener el ID real de DB
+                    m = farmaceutaLogica.findByIdentificacion(identificacion)
+                            .orElseThrow(() -> new RuntimeException("No se encontró farmacéutico con esa identificación"));
+                    m.setNombre(nombre); // Actualizamos el nombre
                     farmaceutaLogica.update(m);
                     refrescarTabla();
                     break;
+
                 case "borrar":
-                    boolean eliminado = farmaceutaLogica.deleteByCodigo(id);
-                    if (eliminado) listaObservable.removeIf(x -> x.getId().equalsIgnoreCase(id));
-                    else mostrarAlerta("No encontrado", "No existe un farmaceutico con ese ID: " + id);
+                    boolean eliminado = farmaceutaLogica.deleteByIdentificacion(identificacion);
+                    if (eliminado) listaObservable.removeIf(x -> x.getIdentificacion().equalsIgnoreCase(identificacion));
+                    else mostrarAlerta("No encontrado", "No existe un farmacéutico con esa identificación: " + identificacion);
                     break;
             }
 
@@ -181,16 +186,15 @@ public class FarmaceuticosController {
     }
 
     @FXML
-    private void buscarFarmaceuta() {
-        String id = txtIDFarmaceuta.getText().trim();
-        String nombre = txtNombreFarmaceuta.getText().trim();
+    private void buscarFarmaceuta() throws SQLException {
+        String identificacion = txtIDFarmaceuta.getText().trim().toLowerCase();
+        String nombre = txtNombreFarmaceuta.getText().trim().toLowerCase();
 
-        if (id.isEmpty() && nombre.isEmpty()) {
-            refrescarTabla();
-            return;
-        }
+        List<Farmaceutico> resultado = farmaceutaLogica.findAll().stream()
+                .filter(f -> f.getNombre().toLowerCase().contains(nombre) ||
+                        f.getIdentificacion().toLowerCase().contains(identificacion))
+                .toList();
 
-        List<Farmaceutico> resultado = farmaceutaLogica.search(id, nombre);
         listaObservable.setAll(resultado);
     }
 
@@ -200,7 +204,7 @@ public class FarmaceuticosController {
         txtNombreFarmaceuta.clear();
     }
 
-    public void refrescarTabla() {
+    public void refrescarTabla() throws SQLException {
         listaObservable.setAll(farmaceutaLogica.findAll());
     }
 
