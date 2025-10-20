@@ -35,12 +35,12 @@ public class MedicosController {
     @FXML private TextField txtIDMedico;
     @FXML private TextField txtNombreMedico;
     @FXML private TextField txtEspecialidadMedico;
+    @FXML private PasswordField txtPasswordMedico; // NUEVO
 
     @FXML private ProgressBar progressBar;
 
     private ObservableList<Medico> listaObservable;
     private MedicoLogica medicosLogica;
-
     private String currentMode = "guardar";
 
     @FXML
@@ -85,6 +85,7 @@ public class MedicosController {
             if (m != null) {
                 txtNombreMedico.setText(m.getNombre());
                 txtEspecialidadMedico.setText(m.getEspecialidad());
+                txtPasswordMedico.setText(""); // no mostramos la contraseña real por seguridad
             } else limpiarCampos();
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,17 +98,27 @@ public class MedicosController {
             String identificacion = txtIDMedico.getText().trim();
             String nombre = txtNombreMedico.getText().trim();
             String especialidad = txtEspecialidadMedico.getText().trim();
+            String password = txtPasswordMedico.getText().trim();
 
-            if (identificacion.isEmpty() || nombre.isEmpty() || especialidad.isEmpty()) {
+            if (identificacion.isEmpty() || nombre.isEmpty() || especialidad.isEmpty() ||
+                    (currentMode.equals("guardar") && password.isEmpty())) {
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }
 
-            Medico m = new Medico(identificacion, nombre, especialidad);
-
+            Medico m;
             if (currentMode.equals("guardar")) {
+                m = new Medico(identificacion, nombre, especialidad, password);
                 medicosLogica.create(m);
             } else if (currentMode.equals("modificar")) {
+                // Para modificar, si el password está vacío, mantenemos el actual
+                Medico existente = medicosLogica.findByIdentificacion(identificacion);
+                if (existente == null) {
+                    mostrarAlerta("No encontrado", "No existe un médico con esa identificación: " + identificacion);
+                    return;
+                }
+                String passToUse = password.isEmpty() ? existente.getPassword() : password;
+                m = new Medico(existente.getId(), identificacion, nombre, especialidad, passToUse);
                 medicosLogica.update(m);
             } else if (currentMode.equals("borrar")) {
                 boolean eliminado = medicosLogica.deleteByIdentificacion(identificacion);
@@ -140,40 +151,30 @@ public class MedicosController {
         }
     }
 
+    // ===== Animación de portada =====
     public void mostrarListaConAnimacion() {
         if (vBoxPortadaMedicos.isVisible()) {
-
-            // Pequeña pausa antes de iniciar la animación
             PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
             pause.setOnFinished(event -> {
-
-                // Animación de desplazamiento hacia la izquierda
                 TranslateTransition translate = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaMedicos);
                 translate.setToX(-vBoxPortadaMedicos.getWidth() - 20);
-
-                // Fade-out simultáneo
                 FadeTransition fade = new FadeTransition(Duration.seconds(1.5), vBoxPortadaMedicos);
                 fade.setFromValue(1);
                 fade.setToValue(0);
-
-                // Cuando termina la animación, ocultar el VBox y resetear posición
                 translate.setOnFinished(e -> {
                     vBoxPortadaMedicos.setVisible(false);
                     vBoxPortadaMedicos.setTranslateX(0);
                     vBoxPortadaMedicos.setOpacity(1);
                 });
-
                 translate.play();
                 fade.play();
             });
-
             pause.play();
         }
     }
 
     private void toggleMode(String mode) {
         currentMode = mode;
-
         btnGuardarMedico.setSelected(mode.equals("guardar"));
         btnBorrarMedico.setSelected(mode.equals("borrar"));
         btnModificarMedico.setSelected(mode.equals("modificar"));
@@ -182,6 +183,7 @@ public class MedicosController {
         txtIDMedico.setEditable(true);
         txtNombreMedico.setEditable(!mode.equals("borrar"));
         txtEspecialidadMedico.setEditable(!mode.equals("borrar") && !mode.equals("buscar"));
+        txtPasswordMedico.setEditable(!mode.equals("borrar"));
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {
@@ -197,6 +199,7 @@ public class MedicosController {
         txtIDMedico.clear();
         txtNombreMedico.clear();
         txtEspecialidadMedico.clear();
+        txtPasswordMedico.clear();
     }
 
     public void cargarMedicos() {
