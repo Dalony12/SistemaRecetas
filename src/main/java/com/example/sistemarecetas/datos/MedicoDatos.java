@@ -20,7 +20,8 @@ public class MedicoDatos {
                         rs.getInt("id_medico"),
                         rs.getString("identificacion"),
                         rs.getString("nombre"),
-                        rs.getString("especialidad")
+                        rs.getString("especialidad"),
+                        rs.getString("password") // ahora incluimos password
                 ));
             }
             return list;
@@ -28,13 +29,14 @@ public class MedicoDatos {
     }
 
     public Medico insert(Medico m) throws SQLException {
-        String sql = "INSERT INTO medicos (identificacion, nombre, especialidad) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO medicos (identificacion, nombre, especialidad, password) VALUES (?, ?, ?, ?)";
         try (Connection cn = DB.getConnection();
              PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, m.getIdentificacion());
             ps.setString(2, m.getNombre());
             ps.setString(3, m.getEspecialidad());
+            ps.setString(4, m.getPassword());
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) return null;
@@ -50,13 +52,14 @@ public class MedicoDatos {
     }
 
     public Medico update(Medico m) throws SQLException {
-        String sql = "UPDATE medicos SET nombre = ?, especialidad = ? WHERE identificacion = ?";
+        String sql = "UPDATE medicos SET nombre = ?, especialidad = ?, password = ? WHERE identificacion = ?";
         try (Connection cn = DB.getConnection();
              PreparedStatement ps = cn.prepareStatement(sql)) {
 
             ps.setString(1, m.getNombre());
             ps.setString(2, m.getEspecialidad());
-            ps.setString(3, m.getIdentificacion());
+            ps.setString(3, m.getPassword());
+            ps.setString(4, m.getIdentificacion());
 
             return ps.executeUpdate() > 0 ? m : null;
         }
@@ -84,7 +87,8 @@ public class MedicoDatos {
                             rs.getInt("id_medico"),
                             rs.getString("identificacion"),
                             rs.getString("nombre"),
-                            rs.getString("especialidad")
+                            rs.getString("especialidad"),
+                            rs.getString("password")
                     );
                 }
             }
@@ -107,7 +111,8 @@ public class MedicoDatos {
                             rs.getInt("id_medico"),
                             rs.getString("identificacion"),
                             rs.getString("nombre"),
-                            rs.getString("especialidad")
+                            rs.getString("especialidad"),
+                            rs.getString("password")
                     ));
                 }
                 return list;

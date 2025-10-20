@@ -13,23 +13,19 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+/**
+ * Controlador del Dashboard conectado a base de datos.
+ * Muestra:
+ *  - Gráfico de línea: cantidad de medicamentos prescritos por mes.
+ *  - Gráfico de pastel: cantidad de recetas por estado.
+ *  - Carga datos automáticamente al abrir el tab.
+ */
 public class DashboardController {
 
+    // ===== Singleton =====
     private static DashboardController instance;
-
-    @FXML private LineChart<String, Number> graficoLineal;
-    @FXML private PieChart graficoPastel;
-    @FXML private ComboBox<String> cmbMedicamento;
-    @FXML private DatePicker fechaInicioDashboard;
-    @FXML private DatePicker fechaFinDashboard;
-    @FXML private Button btnEnviar;
-
-    private DashboardLogica service;
 
     public DashboardController() {
         instance = this;
@@ -39,40 +35,75 @@ public class DashboardController {
         return instance;
     }
 
+    // ===== FXML =====
+    @FXML private Tab tabDashboard; // Tab que contiene el Dashboard
+    @FXML private LineChart<String, Number> graficoLineal;
+    @FXML private PieChart graficoPastel;
+    @FXML private ComboBox<String> cmbMedicamento;
+    @FXML private DatePicker fechaInicioDashboard;
+    @FXML private DatePicker fechaFinDashboard;
+    @FXML private Button btnEnviar;
+
+    // ===== Lógica =====
+    private DashboardLogica service;
+
+    // ===== Inicialización =====
     @FXML
     public void initialize() {
-        // Inicializar el servicio directamente con la DB
-        this.service = new DashboardLogica(); // usa constructor sin archivos
-        cargarDashboard();
-    }
+        this.service = new DashboardLogica();
 
-
-    public void cargarDashboard() {
+        // Cargar inmediatamente (asegura que aparezcan datos al abrir la app)
         try {
-            List<Receta> lista = service.cargarRecetas();
-
-            // Obtener nombres únicos de medicamentos
-            Set<String> nombresUnicos = new HashSet<>();
-            for (Receta r : lista) {
-                List<Prescripcion> prescripciones = r.getMedicamentos();
-                for (Prescripcion p : prescripciones) {
-                    Medicamento m = p.getMedicamento();
-                    if (m != null) {
-                        nombresUnicos.add(m.getNombre());
-                    }
-                }
-            }
-
-            ObservableList<String> medicamentos = FXCollections.observableArrayList(nombresUnicos);
-            cmbMedicamento.setItems(medicamentos);
-
-            cargarGraficoPie();
+            cargarDashboard();
         } catch (Exception e) {
-            mostrarAlerta("Cargar Dashboard", "No se pudo cargar la información desde la base de datos.");
             e.printStackTrace();
+        }
+
+        // Si el Tab está enlazado en el FXML, también recarga al seleccionarlo
+        if (tabDashboard != null) {
+            tabDashboard.setOnSelectionChanged(event -> {
+                if (tabDashboard.isSelected()) {
+                    cargarDashboard();
+                }
+            });
         }
     }
 
+    /**
+     * Carga inicial: llena medicamentos y muestra gráfico pastel.
+     */
+    public void cargarDashboard() {
+        try {
+            List<Receta> listaRecetas = service.cargarRecetas();
+
+            // Obtener nombres únicos de medicamentos desde las prescripciones
+            Set<String> nombresMedicamentos = new HashSet<>();
+            for (Receta receta : listaRecetas) {
+                for (Prescripcion p : receta.getMedicamentos()) {
+                    Medicamento m = p.getMedicamento();
+                    if (m != null) nombresMedicamentos.add(m.getNombre());
+                }
+            }
+
+            // Cargar nombres al ComboBox
+            ObservableList<String> medicamentos = FXCollections.observableArrayList(nombresMedicamentos);
+            cmbMedicamento.setItems(medicamentos);
+
+            // Seleccionar uno por defecto si hay disponibles
+            if (!medicamentos.isEmpty()) {
+                cmbMedicamento.getSelectionModel().selectFirst();
+            }
+
+            // Cargar gráfico de pastel (recetas por estado)
+            cargarGraficoPie();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error", "No se pudieron cargar los datos del Dashboard desde la base de datos.");
+        }
+    }
+
+    // ===== Gráfico de línea =====
     @FXML
     private void cargarGraficoLineal() {
         try {
@@ -81,47 +112,78 @@ public class DashboardController {
             String medicamento = cmbMedicamento.getValue();
 
             if (fechaInicio == null || fechaFin == null || medicamento == null || medicamento.isEmpty()) {
-                mostrarAlerta("Campos incompletos", "Debe completar todos los espacios.");
+                mostrarAlerta("Campos incompletos", "Debe seleccionar fechas y un medicamento antes de continuar.");
                 return;
             }
 
             Map<String, Long> datos = service.prescripcionesPorMes(fechaInicio, fechaFin, medicamento);
 
             graficoLineal.getData().clear();
-            XYChart.Series<String, Number> series = new XYChart.Series<>();
-            series.setName("Cantidad de Prescripciones de " + medicamento);
+            XYChart.Series<String, Number> serie = new XYChart.Series<>();
+            serie.setName("Prescripciones de " + medicamento);
 
             for (Map.Entry<String, Long> entry : datos.entrySet()) {
-                series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+                serie.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
             }
 
-            graficoLineal.getData().add(series);
-        } catch(Exception e) {
-            mostrarAlerta("Cargar gráfico", "No se pudo cargar el gráfico");
+            if (serie.getData().isEmpty()) {
+                mostrarAlerta("Sin datos", "No se encontraron prescripciones para ese medicamento en el rango indicado.");
+            }
+
+            graficoLineal.getData().add(serie);
+
+        } catch (Exception e) {
             e.printStackTrace();
+            mostrarAlerta("Error", "No se pudo cargar el gráfico de prescripciones por mes.");
         }
     }
 
+    // ===== Gráfico de pastel =====
     private void cargarGraficoPie() {
         try {
-            Map<String, Long> conteoPorEstado = service.recetaPorEstado();
-            graficoPastel.getData().clear();
+            // Forzar carga de recetas desde la lógica (BD) y construir el mapa localmente
+            List<Receta> recetas = service.cargarRecetas();
+            System.out.println("[Dashboard] recetas cargadas (total): " + (recetas != null ? recetas.size() : 0));
 
-            for (Map.Entry<String, Long> entrada : conteoPorEstado.entrySet()) {
-                String estado = entrada.getKey();
-                long cantidad = entrada.getValue();
-
-                if (cantidad > 0) {
-                    PieChart.Data sector = new PieChart.Data(estado + " (" + cantidad + ")", cantidad);
-                    graficoPastel.getData().add(sector);
+            Map<String, Long> conteoPorEstado = new LinkedHashMap<>();
+            if (recetas != null) {
+                for (Receta r : recetas) {
+                    String estado = r.getEstado();
+                    if (estado == null || estado.isBlank()) {
+                        estado = "Desconocido";
+                    } else {
+                        estado = estado.trim();
+                    }
+                    conteoPorEstado.put(estado, conteoPorEstado.getOrDefault(estado, 0L) + 1);
                 }
             }
+
+            System.out.println("[Dashboard] conteoPorEstado calculado localmente: " + conteoPorEstado);
+
+            // Llenar PieChart
+            graficoPastel.getData().clear();
+            for (Map.Entry<String, Long> entrada : conteoPorEstado.entrySet()) {
+                String estado = entrada.getKey();
+                long cantidad = entrada.getValue() == null ? 0L : entrada.getValue();
+                System.out.println("[Dashboard] estado='" + estado + "' cantidad=" + cantidad);
+                if (cantidad > 0) {
+                    graficoPastel.getData().add(new PieChart.Data(estado + " (" + cantidad + ")", cantidad));
+                }
+            }
+
+            // Si no hay sectores con >0, mostrar un sector "Sin datos" para que el control no quede vacío
+            if (graficoPastel.getData().isEmpty()) {
+                System.out.println("[Dashboard] No hay recetas con estado válido — mostrando 'Sin datos'.");
+                graficoPastel.getData().add(new PieChart.Data("Sin datos", 1));
+            }
+
         } catch (Exception e) {
-            mostrarAlerta("Cargar gráfico Pie", "No se pudo cargar el gráfico de pastel");
             e.printStackTrace();
+            mostrarAlerta("Error", "No se pudo cargar el gráfico de recetas por estado: " + e.getMessage());
         }
     }
 
+    // ===== Utilidad =====
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);
         alerta.setTitle(titulo);

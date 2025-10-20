@@ -24,12 +24,12 @@ public class MedicoLogica {
     }
 
     public Medico create(Medico m) throws SQLException {
-        validarCampos(m);
+        validarCampos(m, true);
         return store.insert(m);
     }
 
     public Medico update(Medico m) throws SQLException {
-        validarCampos(m);
+        validarCampos(m, false);
         return store.update(m);
     }
 
@@ -38,11 +38,13 @@ public class MedicoLogica {
         return store.deleteByIdentificacion(identificacion);
     }
 
-    private void validarCampos(Medico m) {
+    private void validarCampos(Medico m, boolean esNuevo) {
         if (m.getNombre() == null || m.getNombre().isBlank())
             throw new IllegalArgumentException("El nombre del médico es obligatorio.");
         if (m.getIdentificacion() == null || m.getIdentificacion().isBlank())
             throw new IllegalArgumentException("La identificación del médico es obligatoria.");
         if (m.getEspecialidad() == null) m.setEspecialidad("");
+        if (esNuevo && (m.getPassword() == null || m.getPassword().isBlank()))
+            throw new IllegalArgumentException("La contraseña es obligatoria para nuevos médicos.");
     }
 }
