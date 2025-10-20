@@ -37,6 +37,8 @@ public class MedicosController {
     @FXML private TextField txtEspecialidadMedico;
     @FXML private PasswordField txtPasswordMedico; // NUEVO
 
+    @FXML private ProgressBar progressBar;
+
     private ObservableList<Medico> listaObservable;
     private MedicoLogica medicosLogica;
     private String currentMode = "guardar";
