@@ -128,6 +128,20 @@ public class MedicamentosController {
         txtCodigoMedicamento.setTooltip(null);
 
         limpiarCampos();
+
+        switch (mode) {
+            case "guardar" -> {
+                setFieldEditable(txtNombreMedicamento, true);
+                setFieldEditable(txtPresentacionMedicamento, true);
+                setFieldEditable(txtDescripcionMedicamento, true);
+            }
+            case "modificar", "borrar", "buscar" -> {
+                setFieldEditable(txtNombreMedicamento, false);
+                setFieldEditable(txtPresentacionMedicamento, false);
+                setFieldEditable(txtDescripcionMedicamento, false);
+            }
+        }
+
         cargarMedicamentos();
     }
 
@@ -144,25 +158,31 @@ public class MedicamentosController {
                 return;
             }
 
-            Medicamento m = new Medicamento(codigo, nombre, presentacion, descripcion);
-
-            switch (currentMode) {
-                case "guardar" -> {
-                    Medicamento creado = medicamentoLogica.create(m);
-                    listaObservable.add(creado);
+            Medicamento m;
+            if (currentMode.equals("guardar")) {
+                m = new Medicamento(codigo, nombre, presentacion, descripcion);
+                medicamentoLogica.create(m);
+            } else if (currentMode.equals("modificar")) {
+                // Buscar el medicamento existente por código
+                Medicamento existente = medicamentoLogica.findByCodigo(codigo);
+                if (existente == null) {
+                    mostrarAlerta("No encontrado", "No existe un medicamento con ese código: " + codigo);
+                    return;
                 }
-                case "modificar" -> medicamentoLogica.update(m);
-                case "borrar" -> {
-                    boolean eliminado = medicamentoLogica.deleteByCodigo(codigo);
-                    if (!eliminado)
-                        mostrarAlerta("No encontrado", "No existe un medicamento con ese código: " + codigo);
+                // Crear objeto con ID existente para actualizar
+                m = new Medicamento(existente.getId(), codigo, nombre, presentacion, descripcion);
+                medicamentoLogica.update(m);
+            } else if (currentMode.equals("borrar")) {
+                boolean eliminado = medicamentoLogica.deleteByCodigo(codigo);
+                if (!eliminado) {
+                    mostrarAlerta("No encontrado", "No existe un medicamento con ese código: " + codigo);
                 }
             }
 
             limpiarCampos();
             cargarMedicamentos();
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             mostrarAlerta("Error", e.getMessage());
         }
     }
@@ -171,11 +191,10 @@ public class MedicamentosController {
     private void buscarMedicamento() {
         try {
             String codigo = txtCodigoMedicamento.getText().trim();
-            String nombre = txtNombreMedicamento.getText().trim();
 
             List<Medicamento> resultado;
-            if (codigo.isEmpty() && nombre.isEmpty()) resultado = medicamentoLogica.findAll();
-            else resultado = medicamentoLogica.search(codigo, nombre);
+            if (codigo.isEmpty()) resultado = medicamentoLogica.findAll();
+            else resultado = medicamentoLogica.searchByCodigo(codigo);
 
             listaObservable.setAll(resultado);
 

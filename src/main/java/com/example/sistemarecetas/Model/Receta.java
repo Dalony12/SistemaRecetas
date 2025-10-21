@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Receta {
     int id;
+    private String codigo;
     private Paciente paciente;
     private List<Prescripcion> medicamentos;
     private LocalDate fechaConfeccion;
@@ -25,11 +26,19 @@ public class Receta {
         this.estado = estado;
     }
 
-    public Receta(Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro) {
+    public Receta(String codigo, Paciente paciente, List<Prescripcion> medicamentos, LocalDate fechaRetiro) {
+        this.codigo = codigo;
         this.paciente = paciente;
-        this.medicamentos = medicamentos;
+        this.medicamentos = new ArrayList<>(medicamentos);
         this.fechaRetiro = fechaRetiro;
+        this.fechaConfeccion = LocalDate.now();
+        this.estado = "Pendiente";
     }
+
+
+    public String getCodigo() { return codigo; }
+
+    public void setCodigo(String codigo) { this.codigo = codigo; }
 
     public int getId() { return id;}
 

@@ -28,8 +28,8 @@ public class DespachoController {
     @FXML private TableColumn<Receta, String> colFechaConfeccion;
     @FXML private TableColumn<Receta, String> colFechaRetiro;
     @FXML private TableColumn<Receta, String> colEstado;
-    @FXML private ComboBox<String> cmbFiltrarPacienteDespacho;
-    @FXML private TextField txtBuscarClienteDespacho;
+    @FXML private ComboBox<String> cmbFiltrarPaciencteDespacho;
+    @FXML private TextField txtBuscarClienetDespacho;
 
     private ObservableList<Receta> listaObservable;
     private RecetaLogica recetasLogica;
@@ -41,9 +41,9 @@ public class DespachoController {
             recetasLogica = new RecetaLogica();
 
             // Configurar filtro
-            if (cmbFiltrarPacienteDespacho != null) {
-                cmbFiltrarPacienteDespacho.setItems(FXCollections.observableArrayList("Identificación", "Nombre"));
-                cmbFiltrarPacienteDespacho.setValue("Nombre");
+            if (cmbFiltrarPaciencteDespacho != null) {
+                cmbFiltrarPaciencteDespacho.setItems(FXCollections.observableArrayList("Identificación", "Nombre"));
+                cmbFiltrarPaciencteDespacho.setValue("Nombre");
             }
 
             configurarColumnas();
@@ -117,10 +117,10 @@ public class DespachoController {
 
     private void configurarBindings() {
         try {
-            if (txtBuscarClienteDespacho != null)
-                txtBuscarClienteDespacho.textProperty().addListener((obs, o, n) -> filtrarPacientes());
-            if (cmbFiltrarPacienteDespacho != null)
-                cmbFiltrarPacienteDespacho.setOnAction(e -> filtrarPacientes());
+            if (txtBuscarClienetDespacho != null)
+                txtBuscarClienetDespacho.textProperty().addListener((obs, o, n) -> filtrarPacientes());
+            if (cmbFiltrarPaciencteDespacho != null)
+                cmbFiltrarPaciencteDespacho.setOnAction(e -> filtrarPacientes());
         } catch (Exception ex) {
             logExceptionAndShowAlert("Error al configurar bindings en DespachoController", ex);
         }
@@ -142,10 +142,10 @@ public class DespachoController {
 
     private void filtrarPacientes() {
         try {
-            if (cmbFiltrarPacienteDespacho == null || txtBuscarClienteDespacho == null || listaObservable == null) return;
+            if (cmbFiltrarPaciencteDespacho == null || txtBuscarClienetDespacho == null || listaObservable == null) return;
 
-            String filtro = cmbFiltrarPacienteDespacho.getValue();
-            String texto = txtBuscarClienteDespacho.getText().trim().toLowerCase();
+            String filtro = cmbFiltrarPaciencteDespacho.getValue();
+            String texto = txtBuscarClienetDespacho.getText().trim().toLowerCase();
 
             if (texto.isEmpty()) {
                 tblBuscarPacientesDespacho.setItems(listaObservable);

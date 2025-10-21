@@ -86,7 +86,7 @@ public class RecetaDatos {
             cn.setAutoCommit(false); // inicio transacción
 
             try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, r.getEstado() != null ? r.getEstado() : r.getEstado()); // codigo could be null or computed elsewhere
+                ps.setString(1, r.getCodigo());
                 ps.setInt(2, r.getPaciente().getId());
                 ps.setDate(3, r.getFechaConfeccion() != null ? Date.valueOf(r.getFechaConfeccion()) : null);
                 ps.setDate(4, r.getFechaRetiro() != null ? Date.valueOf(r.getFechaRetiro()) : null);
@@ -217,6 +217,23 @@ public class RecetaDatos {
                     if (r != null) list.add(r);
                 }
                 return list;
+            }
+        }
+    }
+
+    public String generarCodigoReceta() throws SQLException {
+        String sql = "SELECT codigo FROM recetas ORDER BY id_receta DESC LIMIT 1";
+        try (Connection cn = DB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                String ultimoCodigo = rs.getString("codigo"); // Ej: "REC004"
+                int numero = Integer.parseInt(ultimoCodigo.substring(3)); // 4
+                numero++; // siguiente número
+                return String.format("REC%03d", numero); // "REC005"
+            } else {
+                return "REC001"; // si no hay recetas aún
             }
         }
     }

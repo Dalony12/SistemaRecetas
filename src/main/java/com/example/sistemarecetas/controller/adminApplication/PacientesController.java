@@ -1,5 +1,6 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
+import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Paciente;
 import com.example.sistemarecetas.logica.PacienteLogica;
 import javafx.animation.FadeTransition;
@@ -11,10 +12,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.beans.value.ChangeListener;
 import javafx.util.Duration;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class PacientesController {
 
@@ -57,9 +61,10 @@ public class PacientesController {
             colFechaNacimiento.setCellValueFactory(new PropertyValueFactory<>("fechaNacimiento"));
             colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
 
+            toggleMode("guardar");
             configurarListeners();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch (SQLException e) {
             mostrarAlerta("Error al inicializar", e.getMessage());
         }
     }
@@ -70,28 +75,84 @@ public class PacientesController {
         btnModificarPaciente.setOnAction(e -> toggleMode("modificar"));
         btnBuscarPaciente.setOnAction(e -> toggleMode("buscar"));
 
-        txtIDPaciente.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (currentMode.equals("buscar")) buscarPaciente();
-            if (newVal.isEmpty()) limpiarCampos();
-            else autocompletarPaciente(newVal);
-        });
-
-        txtNombrePaciente.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (currentMode.equals("buscar")) buscarPaciente();
-        });
+        txtIDPaciente.textProperty().addListener((obs, oldVal, newVal) -> handleCodigoChange(newVal));
     }
 
-    private void autocompletarPaciente(String identificacion) {
-        try {
-            Paciente p = pacienteLogica.findByIdentificacion(identificacion);
-            if (p != null) {
-                txtNombrePaciente.setText(p.getNombre());
-                txtTelefonoPaciente.setText(String.valueOf(p.getTelefono()));
-                dtpFechaNacimiento.setValue(p.getFechaNacimiento());
-            } else limpiarCampos();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void handleCodigoChange(String codigo) {
+        if (currentMode.equals("guardar")) {
+            setFieldEditable(txtNombrePaciente, true);
+            setFieldEditable(txtTelefonoPaciente, true);
+            setFieldEditable(dtpFechaNacimiento, true);
+            return;
         }
+
+        try {
+            Paciente m = pacienteLogica.findByIdentificacion(codigo);
+            if (m != null) {
+                txtNombrePaciente.setText(m.getNombre());
+                txtTelefonoPaciente.setText(String.valueOf(m.getTelefono()));
+                dtpFechaNacimiento.setValue(m.getFechaNacimiento());
+
+                boolean editable = currentMode.equals("modificar");
+                setFieldEditable(txtNombrePaciente, editable);
+                setFieldEditable(txtTelefonoPaciente, editable);
+                setFieldEditable(dtpFechaNacimiento, editable);
+            } else if (!currentMode.equals("buscar")) {
+                limpiarCampos(false);
+                setFieldEditable(txtNombrePaciente, false);
+                setFieldEditable(txtTelefonoPaciente, false);
+                setFieldEditable(dtpFechaNacimiento, false);
+            }
+
+            if (currentMode.equals("buscar")) buscarPaciente();
+
+        } catch (SQLException e) {
+            mostrarAlerta("Error al buscar medicamento", e.getMessage());
+        }
+    }
+
+
+    private void setFieldEditable(TextInputControl field, boolean editable) {
+        field.setEditable(editable);
+        field.setStyle(editable ? "" : "-fx-control-inner-background: #f0f0f0;");
+        if (!editable) field.setTooltip(new Tooltip("Campo bloqueado"));
+        else field.setTooltip(null);
+    }
+    private void setFieldEditable(DatePicker picker, boolean editable) {
+        picker.setDisable(!editable); // Se usa setDisable en lugar de setEditable
+        picker.setStyle(editable ? "" : "-fx-opacity: 0.8; -fx-control-inner-background: #f0f0f0;");
+        if (!editable) picker.setTooltip(new Tooltip("Campo bloqueado"));
+        else picker.setTooltip(null);
+    }
+
+    private void toggleMode(String mode) {
+        currentMode = mode;
+
+        btnGuardarPaciente.setSelected(mode.equals("guardar"));
+        btnBorrarPaciente.setSelected(mode.equals("borrar"));
+        btnModificarPaciente.setSelected(mode.equals("modificar"));
+        btnBuscarPaciente.setSelected(mode.equals("buscar"));
+
+        txtIDPaciente.setEditable(true);
+        txtIDPaciente.setStyle("");
+        txtIDPaciente.setTooltip(null);
+
+        limpiarCampos();
+
+        switch (mode) {
+            case "guardar" -> {
+                setFieldEditable(txtNombrePaciente, true);
+                setFieldEditable(txtTelefonoPaciente, true);
+                setFieldEditable(dtpFechaNacimiento, true);
+            }
+            case "modificar", "borrar", "buscar" -> {
+                setFieldEditable(txtNombrePaciente, false);
+                setFieldEditable(txtTelefonoPaciente, false);
+                setFieldEditable(dtpFechaNacimiento, false);
+            }
+        }
+
+        cargarPacientes();
     }
 
     @FXML
@@ -108,13 +169,28 @@ public class PacientesController {
             }
 
             int telefono = Integer.parseInt(telefonoStr);
-            Paciente p = new Paciente(identificacion, nombre, telefono, fechaNacimiento);
+            Paciente p;
 
-            if (currentMode.equals("guardar")) pacienteLogica.create(p);
-            else if (currentMode.equals("modificar")) pacienteLogica.update(p);
-            else if (currentMode.equals("borrar")) {
+            if (currentMode.equals("guardar")) {
+                p = new Paciente(identificacion, nombre, telefono, fechaNacimiento);
+                pacienteLogica.create(p);
+
+            } else if (currentMode.equals("modificar")) {
+                // Buscar paciente existente
+                Paciente existente = pacienteLogica.findByIdentificacion(identificacion);
+                if (existente == null) {
+                    mostrarAlerta("No encontrado", "No existe un paciente con esa identificación: " + identificacion);
+                    return;
+                }
+                // Crear objeto con ID existente para actualizar
+                p = new Paciente(existente.getId(), identificacion, nombre, telefono, fechaNacimiento);
+                pacienteLogica.update(p);
+
+            } else if (currentMode.equals("borrar")) {
                 boolean eliminado = pacienteLogica.deleteByIdentificacion(identificacion);
-                if (!eliminado) mostrarAlerta("No encontrado", "No existe un paciente con esa identificación: " + identificacion);
+                if (!eliminado) {
+                    mostrarAlerta("No encontrado", "No existe un paciente con esa identificación: " + identificacion);
+                }
             }
 
             limpiarCampos();
@@ -129,61 +205,48 @@ public class PacientesController {
 
     @FXML
     private void buscarPaciente() {
-        String identificacion = txtIDPaciente.getText().trim();
-        String nombre = txtNombrePaciente.getText().trim();
-
         try {
-            if (identificacion.isEmpty() && nombre.isEmpty()) {
-                cargarPacientes();
-                return;
-            }
+            String codigo = txtIDPaciente.getText().trim();
 
-            List<Paciente> resultado = pacienteLogica.search(identificacion, nombre);
+
+            List<Paciente> resultado;
+            if (codigo.isEmpty()) resultado = pacienteLogica.findAll();
+            else resultado = pacienteLogica.searchByCodigo(codigo);
+
             listaObservable.setAll(resultado);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch (SQLException e) {
+            mostrarAlerta("Error", e.getMessage());
         }
+    }
+
+    @FXML
+    private void limpiarCampos() { limpiarCampos(true); }
+
+
+    private void limpiarCampos(boolean limpiarCodigo) {
+        if (limpiarCodigo) txtIDPaciente.clear();
+        txtNombrePaciente.clear();
+        txtTelefonoPaciente.clear();
+        dtpFechaNacimiento.setValue(null);
+    }
+
+    public void cargarPacientes() {
+        try { listaObservable.setAll(pacienteLogica.findAll()); }
+        catch (SQLException e) { mostrarAlerta("Error", e.getMessage()); }
     }
 
     public void mostrarListaConAnimacion() {
         if (vBoxPortadaPaciente.isVisible()) {
-
-            PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
+            PauseTransition pause = new PauseTransition(Duration.seconds(1));
             pause.setOnFinished(event -> {
-
-                TranslateTransition translate = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaPaciente);
-                translate.setToX(-vBoxPortadaPaciente.getWidth() - 20);
-
-                FadeTransition fade = new FadeTransition(Duration.seconds(1.5), vBoxPortadaPaciente);
-                fade.setFromValue(1);
-                fade.setToValue(0);
-
-                translate.setOnFinished(e -> {
-                    vBoxPortadaPaciente.setVisible(false);
-                    vBoxPortadaPaciente.setTranslateX(0);
-                    vBoxPortadaPaciente.setOpacity(1);
-                });
-
-                translate.play();
-                fade.play();
+                TranslateTransition transition = new TranslateTransition(Duration.seconds(1.5), vBoxPortadaPaciente);
+                transition.setToX(-vBoxPortadaPaciente.getWidth() - 20);
+                transition.setOnFinished(e -> vBoxPortadaPaciente.setVisible(false));
+                transition.play();
             });
-
             pause.play();
         }
-    }
-
-    private void toggleMode(String mode) {
-        currentMode = mode;
-
-        btnGuardarPaciente.setSelected(mode.equals("guardar"));
-        btnBorrarPaciente.setSelected(mode.equals("borrar"));
-        btnModificarPaciente.setSelected(mode.equals("modificar"));
-        btnBuscarPaciente.setSelected(mode.equals("buscar"));
-
-        txtIDPaciente.setEditable(true);
-        txtNombrePaciente.setEditable(!mode.equals("borrar"));
-        txtTelefonoPaciente.setEditable(!mode.equals("borrar") && !mode.equals("buscar"));
-        dtpFechaNacimiento.setDisable(mode.equals("borrar") || mode.equals("buscar"));
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {
@@ -192,21 +255,5 @@ public class PacientesController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
-    }
-
-    @FXML
-    private void limpiarCampos() {
-        txtIDPaciente.clear();
-        txtNombrePaciente.clear();
-        txtTelefonoPaciente.clear();
-        dtpFechaNacimiento.setValue(null);
-    }
-
-    public void cargarPacientes() {
-        try {
-            listaObservable.setAll(pacienteLogica.findAll());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
+import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Medico;
 import com.example.sistemarecetas.logica.MedicoLogica;
 import javafx.animation.FadeTransition;
@@ -13,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class MedicosController {
@@ -35,7 +37,6 @@ public class MedicosController {
     @FXML private TextField txtIDMedico;
     @FXML private TextField txtNombreMedico;
     @FXML private TextField txtEspecialidadMedico;
-    @FXML private PasswordField txtPasswordMedico; // NUEVO
 
     @FXML private ProgressBar progressBar;
 
@@ -68,28 +69,71 @@ public class MedicosController {
         btnModificarMedico.setOnAction(e -> toggleMode("modificar"));
         btnBuscarMedico.setOnAction(e -> toggleMode("buscar"));
 
-        txtIDMedico.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (currentMode.equals("buscar")) buscarMedico();
-            if (newVal.isEmpty()) limpiarCampos();
-            else autocompletarMedico(newVal);
-        });
-
-        txtNombreMedico.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (currentMode.equals("buscar")) buscarMedico();
-        });
+        txtIDMedico.textProperty().addListener((obs, oldVal, newVal) -> handleCodigoChange(newVal));
     }
 
-    private void autocompletarMedico(String identificacion) {
+    private void handleCodigoChange(String codigo) {
+        if (currentMode.equals("guardar")) {
+            setFieldEditable(txtNombreMedico, true);
+            setFieldEditable(txtEspecialidadMedico, true);
+            return;
+        }
+
         try {
-            Medico m = medicosLogica.findByIdentificacion(identificacion);
+            Medico m = medicosLogica.findByIdentificacion(codigo);
             if (m != null) {
                 txtNombreMedico.setText(m.getNombre());
                 txtEspecialidadMedico.setText(m.getEspecialidad());
-                txtPasswordMedico.setText(""); // no mostramos la contraseña real por seguridad
-            } else limpiarCampos();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+                boolean editable = currentMode.equals("modificar");
+                setFieldEditable(txtNombreMedico, editable);
+                setFieldEditable(txtEspecialidadMedico, editable);
+            } else if (!currentMode.equals("buscar")) {
+                limpiarCampos(false);
+                setFieldEditable(txtNombreMedico, false);
+            }
+
+            if (currentMode.equals("buscar")) buscarMedico();
+
+        } catch (SQLException e) {
+            mostrarAlerta("Error al buscar medicamento", e.getMessage());
         }
+    }
+
+    private void setFieldEditable(TextInputControl field, boolean editable) {
+        field.setEditable(editable);
+        field.setStyle(editable ? "" : "-fx-control-inner-background: #f0f0f0;");
+        if (!editable) field.setTooltip(new Tooltip("Campo bloqueado"));
+        else field.setTooltip(null);
+    }
+
+
+    private void toggleMode(String mode) {
+        currentMode = mode;
+
+        btnGuardarMedico.setSelected(mode.equals("guardar"));
+        btnBorrarMedico.setSelected(mode.equals("borrar"));
+        btnModificarMedico.setSelected(mode.equals("modificar"));
+        btnBuscarMedico.setSelected(mode.equals("buscar"));
+
+        txtIDMedico.setEditable(true);
+        txtIDMedico.setStyle("");
+        txtIDMedico.setTooltip(null);
+
+        limpiarCampos();
+
+        switch (mode) {
+            case "guardar" -> {
+                setFieldEditable(txtNombreMedico, true);
+                setFieldEditable(txtEspecialidadMedico, true);
+            }
+            case "modificar", "borrar", "buscar" -> {
+                setFieldEditable(txtNombreMedico, false);
+                setFieldEditable(txtEspecialidadMedico, false);
+            }
+        }
+
+        cargarMedicos();
     }
 
     @FXML
@@ -98,17 +142,15 @@ public class MedicosController {
             String identificacion = txtIDMedico.getText().trim();
             String nombre = txtNombreMedico.getText().trim();
             String especialidad = txtEspecialidadMedico.getText().trim();
-            String password = txtPasswordMedico.getText().trim();
 
-            if (identificacion.isEmpty() || nombre.isEmpty() || especialidad.isEmpty() ||
-                    (currentMode.equals("guardar") && password.isEmpty())) {
+            if (identificacion.isEmpty() || nombre.isEmpty() || especialidad.isEmpty()) {
                 mostrarAlerta("Campos incompletos", "Debe llenar todos los campos del formulario");
                 return;
             }
 
             Medico m;
             if (currentMode.equals("guardar")) {
-                m = new Medico(identificacion, nombre, especialidad, password);
+                m = new Medico(identificacion, nombre, especialidad, identificacion);
                 medicosLogica.create(m);
             } else if (currentMode.equals("modificar")) {
                 // Para modificar, si el password está vacío, mantenemos el actual
@@ -117,8 +159,7 @@ public class MedicosController {
                     mostrarAlerta("No encontrado", "No existe un médico con esa identificación: " + identificacion);
                     return;
                 }
-                String passToUse = password.isEmpty() ? existente.getPassword() : password;
-                m = new Medico(existente.getId(), identificacion, nombre, especialidad, passToUse);
+                m = new Medico(existente.getId(), identificacion, nombre, especialidad, identificacion);
                 medicosLogica.update(m);
             } else if (currentMode.equals("borrar")) {
                 boolean eliminado = medicosLogica.deleteByIdentificacion(identificacion);
@@ -135,19 +176,17 @@ public class MedicosController {
 
     @FXML
     private void buscarMedico() {
-        String identificacion = txtIDMedico.getText().trim();
-        String nombre = txtNombreMedico.getText().trim();
-
         try {
-            if (identificacion.isEmpty() && nombre.isEmpty()) {
-                cargarMedicos();
-                return;
-            }
+            String codigo = txtIDMedico.getText().trim();
 
-            List<Medico> resultado = medicosLogica.search(identificacion, nombre);
+            List<Medico> resultado;
+            if (codigo.isEmpty()) resultado = medicosLogica.findAll();
+            else resultado = medicosLogica.searchByCodigo(codigo);
+
             listaObservable.setAll(resultado);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch (SQLException e) {
+            mostrarAlerta("Error", e.getMessage());
         }
     }
 
@@ -173,18 +212,6 @@ public class MedicosController {
         }
     }
 
-    private void toggleMode(String mode) {
-        currentMode = mode;
-        btnGuardarMedico.setSelected(mode.equals("guardar"));
-        btnBorrarMedico.setSelected(mode.equals("borrar"));
-        btnModificarMedico.setSelected(mode.equals("modificar"));
-        btnBuscarMedico.setSelected(mode.equals("buscar"));
-
-        txtIDMedico.setEditable(true);
-        txtNombreMedico.setEditable(!mode.equals("borrar"));
-        txtEspecialidadMedico.setEditable(!mode.equals("borrar") && !mode.equals("buscar"));
-        txtPasswordMedico.setEditable(!mode.equals("borrar"));
-    }
 
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -195,11 +222,13 @@ public class MedicosController {
     }
 
     @FXML
-    private void limpiarCampos() {
-        txtIDMedico.clear();
+    private void limpiarCampos() { limpiarCampos(true); }
+
+    private void limpiarCampos(boolean limpiarCodigo) {
+        if (limpiarCodigo) txtIDMedico.clear();
         txtNombreMedico.clear();
         txtEspecialidadMedico.clear();
-        txtPasswordMedico.clear();
+
     }
 
     public void cargarMedicos() {

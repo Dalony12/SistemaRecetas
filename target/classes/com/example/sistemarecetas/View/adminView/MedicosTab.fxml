@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -57,6 +58,7 @@
                     <RadioButton id="btnModificarMedico" fx:id="btnModificarMedico" text="Modificar" />
                <RadioButton id="btnBuscarMedico" fx:id="btnBuscarMedico" mnemonicParsing="false" text="Buscar" />
                 </HBox>
+            <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" visible="false" />
 
                 <Line endX="182.0" opacity="0.3" startX="-100.0" strokeWidth="2.0" />
 

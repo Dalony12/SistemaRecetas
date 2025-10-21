@@ -63,9 +63,9 @@ public class BuscarPacienteController {
         try {
             List<Paciente> pacientesFiltrados;
             if (filtro.equals("ID")) {
-                pacientesFiltrados = pacientesLogica.search(texto, ""); // buscar por ID en BD
+                pacientesFiltrados = pacientesLogica.searchByCodigo(texto); // buscar por ID en BD
             } else { // Nombre
-                pacientesFiltrados = pacientesLogica.search("", texto); // buscar por nombre en BD
+                pacientesFiltrados = pacientesLogica.searchByNombre(texto); // buscar por nombre en BD
             }
 
             listaObservable.setAll(pacientesFiltrados);
