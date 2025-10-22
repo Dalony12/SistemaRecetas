@@ -1,6 +1,7 @@
 package com.example.sistemarecetas.logica;
 
 import com.example.sistemarecetas.Model.Farmaceutico;
+import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.datos.FarmaceuticoDatos;
 
 import java.sql.SQLException;
@@ -15,9 +16,8 @@ public class FarmaceuticoLogica {
         return store.findAll();
     }
 
-    public Farmaceutico findById(int id) throws SQLException {
-        if (id <= 0) return null;
-        return store.findById(id);
+    public Farmaceutico findById(String id) throws SQLException {
+        return store.findByIdentificacion(id);
     }
 
     public Farmaceutico create(Farmaceutico nuevo) throws SQLException {
@@ -32,10 +32,6 @@ public class FarmaceuticoLogica {
         return store.update(f);
     }
 
-    public boolean deleteById(int id) throws SQLException {
-        if (id <= 0) return false;
-        return store.delete(id);
-    }
 
     private void validarNuevo(Farmaceutico f) {
         if (f == null) throw new IllegalArgumentException("Farmacéutico nulo.");
@@ -61,4 +57,17 @@ public class FarmaceuticoLogica {
         if (identificacion == null || identificacion.isBlank()) return Optional.empty();
         return Optional.ofNullable(store.findByIdentificacion(identificacion));
     }
+
+    public List<Farmaceutico> search(String codigo, String nombre) throws SQLException {
+        return store.search(codigo, nombre);
+    }
+
+    public List<Farmaceutico> searchByCodigo(String codigo) throws SQLException {
+        List<Farmaceutico> todos = store.search(codigo, "");
+        return todos.stream()
+                .filter(m -> m.getIdentificacion().toLowerCase().contains(codigo.toLowerCase()))
+                .toList();
+    }
+
+
 }

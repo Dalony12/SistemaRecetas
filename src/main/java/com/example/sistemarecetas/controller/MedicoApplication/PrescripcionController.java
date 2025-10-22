@@ -185,6 +185,7 @@ public class PrescripcionController {
         }
     }
 
+
     @FXML
     public void guardarPrescripcion(ActionEvent actionEvent) {
         try {
@@ -195,8 +196,8 @@ public class PrescripcionController {
             }
 
             if (receta == null) {
-                receta = new Receta(paciente, listaMedicamentos, fechaRetiro);
-                recetasLogica.create(receta); // BD
+                receta = new Receta(null,paciente, listaMedicamentos, fechaRetiro);
+                recetasLogica.create(receta); //BD
             } else {
                 receta.setPaciente(paciente);
                 receta.setMedicamentos(listaMedicamentos);

@@ -39,13 +39,17 @@ public class MedicamentoLogica {
     }
 
     public List<Medicamento> searchByCodigo(String codigo) throws SQLException {
-        if (codigo == null) codigo = "";
-        return store.search(codigo, "");
+        List<Medicamento> todos = store.search(codigo, "");
+        return todos.stream()
+                .filter(m -> m.getCodigo().toLowerCase().contains(codigo.toLowerCase()))
+                .toList();
     }
 
     public List<Medicamento> searchByNombre(String nombre) throws SQLException {
-        if (nombre == null) nombre = "";
-        return store.search("", nombre);
+        List<Medicamento> todos = store.search("", nombre);
+        return todos.stream()
+                .filter(m -> m.getNombre().toLowerCase().contains(nombre.toLowerCase()))
+                .toList();
     }
 
 }

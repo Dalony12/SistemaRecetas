@@ -54,16 +54,22 @@ public class RecetaLogica {
     /** Crea una receta con sus prescripciones */
     public Receta create(Receta nueva) {
         try {
-            // Insertar receta
-            Receta recetaInsertada = recetaStore.insert(nueva);
-            if (recetaInsertada != null) {
-                // Insertar cada prescripcion asociada
-                for (Prescripcion p : nueva.getMedicamentos()) {
-                    prescripcionStore.insert(p, recetaInsertada.getId());
-                }
-                // Recargar prescripciones para asegurar consistencia
-                recetaInsertada.setMedicamentos(prescripcionStore.findByRecetaId(recetaInsertada.getId()));
+            // Generar código consecutivo si no existe
+            if (nueva.getCodigo() == null || nueva.getCodigo().isEmpty()) {
+                String codigo = recetaStore.generarCodigoReceta();
+                nueva.setCodigo(codigo);
             }
+
+            // Insertar receta y sus prescripciones (transacción interna)
+            Receta recetaInsertada = recetaStore.insert(nueva);
+
+            // Recargar prescripciones desde BD (ya se guardaron dentro del insert)
+            if (recetaInsertada != null) {
+                recetaInsertada.setMedicamentos(
+                        prescripcionStore.findByRecetaId(recetaInsertada.getId())
+                );
+            }
+
             return recetaInsertada;
         } catch (SQLException e) {
             e.printStackTrace();

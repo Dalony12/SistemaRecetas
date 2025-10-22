@@ -1,5 +1,6 @@
 package com.example.sistemarecetas.logica;
 
+import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Paciente;
 import com.example.sistemarecetas.datos.PacienteDatos;
 
@@ -54,6 +55,20 @@ public class PacienteLogica {
 
     public List<Paciente> search(String identificacion, String nombre) throws SQLException {
         return store.search(identificacion, nombre);
+    }
+
+    public List<Paciente> searchByCodigo(String id) throws SQLException {
+        List<Paciente> todos = store.search(id, "");
+        return todos.stream()
+                .filter(m -> m.getIdentificacion().toLowerCase().contains(id.toLowerCase()))
+                .toList();
+    }
+
+    public List<Paciente> searchByNombre(String nombre) throws SQLException {
+        List<Paciente> todos = store.search("", nombre);
+        return todos.stream()
+                .filter(m -> m.getNombre().toLowerCase().contains(nombre.toLowerCase()))
+                .toList();
     }
 
     private void validarCampos(Paciente p) {

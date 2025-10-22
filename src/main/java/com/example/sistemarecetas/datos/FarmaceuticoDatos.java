@@ -139,4 +139,27 @@ public class FarmaceuticoDatos {
             return affectedRows > 0; // true si se eliminó al menos un registro
         }
     }
+    public List<Farmaceutico> search(String identificacion, String nombre) throws SQLException {
+        List<Farmaceutico> lista = new ArrayList<>();
+        String sql = "SELECT * FROM farmaceuticos WHERE identificacion LIKE ? OR nombre LIKE ?";
+
+        try (Connection cn = DB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setString(1, "%" + identificacion + "%");
+            ps.setString(2, "%" + nombre + "%");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new Farmaceutico(
+                            rs.getInt("id_farmaceutico"),
+                            rs.getString("identificacion"),
+                            rs.getString("nombre"),
+                            rs.getString("password")
+                    ));
+                }
+            }
+        }
+        return lista;
+    }
 }
