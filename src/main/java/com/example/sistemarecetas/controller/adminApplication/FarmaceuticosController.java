@@ -2,6 +2,8 @@ package com.example.sistemarecetas.controller.adminApplication;
 
 import com.example.sistemarecetas.Model.Farmaceutico;
 import com.example.sistemarecetas.Model.Medicamento;
+import com.example.sistemarecetas.Model.Paciente;
+import com.example.sistemarecetas.controller.Async;
 import com.example.sistemarecetas.logica.FarmaceuticoLogica;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
@@ -125,7 +127,7 @@ public class FarmaceuticosController {
             }
         }
 
-        cargarFarmaceuticos();
+        cargarFarmaceuticosAsync();
     }
 
     @FXML
@@ -141,14 +143,13 @@ public class FarmaceuticosController {
                         return;
                     }
                     Farmaceutico nuevo = new Farmaceutico(nombre, identificacion);
-                    farmaceutaLogica.create(nuevo);
-                    listaObservable.add(nuevo);
+                    guardarFarmaceuticosAsync(nuevo);
                 }
                 case "modificar" -> {
                     Optional<Farmaceutico> mod = farmaceutaLogica.findByIdentificacion(identificacion);
                     if (mod.isPresent()) {
                         mod.get().setNombre(nombre);
-                        farmaceutaLogica.update(mod.get());
+                        modificarFarmaceuticoAsync(mod.get());
                         refrescarTabla();
                     } else mostrarAlerta("No encontrado", "No existe farmacéutico con esa identificación.");
                 }
@@ -157,9 +158,7 @@ public class FarmaceuticosController {
                         mostrarAlerta("Campo vacío", "Debe ingresar una identificación.");
                         return;
                     }
-                    boolean eliminado = farmaceutaLogica.deleteByIdentificacion(identificacion);
-                    if (eliminado) listaObservable.removeIf(f -> f.getIdentificacion().equalsIgnoreCase(identificacion));
-                    else mostrarAlerta("No encontrado", "No existe farmacéutico con esa identificación.");
+                    eliminarFarmaceuticoAsync(identificacion);
                 }
             }
 
@@ -184,17 +183,151 @@ public class FarmaceuticosController {
         }
     }
 
+    //METODOS CON HILOSSSSSS//
+    public void cargarFarmaceuticosAsync(){
+        progressBar.setVisible(true);
+        Async.run(
+                () -> {// Esta expresión representa el proceso principal
+                    try {
+                        // Sobre el proceso principal vamos a ejecutar un hilo con un proceso adicional
+                        return farmaceutaLogica.findAll();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                listaClientes -> { // Este es el caso del onSuccess
+                    tableFarmaceuticos.getItems().setAll(listaClientes);
+                    progressBar.setVisible(false);
+                },
+                ex -> { // Este es el caso del onError
+                    progressBar.setVisible(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText("Error al cargar la lista de Farmaceuticos.");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void guardarFarmaceuticosAsync(Farmaceutico c) {
+        btnGuardarFarmaceutico.setDisable(true);
+        progressBar.setVisible(true);
+
+        Async.run(
+                () -> { // Este es el proceso principal
+                    try {
+                        return farmaceutaLogica.create(c);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                guardado -> { // onSuccess
+                    progressBar.setVisible(false);
+                    btnGuardarFarmaceutico.setDisable(false);
+                    tableFarmaceuticos.getItems().add(guardado);
+                    new Alert(Alert.AlertType.INFORMATION, "Farmaceutico guardado").showAndWait();
+                },
+                ex -> { // onError
+                    progressBar.setVisible(false);
+                    btnGuardarFarmaceutico.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("No se pudo guardar el Farmaceutico");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void modificarFarmaceuticoAsync(Farmaceutico f) {
+        btnModificarFarmaceutico.setDisable(true);
+        progressBar.setVisible(true);
+
+        Async.run(
+                () -> { // --- proceso principal (en segundo plano)
+                    try {
+                        return farmaceutaLogica.update(f);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                actualizado -> { // --- onSuccess
+                    progressBar.setVisible(false);
+                    btnModificarFarmaceutico.setDisable(false);
+
+                    if (actualizado != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Farmacéutico modificado correctamente").showAndWait();
+                        try {
+                            refrescarTabla();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        limpiarCampos();
+                    } else {
+                        new Alert(Alert.AlertType.WARNING, "No se pudo modificar el farmacéutico.").showAndWait();
+                    }
+                },
+                ex -> { // --- onError
+                    progressBar.setVisible(false);
+                    btnModificarFarmaceutico.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("Error al modificar farmacéutico");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void eliminarFarmaceuticoAsync(String identificacion) {
+        btnBorrarFarmaceutico.setDisable(true);
+        progressBar.setVisible(true);
+
+        Async.run(
+                () -> { // --- proceso en segundo plano
+                    try {
+                        return farmaceutaLogica.deleteByIdentificacion(identificacion);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                eliminado -> { // --- onSuccess
+                    progressBar.setVisible(false);
+                    btnBorrarFarmaceutico.setDisable(false);
+
+                    if (eliminado) {
+                        listaObservable.removeIf(f -> f.getIdentificacion().equalsIgnoreCase(identificacion));
+                        new Alert(Alert.AlertType.INFORMATION, "Farmacéutico eliminado correctamente").showAndWait();
+                        try {
+                            refrescarTabla();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        limpiarCampos();
+                    } else {
+                        new Alert(Alert.AlertType.WARNING, "No se encontró farmacéutico con esa identificación.").showAndWait();
+                    }
+                },
+                ex -> { // --- onError
+                    progressBar.setVisible(false);
+                    btnBorrarFarmaceutico.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("Error al eliminar farmacéutico");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+
     @FXML
     private void limpiarCampos() { limpiarCampos(true); }
 
     private void limpiarCampos(boolean limpiarCodigo) {
         if (limpiarCodigo) txtIDFarmaceuta.clear();
         txtNombreFarmaceuta.clear();
-    }
-
-    public void cargarFarmaceuticos() {
-        try { listaObservable.setAll(farmaceutaLogica.findAll()); }
-        catch (SQLException e) { mostrarAlerta("Error", e.getMessage()); }
     }
 
     public void refrescarTabla() throws SQLException {

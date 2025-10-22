@@ -1,6 +1,8 @@
 package com.example.sistemarecetas.controller.adminApplication;
 
+import com.example.sistemarecetas.Model.Farmaceutico;
 import com.example.sistemarecetas.Model.Medicamento;
+import com.example.sistemarecetas.controller.Async;
 import com.example.sistemarecetas.logica.MedicamentoLogica;
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
@@ -142,7 +144,7 @@ public class MedicamentosController {
             }
         }
 
-        cargarMedicamentos();
+        cargarMedicamentosAsync();
     }
 
     @FXML
@@ -161,7 +163,7 @@ public class MedicamentosController {
             Medicamento m;
             if (currentMode.equals("guardar")) {
                 m = new Medicamento(codigo, nombre, presentacion, descripcion);
-                medicamentoLogica.create(m);
+                guardarMedicamentoAsync(m);
             } else if (currentMode.equals("modificar")) {
                 // Buscar el medicamento existente por código
                 Medicamento existente = medicamentoLogica.findByCodigo(codigo);
@@ -171,16 +173,13 @@ public class MedicamentosController {
                 }
                 // Crear objeto con ID existente para actualizar
                 m = new Medicamento(existente.getId(), codigo, nombre, presentacion, descripcion);
-                medicamentoLogica.update(m);
+                modificarMedicamentoAsync(m);
             } else if (currentMode.equals("borrar")) {
-                boolean eliminado = medicamentoLogica.deleteByCodigo(codigo);
-                if (!eliminado) {
-                    mostrarAlerta("No encontrado", "No existe un medicamento con ese código: " + codigo);
-                }
+                eliminarMedicamentoAsync(codigo);
             }
 
             limpiarCampos();
-            cargarMedicamentos();
+            cargarMedicamentosAsync();
 
         } catch (Exception e) {
             mostrarAlerta("Error", e.getMessage());
@@ -203,6 +202,144 @@ public class MedicamentosController {
         }
     }
 
+    //METODOS CON HILOSSSSSS//
+
+    public void cargarMedicamentosAsync(){
+        progressBar.setVisible(true);
+        Async.run(
+                () -> {// Esta expresión representa el proceso principal
+                    try {
+                        // Sobre el proceso principal vamos a ejecutar un hilo con un proceso adicional
+                        return medicamentoLogica.findAll();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                listaClientes -> { // Este es el caso del onSuccess
+                    tableMedicamentos.getItems().setAll(listaClientes);
+                    progressBar.setVisible(false);
+                },
+                ex -> { // Este es el caso del onError
+                    progressBar.setVisible(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText("Error al cargar la lista de Medicamentos.");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void guardarMedicamentoAsync(Medicamento c) {
+        btnGuardarMedicamento.setDisable(true);
+        progressBar.setVisible(true);
+
+        Async.run(
+                () -> { // Este es el proceso principal
+                    try {
+                        return medicamentoLogica.create(c);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                guardado -> { // onSuccess
+                    progressBar.setVisible(false);
+                    btnGuardarMedicamento.setDisable(false);
+                    tableMedicamentos.getItems().add(guardado);
+                    new Alert(Alert.AlertType.INFORMATION, "Medicamento guardado").showAndWait();
+                },
+                ex -> { // onError
+                    progressBar.setVisible(false);
+                    btnGuardarMedicamento.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("No se pudo guardar el Medicamento");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void modificarMedicamentoAsync(Medicamento f) {
+        btnModificarMedicamento.setDisable(true);
+        progressBar.setVisible(true);
+
+        Async.run(
+                () -> { // --- proceso principal (en segundo plano)
+                    try {
+                        return medicamentoLogica.update(f);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                actualizado -> { // --- onSuccess
+                    progressBar.setVisible(false);
+                    btnModificarMedicamento.setDisable(false);
+
+                    if (actualizado != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Medicamento modificado correctamente").showAndWait();
+                        try {
+                            refrescarTabla();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        limpiarCampos();
+                    } else {
+                        new Alert(Alert.AlertType.WARNING, "No se pudo modificar el Medicamento.").showAndWait();
+                    }
+                },
+                ex -> { // --- onError
+                    progressBar.setVisible(false);
+                    btnModificarMedicamento.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("Error al modificar Medicamento");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void eliminarMedicamentoAsync(String codigo) {
+        btnBorrarMedicamento.setDisable(true);
+        progressBar.setVisible(true);
+
+        Async.run(
+                () -> { // --- proceso en segundo plano
+                    try {
+                        return medicamentoLogica.deleteByCodigo(codigo); // devuelve boolean
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                eliminado -> { // --- onSuccess
+                    progressBar.setVisible(false);
+                    btnBorrarMedicamento.setDisable(false);
+
+                    if (eliminado) {
+                        tableMedicamentos.getItems().remove(codigo);
+                        new Alert(Alert.AlertType.INFORMATION, "Medicamento eliminado correctamente").showAndWait();
+                        try {
+                            refrescarTabla();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        new Alert(Alert.AlertType.WARNING, "No se pudo eliminar el medicamento.").showAndWait();
+                    }
+                },
+                ex -> { // --- onError
+                    progressBar.setVisible(false);
+                    btnBorrarMedicamento.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("Error al eliminar medicamento");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
     @FXML
     private void limpiarCampos() { limpiarCampos(true); }
 
@@ -211,14 +348,6 @@ public class MedicamentosController {
         txtNombreMedicamento.clear();
         txtPresentacionMedicamento.clear();
         txtDescripcionMedicamento.clear();
-    }
-
-    public void cargarMedicamentos() {
-        try {
-            listaObservable.setAll(medicamentoLogica.findAll());
-        } catch (SQLException e) {
-            mostrarAlerta("Error", e.getMessage());
-        }
     }
 
     public void mostrarListaConAnimacion() {
@@ -232,6 +361,10 @@ public class MedicamentosController {
             });
             pause.play();
         }
+    }
+
+    public void refrescarTabla() throws SQLException {
+        listaObservable.setAll(medicamentoLogica.findAll());
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {

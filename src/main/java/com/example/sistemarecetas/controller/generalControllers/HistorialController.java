@@ -2,6 +2,7 @@ package com.example.sistemarecetas.controller.generalControllers;
 
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
+import com.example.sistemarecetas.controller.Async;
 import com.example.sistemarecetas.logica.RecetaLogica;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -9,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,13 +55,6 @@ public class HistorialController {
 
         } catch (Exception e) {
             mostrarAlerta("Error al cargar historial", e.getMessage());
-        }
-    }
-
-    /** Recargar todas las recetas en la tabla */
-    public void cargarHistorial() {
-        if (recetasLogica != null) {
-            listaObservable.setAll(recetasLogica.findAll());
         }
     }
 
@@ -115,6 +110,26 @@ public class HistorialController {
                 .filter(r -> r.getPaciente().getNombre().toLowerCase().contains(criterio))
                 .collect(Collectors.toList());
         listaObservable.setAll(filtradas);
+    }
+
+    //METODOS CON HILOSSSSSS//
+    public void cargarRecetasAsync(){
+        Async.run(
+                () -> {// Esta expresión representa el proceso principal
+                    // Sobre el proceso principal vamos a ejecutar un hilo con un proceso adicional
+                    return recetasLogica.findAll();
+                },
+                listaClientes -> { // Este es el caso del onSuccess
+                    tableRecetas.getItems().setAll(listaClientes);
+                },
+                ex -> { // Este es el caso del onError
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText("Error al cargar la lista de pacientes.");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {

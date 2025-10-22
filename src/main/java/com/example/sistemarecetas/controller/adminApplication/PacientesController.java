@@ -2,6 +2,7 @@ package com.example.sistemarecetas.controller.adminApplication;
 
 import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Paciente;
+import com.example.sistemarecetas.controller.Async;
 import com.example.sistemarecetas.logica.PacienteLogica;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
@@ -152,7 +153,7 @@ public class PacientesController {
             }
         }
 
-        cargarPacientes();
+        cargarPacientesAsync();
     }
 
     @FXML
@@ -173,7 +174,7 @@ public class PacientesController {
 
             if (currentMode.equals("guardar")) {
                 p = new Paciente(identificacion, nombre, telefono, fechaNacimiento);
-                pacienteLogica.create(p);
+                guardarPacienteAsync(p);
 
             } else if (currentMode.equals("modificar")) {
                 // Buscar paciente existente
@@ -184,17 +185,14 @@ public class PacientesController {
                 }
                 // Crear objeto con ID existente para actualizar
                 p = new Paciente(existente.getId(), identificacion, nombre, telefono, fechaNacimiento);
-                pacienteLogica.update(p);
+                modificarPacienteAsync(p);
 
             } else if (currentMode.equals("borrar")) {
-                boolean eliminado = pacienteLogica.deleteByIdentificacion(identificacion);
-                if (!eliminado) {
-                    mostrarAlerta("No encontrado", "No existe un paciente con esa identificación: " + identificacion);
-                }
+                eliminarPacienteAsync(identificacion);
             }
 
             limpiarCampos();
-            cargarPacientes();
+            cargarPacientesAsync();
 
         } catch (NumberFormatException e) {
             mostrarAlerta("Error de formato", "El teléfono debe ser un número válido.");
@@ -220,6 +218,144 @@ public class PacientesController {
         }
     }
 
+    //METODOS CON HILOSSSSSS//
+    public void cargarPacientesAsync(){
+        progressBar.setVisible(true);
+        Async.run(
+                () -> {// Esta expresión representa el proceso principal
+                    try {
+                        // Sobre el proceso principal vamos a ejecutar un hilo con un proceso adicional
+                        return pacienteLogica.findAll();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                listaClientes -> { // Este es el caso del onSuccess
+                    tablePacientes.getItems().setAll(listaClientes);
+                    progressBar.setVisible(false);
+                },
+                ex -> { // Este es el caso del onError
+                    progressBar.setVisible(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText("Error al cargar la lista de pacientes.");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void guardarPacienteAsync(Paciente c) {
+        btnGuardarPaciente.setDisable(true);
+        progressBar.setVisible(true);
+
+        Async.run(
+                () -> { // Este es el proceso principal
+                    try {
+                        return pacienteLogica.create(c);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                guardado -> { // onSuccess
+                    progressBar.setVisible(false);
+                    btnGuardarPaciente.setDisable(false);
+                    tablePacientes.getItems().add(guardado);
+                    new Alert(Alert.AlertType.INFORMATION, "Paciente guardado").showAndWait();
+                },
+                ex -> { // onError
+                    progressBar.setVisible(false);
+                    btnGuardarPaciente.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("No se pudo guardar el Paciente");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void modificarPacienteAsync(Paciente c) {
+        btnModificarPaciente.setDisable(true);
+        progressBar.setVisible(true);
+
+        Async.run(
+                () -> { // Proceso principal (se ejecuta en segundo plano)
+                    try {
+                        return pacienteLogica.update(c);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                actualizado -> { // onSuccess
+                    progressBar.setVisible(false);
+                    btnModificarPaciente.setDisable(false);
+
+                    if (actualizado != null) {
+                        // Buscar el paciente en la tabla y actualizarlo visualmente
+                        for (int i = 0; i < tablePacientes.getItems().size(); i++) {
+                            Paciente existente = tablePacientes.getItems().get(i);
+                            if (existente.getId() == actualizado.getId()) {
+                                tablePacientes.getItems().set(i, actualizado);
+                                break;
+                            }
+                        }
+
+                        new Alert(Alert.AlertType.INFORMATION, "Paciente modificado correctamente").showAndWait();
+                    } else {
+                        new Alert(Alert.AlertType.WARNING, "No se pudo modificar el paciente.").showAndWait();
+                    }
+                },
+                ex -> { // onError
+                    progressBar.setVisible(false);
+                    btnModificarPaciente.setDisable(false);
+
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("Error al modificar el paciente");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+    public void eliminarPacienteAsync(String identificacion) {
+        btnBorrarPaciente.setDisable(true);
+        progressBar.setVisible(true);
+
+        Async.run(
+                () -> { // --- proceso en segundo plano
+                    try {
+                        return pacienteLogica.deleteByIdentificacion(identificacion);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                },
+                eliminado -> { // --- onSuccess
+                    progressBar.setVisible(false);
+                    btnBorrarPaciente.setDisable(false);
+
+                    if (eliminado) {
+                        new Alert(Alert.AlertType.INFORMATION, "Paciente eliminado correctamente").showAndWait();
+                        cargarPacientesAsync(); // recarga la tabla
+                        limpiarCampos();
+                    } else {
+                        new Alert(Alert.AlertType.WARNING, "No se encontró ningún paciente con esa identificación").showAndWait();
+                    }
+                },
+                ex -> { // --- onError
+                    progressBar.setVisible(false);
+                    btnBorrarPaciente.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("Error al eliminar paciente");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
+
+
     @FXML
     private void limpiarCampos() { limpiarCampos(true); }
 
@@ -229,11 +365,6 @@ public class PacientesController {
         txtNombrePaciente.clear();
         txtTelefonoPaciente.clear();
         dtpFechaNacimiento.setValue(null);
-    }
-
-    public void cargarPacientes() {
-        try { listaObservable.setAll(pacienteLogica.findAll()); }
-        catch (SQLException e) { mostrarAlerta("Error", e.getMessage()); }
     }
 
     public void mostrarListaConAnimacion() {

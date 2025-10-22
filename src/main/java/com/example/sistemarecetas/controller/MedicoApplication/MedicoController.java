@@ -33,7 +33,7 @@ public class MedicoController {
     public void abrirHistorial(Event event) {
         if (!tabHistorial.isSelected()) return;
         // Refrescar historial al seleccionarlo
-        HistorialController.getInstance().cargarHistorial();
+        HistorialController.getInstance().cargarRecetasAsync();
     }
 
     @FXML

@@ -30,7 +30,7 @@ public class FarmaController {
     @FXML
     public void abrirHistorial(Event event) {
         if (!tabHistorial.isSelected()) return;
-        HistorialController.getInstance().cargarHistorial();
+        HistorialController.getInstance().cargarRecetasAsync();
     }
 
     @FXML

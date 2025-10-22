@@ -21,7 +21,7 @@ public class AdminController {
     @FXML
     public void abrirMedicos(Event event) {
         if (tabMedicos.isSelected()) {
-            MedicosController.getInstance().cargarMedicos(); // refresca los datos desde XML
+            MedicosController.getInstance().cargarMedicosAsync();
             MedicosController.getInstance().mostrarListaConAnimacion();
         }
     }
@@ -29,7 +29,7 @@ public class AdminController {
     @FXML
     public void abrirFarmaceuticos(Event event) {
         if (tabFarmaceuticos.isSelected()) {
-            FarmaceuticosController.getInstance().cargarFarmaceuticos(); // refresca datos desde XML
+            FarmaceuticosController.getInstance().cargarFarmaceuticosAsync();
             FarmaceuticosController.getInstance().mostrarListaConAnimacion();
         }
     }
@@ -37,7 +37,7 @@ public class AdminController {
     @FXML
     public void abrirPacientes(Event event) {
         if (tabPacientes.isSelected()) {
-            PacientesController.getInstance().cargarPacientes(); // refresca datos desde XML
+            PacientesController.getInstance().cargarPacientesAsync();
             PacientesController.getInstance().mostrarListaConAnimacion();
         }
     }
@@ -45,7 +45,7 @@ public class AdminController {
     @FXML
     public void abrirMedicamentos(Event event) {
         if (tabMedicamentos.isSelected()) {
-            MedicamentosController.getInstance().cargarMedicamentos(); // refresca datos desde XML
+            MedicamentosController.getInstance().cargarMedicamentosAsync();
             MedicamentosController.getInstance().mostrarListaConAnimacion();
         }
     }
@@ -60,7 +60,7 @@ public class AdminController {
     @FXML
     public void abrirHistorial(Event event) {
         if (tabHistorial.isSelected()) {
-            HistorialController.getInstance().cargarHistorial(); // refresca la tabla de recetas
+            HistorialController.getInstance().cargarRecetasAsync(); // refresca la tabla de recetas
         }
     }
 }

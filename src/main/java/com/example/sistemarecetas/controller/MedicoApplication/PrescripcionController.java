@@ -4,6 +4,7 @@ import com.example.sistemarecetas.Model.Medicamento;
 import com.example.sistemarecetas.Model.Paciente;
 import com.example.sistemarecetas.Model.Prescripcion;
 import com.example.sistemarecetas.Model.Receta;
+import com.example.sistemarecetas.controller.Async;
 import com.example.sistemarecetas.logica.MedicamentoLogica;
 import com.example.sistemarecetas.logica.PacienteLogica;
 import com.example.sistemarecetas.logica.RecetaLogica;
@@ -19,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,7 @@ public class PrescripcionController {
     }
 
     @FXML private Button btnEliminarMedicamento;
+    @FXML private Button btnGuardarReceta;
     @FXML private DatePicker dtpFechaRetiroPres;
     @FXML private TextField txtNombrePacientePresc;
     @FXML private TableView<Prescripcion> tblMedicamentoReceta;
@@ -212,6 +215,9 @@ public class PrescripcionController {
             mostrarAlerta("Error al guardar receta", e.getMessage());
         }
     }
+
+    //PROXIMO GUARDAR CON HILOS
+
 
     @FXML
     public void limpiarPrescripcion(ActionEvent actionEvent) {
