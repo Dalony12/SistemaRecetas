@@ -5,6 +5,8 @@ import com.example.sistemarecetas.controller.generalControllers.ChatController;
 import com.example.sistemarecetas.domain.UsuarioActual;
 import com.example.sistemarecetas.servicios.UsuarioChat;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -156,12 +158,24 @@ public class MenuPrincipalController {
         try {
             String nombre = UsuarioActual.getInstancia().getUsuario().getIdentificacion();
             usuarioChat = new UsuarioChat();
-            usuarioChat.conectar("localhost", 6000, nombre, msg -> {
-                        System.out.println("Mensaje recibido: " + msg);
-                    });
+            usuarioChat.conectar("localhost", 6000, nombre, msg ->
+                    Platform.runLater(() -> actualizarTabla(msg)));
             mostrarAlerta("Conectado", "Te has conectado al servidor de chat correctamente.");
         } catch (Exception e) {
             mostrarAlerta("Error", "No se pudo conectar al servidor: " + e.getMessage());
+        }
+    }
+
+    private void actualizarTabla(String msg) {
+        if (msg.startsWith("[USUARIOS]")) {
+            String[] usuarios = msg.replace("[USUARIOS]", "").trim().split(",");
+            ObservableList<UsuarioActivo> lista = FXCollections.observableArrayList();
+            for (String u : usuarios) {
+                lista.add(new UsuarioActivo(u.trim()));
+            }
+            tblMensajes.setItems(lista);
+        } else {
+            System.out.println(msg);
         }
     }
 
