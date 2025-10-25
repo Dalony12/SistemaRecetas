@@ -3,7 +3,8 @@ package com.example.sistemarecetas.controller.adminApplication;
 import com.example.sistemarecetas.Model.UsuarioActivo;
 import com.example.sistemarecetas.controller.generalControllers.ChatController;
 import com.example.sistemarecetas.domain.UsuarioActual;
-import javafx.collections.FXCollections;
+import com.example.sistemarecetas.servicios.UsuarioChat;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,9 @@ public class MenuPrincipalController {
     @FXML private TableColumn<UsuarioActivo, Boolean> colMarcarMensaje;
     @FXML private Button btnSalir;
     @FXML private Button btnEnviar;
+    @FXML private Button btnConectar;
+
+    UsuarioChat usuarioChat;
 
     @FXML
     public void initialize() {
@@ -55,11 +59,11 @@ public class MenuPrincipalController {
         });
 
         //ejemplo
-        tblMensajes.setItems(FXCollections.observableArrayList(
-                new UsuarioActivo("ADM-111"),
-                new UsuarioActivo("MED-111"),
-                new UsuarioActivo("MED-222")
-        ));
+//        tblMensajes.setItems(FXCollections.observableArrayList(
+//                new UsuarioActivo("ADM-111"),
+//                new UsuarioActivo("MED-111"),
+//                new UsuarioActivo("MED-222")
+//        ));
     }
 
     public void clickCerrarSesion(ActionEvent actionEvent) {
@@ -132,6 +136,8 @@ public class MenuPrincipalController {
             ChatController chatController = loader.getController();
             chatController.inicializarDestinatarios(seleccionados);
 
+            chatController.setUsuarioChat(usuarioChat);
+
             Stage stage = new Stage();
             stage.setTitle("Chat de la Clínica");
             stage.setScene(new Scene(root));
@@ -142,6 +148,20 @@ public class MenuPrincipalController {
         } catch (IOException e) {
             e.printStackTrace();
             mostrarAlerta("Error al abrir chat", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void conectar() {
+        try {
+            String nombre = UsuarioActual.getInstancia().getUsuario().getIdentificacion();
+            usuarioChat = new UsuarioChat();
+            usuarioChat.conectar("localhost", 6000, nombre, msg -> {
+                        System.out.println("Mensaje recibido: " + msg);
+                    });
+            mostrarAlerta("Conectado", "Te has conectado al servidor de chat correctamente.");
+        } catch (Exception e) {
+            mostrarAlerta("Error", "No se pudo conectar al servidor: " + e.getMessage());
         }
     }
 
