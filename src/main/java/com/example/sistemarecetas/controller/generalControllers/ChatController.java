@@ -41,4 +41,11 @@ public class ChatController {
         chatClient.enviarMensaje(msg);
         txtMensaje.clear();
     }
+
+    @FXML
+    public void onClose() {
+        try {
+            chatClient.close();
+        } catch (Exception ignored) {}
+    }
 }
