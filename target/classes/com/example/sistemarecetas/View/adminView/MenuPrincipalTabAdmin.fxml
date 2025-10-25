@@ -32,7 +32,7 @@
                                  <children>
                                     <Button fx:id="btnEnviar" mnemonicParsing="false" onAction="#enviar" prefHeight="8.0" prefWidth="92.0" text="Enviar" />
                                     <Label prefHeight="17.0" prefWidth="26.0" />
-                                    <Button fx:id="btnRecibir" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="Recibir" />
+                                    <Button fx:id="btnRecibir" mnemonicParsing="false" onAction="#recibir" prefHeight="25.0" prefWidth="86.0" text="Recibir" />
                                  </children>
                               </HBox>
                               <TableView fx:id="tblMensajes" prefHeight="237.0" prefWidth="217.0">

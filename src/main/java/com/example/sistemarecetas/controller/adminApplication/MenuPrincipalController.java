@@ -3,7 +3,6 @@ package com.example.sistemarecetas.controller.adminApplication;
 import com.example.sistemarecetas.Model.UsuarioActivo;
 import com.example.sistemarecetas.controller.generalControllers.ChatController;
 import com.example.sistemarecetas.domain.UsuarioActual;
-import com.example.sistemarecetas.servicios.UsuarioChat;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,9 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 
 public class MenuPrincipalController {
 
@@ -27,8 +24,6 @@ public class MenuPrincipalController {
     @FXML private TableColumn<UsuarioActivo, Boolean> colMarcarMensaje;
     @FXML private Button btnSalir;
     @FXML private Button btnEnviar;
-
-    private UsuarioChat chatClient;
 
     @FXML
     public void initialize() {
@@ -59,7 +54,7 @@ public class MenuPrincipalController {
             }
         });
 
-        // ejemplo
+        //ejemplo
         tblMensajes.setItems(FXCollections.observableArrayList(
                 new UsuarioActivo("ADM-111"),
                 new UsuarioActivo("MED-111"),
@@ -112,6 +107,21 @@ public class MenuPrincipalController {
     }
 
     @FXML
+    private void recibir() {
+        List<String> seleccionados = tblMensajes.getItems().stream()
+                .filter(UsuarioActivo::isSeleccionado)
+                .map(UsuarioActivo::getId)
+                .toList();
+
+        if (seleccionados.isEmpty()) {
+            mostrarAlerta("Error: ", "No hay usuarios seleccionados");
+            return;
+        }
+
+        abrirChat(seleccionados);
+    }
+
+    @FXML
     private void abrirChat(List<String> seleccionados) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -126,6 +136,7 @@ public class MenuPrincipalController {
             stage.setTitle("Chat de la Clínica");
             stage.setScene(new Scene(root));
             stage.initOwner(btnEnviar.getScene().getWindow());
+            stage.setOnCloseRequest(event -> chatController.onClose());
             stage.show();
 
         } catch (IOException e) {
