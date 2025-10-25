@@ -4,6 +4,7 @@ import com.example.sistemarecetas.domain.UsuarioActual;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import com.example.sistemarecetas.servicios.UsuarioChat;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -14,19 +15,11 @@ public class ChatController {
     @FXML private TextArea txtMensajes;
     @FXML private TextField txtMensaje;
 
-    private UsuarioChat chatClient;
+    private UsuarioChat usuarioChat;
     List<String> destinatarios;
 
-    @FXML
-    public void initialize() {
-        try {
-            String nombre = UsuarioActual.getInstancia().getUsuario().getIdentificacion();
-            chatClient = new UsuarioChat();
-            chatClient.conectar("localhost", 6000, nombre, msg ->
-                    Platform.runLater(() -> txtMensajes.appendText(msg + "\n")));
-        } catch (Exception e) {
-            txtMensajes.appendText("[SISTEMA] Error al conectar: " + e.getMessage() + "\n");
-        }
+    public void setUsuarioChat(UsuarioChat usuarioChat) {
+        this.usuarioChat = usuarioChat;
     }
 
     public void inicializarDestinatarios(List<String> destinatarios) {
@@ -38,14 +31,22 @@ public class ChatController {
     public void onSend() {
         String msg = txtMensaje.getText().trim();
         if (msg.isEmpty()) return;
-        chatClient.enviarMensaje(msg);
+        usuarioChat.enviarMensaje(msg);
         txtMensaje.clear();
     }
 
     @FXML
     public void onClose() {
         try {
-            chatClient.close();
+            usuarioChat.close();
         } catch (Exception ignored) {}
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }
