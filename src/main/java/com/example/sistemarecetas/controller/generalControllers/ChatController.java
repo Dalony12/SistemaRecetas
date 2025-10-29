@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ChatController {
@@ -31,7 +32,12 @@ public class ChatController {
     public void onSend() {
         String msg = txtMensaje.getText().trim();
         if (msg.isEmpty()) return;
-        usuarioChat.enviarMensaje(msg);
+
+        for (String d : destinatarios) {
+            usuarioChat.enviarMensaje("/privado " + d + " " + msg);
+        }
+
+        //txtMensajes.appendText("Tú: " + msg + "\n");
         txtMensaje.clear();
     }
 
@@ -49,4 +55,17 @@ public class ChatController {
         alert.setContentText(mensaje);
         alert.showAndWait();
     }
+
+    public void iniciarEscucha() {
+        usuarioChat = new UsuarioChat();
+        try {
+            String nombre = UsuarioActual.getInstancia().getUsuario().getIdentificacion();
+            usuarioChat.conectar("localhost", 6000, nombre, msg ->
+                    Platform.runLater(() -> txtMensajes.appendText(msg + "\n"))
+            );
+        } catch (IOException e) {
+            mostrarAlerta("Error", "No se pudo conectar al servidor: " + e.getMessage());
+        }
+    }
+
 }

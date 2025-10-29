@@ -138,7 +138,8 @@ public class MenuPrincipalController {
             ChatController chatController = loader.getController();
             chatController.inicializarDestinatarios(seleccionados);
 
-            chatController.setUsuarioChat(usuarioChat);
+            // chatController.setUsuarioChat(usuarioChat);
+            chatController.iniciarEscucha();
 
             Stage stage = new Stage();
             stage.setTitle("Chat de la Clínica");
