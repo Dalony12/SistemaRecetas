@@ -33,7 +33,7 @@ public class ClinicaChatServer {
     public void start() {
         LOGGER.info("Servidor del chat iniciado en el puerto: " + port);
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            while (true) {
+              while (true) {
                 Socket socket = serverSocket.accept();
                 UsuarioHandler usuarioHandler = new UsuarioHandler(socket, this);
                 usuarioHandler.start();
