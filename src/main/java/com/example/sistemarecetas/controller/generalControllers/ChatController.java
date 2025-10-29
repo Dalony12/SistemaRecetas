@@ -37,7 +37,7 @@ public class ChatController {
             usuarioChat.enviarMensaje("/privado " + d + " " + msg);
         }
 
-        //txtMensajes.appendText("Tú: " + msg + "\n");
+        txtMensajes.appendText("Tú: " + msg + "\n");
         txtMensaje.clear();
     }
 
