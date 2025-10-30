@@ -200,15 +200,13 @@ public class PrescripcionController {
 
             if (receta == null) {
                 receta = new Receta(null,paciente, listaMedicamentos, fechaRetiro);
-                recetasLogica.create(receta); //BD
+                guardarRecetasAsync(receta);
             } else {
                 receta.setPaciente(paciente);
                 receta.setMedicamentos(listaMedicamentos);
                 receta.setFechaRetiro(fechaRetiro);
                 recetasLogica.update(receta); // BD
             }
-
-            mostrarAlerta("Éxito", "Receta guardada correctamente.");
             limpiarPrescripcion(actionEvent);
 
         } catch (Exception e) {
@@ -217,7 +215,30 @@ public class PrescripcionController {
     }
 
     //PROXIMO GUARDAR CON HILOS
+    public void guardarRecetasAsync(Receta r) {
+        btnGuardarReceta.setDisable(true);
+        progressIndicator.setVisible(true);
 
+        Async.run(
+                () -> { // Proceso principal (hilo secundario)
+                    return recetasLogica.create(r);
+                },
+                guardado -> { // onSuccess
+                    progressIndicator.setVisible(false);
+                    btnGuardarReceta.setDisable(false);
+                    new Alert(Alert.AlertType.INFORMATION, "Receta guardada correctamente").showAndWait();
+                },
+                ex -> { // onError
+                    progressIndicator.setVisible(false);
+                    btnGuardarReceta.setDisable(false);
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("No se pudo guardar la receta");
+                    a.setHeaderText(null);
+                    a.setContentText(ex.getMessage());
+                    a.showAndWait();
+                }
+        );
+    }
 
     @FXML
     public void limpiarPrescripcion(ActionEvent actionEvent) {
